@@ -1,6 +1,8 @@
 import { createFontMetrics, type FontMetrics } from './font';
 import { EMBEDDED_FONTS, type EmbeddedFontPath } from './embedded';
 
+export { EMBEDDED_FONTS, type EmbeddedFontPath };
+
 /**
  * Resolves the font path in a form definition to a parsed, measurable font.
  *

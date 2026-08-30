@@ -5,6 +5,7 @@ import {
   shapeLine,
   shapeDocument,
   DEFAULT_TOLERANCE_MM,
+  effectiveTargetMm,
   type ShapeResult,
 } from '@/lib/shape/optimizer';
 import { fontUnitsToMm } from '@/lib/metrics/units';
@@ -48,12 +49,15 @@ describe('shapeLine', () => {
     expect(target - result.widthMm).toBeLessThanOrEqual(DEFAULT_TOLERANCE_MM);
   });
 
-  it('never exceeds the target when it reports success', () => {
+  // The reference measures against `widthPx + 0.55`, so a successful line may
+  // sit a fraction past the nominal field width. That slack is deliberate and
+  // shared with the wrapper, so it can never put a line onto a second row.
+  it('never exceeds the effective target when it reports success', () => {
     for (let extra = 0; extra <= 20; extra += 0.25) {
       const target = natural(BULLET) + extra;
       const result = shape(BULLET, target);
       if (result.status === 'shaped' || result.status === 'at-target') {
-        expect(result.widthMm).toBeLessThanOrEqual(target + 1e-9);
+        expect(result.widthMm).toBeLessThanOrEqual(effectiveTargetMm(target) + 1e-9);
       }
     }
   });
@@ -80,7 +84,7 @@ describe('shapeLine', () => {
     const target = natural(BULLET) - 1.5;
     const result = shape(BULLET, target);
     expect(result.status).toBe('shaped');
-    expect(result.widthMm).toBeLessThanOrEqual(target);
+    expect(result.widthMm).toBeLessThanOrEqual(effectiveTargetMm(target));
     expect(countSpaces(result.text)[SPACE_CHARS.SIX_PER_EM]).toBeGreaterThan(0);
   });
 
@@ -101,41 +105,20 @@ describe('shapeLine', () => {
     }
   });
 
-  it('distributes padding across gaps rather than concentrating it', () => {
-    const target = natural(BULLET) + 2;
-    const result = shape(BULLET, target);
-    const levels = levelsOf(result);
-    // The evenness invariant: no gap sits more than one level above another.
-    expect(Math.max(...levels) - Math.min(...levels)).toBeLessThanOrEqual(1);
-    // And the widened gaps are genuinely spread, not clustered at one break.
-    const wide = levels.filter((l) => l === 2).length;
-    const normal = levels.filter((l) => l === 1).length;
-    expect(wide + normal).toBe(levels.length);
-    expect(wide).toBeGreaterThan(0);
-  });
-
-  it('holds the evenness invariant across the whole feasible range', () => {
-    for (let extra = 0; extra <= 25; extra += 0.25) {
-      const levels = levelsOf(shape(BULLET, natural(BULLET) + extra));
-      if (levels.length === 0) continue;
-      expect(Math.max(...levels) - Math.min(...levels)).toBeLessThanOrEqual(1);
-    }
-  });
 
 
-  // The three space characters sit 1/12 em apart, so each gap can move the line
-  // by only ~0.35mm at 12pt. A 12-gap bullet therefore has about +/-4.2mm of
-  // total travel. Shaping is a fine-tuning instrument; anything further out has
-  // to be fixed by editing the text, which is what the diagnosis exists for.
-  it('has symmetric, bounded headroom of about a third of a millimetre per gap', () => {
-    const result = shape(BULLET, natural(BULLET));
-    const padHeadroom = result.maxWidthMm - result.naturalWidthMm;
-    const shrinkHeadroom = result.naturalWidthMm - result.minWidthMm;
-    expect(padHeadroom).toBeCloseTo(shrinkHeadroom, 6);
-    // 1/3 em - 1/4 em = 1/12 em = 171 units on Liberation's 2048-unit em.
-    const stepMm = fontUnitsToMm(683 - 512, font.unitsPerEm, SIZE_PT);
-    expect(stepMm).toBeCloseTo(0.3535, 4);
-    expect(padHeadroom / result.gapCount).toBeCloseTo(stepMm, 9);
+
+  // The first gap after the bullet dash is never substituted -- the reference
+  // leaves it alone because a narrowed space right after the dash is the one
+  // place the change is obvious. So the achievable range is one gap short of
+  // the theoretical maximum, and is not symmetric about the natural width.
+  it('leaves the first gap after the dash alone', () => {
+    const dashed = `- ${BULLET}`;
+    const result = shape(dashed, natural(dashed) - 3);
+    expect(result.status).toBe('shaped');
+    // A narrowed space right after the dash is the one place the substitution
+    // is obvious, so that gap is never chosen.
+    expect(result.text.startsWith(`-${SPACE_CHARS.NORMAL}Led`)).toBe(true);
   });
 
   it('is deterministic', () => {
@@ -185,5 +168,64 @@ describe('shapeDocument', () => {
     expect(results).toHaveLength(3);
     expect(results[1]!.status).toBe('empty');
     expect(unshape(results[0]!.text)).toBe(unshape(BULLET));
+  });
+});
+
+/**
+ * Behaviours ported deliberately from AF-VCD/pdf-bullets. Each one is a place
+ * where an "improvement" would make our output differ from theirs for the same
+ * bullet, which is the thing to avoid.
+ */
+describe('parity with the reference implementation', () => {
+  const OVER =
+    '- SrA Saunders was the focal point for squadron training day. He facilitated two bridge chats, and headed training on critic';
+
+  it('is deterministic: their gap choice is a hash, not a random draw', () => {
+    const first = shape(OVER, 202.321);
+    for (let i = 0; i < 25; i += 1) {
+      expect(shape(OVER, 202.321).text).toBe(first.text);
+    }
+  });
+
+  // Their loop merges a pair into one element, so a later pass can merge that
+  // element with its neighbour. Substituted spaces therefore run together
+  // rather than spreading out -- the opposite of even distribution.
+  it('allows substituted spaces to cluster', () => {
+    const result = shape(OVER, 202.321);
+    expect(result.status).toBe('shaped');
+    expect(countSpaces(result.text)[SPACE_CHARS.SIX_PER_EM]).toBeGreaterThan(0);
+    expect(unshape(result.text)).toBe(unshape(OVER));
+  });
+
+  // Shrinking stops the moment overflow reaches zero; there is no attempt to
+  // push the line back out to the right margin.
+  it('stops as soon as the line fits rather than reaching for flush', () => {
+    const result = shape(OVER, 202.321);
+    const effective = effectiveTargetMm(202.321);
+    expect(result.widthMm).toBeLessThanOrEqual(effective);
+    // Undoing a single substitution would put it back over the line.
+    const oneFewer = result.text.replace(SPACE_CHARS.SIX_PER_EM, SPACE_CHARS.NORMAL);
+    expect(font.widthMm(oneFewer, SIZE_PT, false)).toBeGreaterThan(effective);
+  });
+
+  it('measures without kerning, as a form field lays text out', () => {
+    const result = shape(OVER, 202.321);
+    // Kerned measurement would report this line narrower than it renders,
+    // which is how a bullet that "fits" here overflows in the form.
+    expect(font.widthMm(result.text, SIZE_PT, false)).toBeGreaterThanOrEqual(
+      font.widthMm(result.text, SIZE_PT, true),
+    );
+  });
+
+  it('measures against the target plus their 0.55px slack', () => {
+    expect(effectiveTargetMm(202.321) - 202.321).toBeCloseTo(0.55 / (96 / 25.4), 9);
+  });
+
+  it('emits only permitted space characters and preserves the words', () => {
+    for (let extra = -8; extra <= 8; extra += 0.5) {
+      const result = shape(OVER, natural(OVER) + extra);
+      expect(usesOnlyPermittedSpaces(result.text)).toBe(true);
+      expect(unshape(result.text)).toBe(unshape(OVER));
+    }
   });
 });

@@ -1,11 +1,604 @@
 {
   "meta": {
-    "source": "HQ-approved abbreviation list",
-    "version": "TBD",
+    "source": "AFPC Acronyms list",
+    "version": "2026-08-30",
     "verifiedDate": "2026-08-30",
-    "sourceUrl": "",
-    "status": "stub",
-    "notes": "NOT YET POPULATED. Transcribe from the official HQ list; do not generate entries from memory, they will be plausible and wrong. Format is [{\"phrase\": \"United States Air Force Academy\", \"abbr\": \"USAFA\"}]. The loader sorts descending by phrase length, so file order does not matter. Import from .xlsx in the UI writes to localStorage and does not modify this file."
+    "sourceUrl": "https://www.afpc.af.mil/Career-Management/Acronyms/",
+    "status": "verified",
+    "notes": "Transcribed verbatim from the AFPC acronyms page as supplied by the maintainer on 2026-08-30. Phrases keep the source's uppercase styling; matching is case-insensitive so this does not affect replacement, only how a suggestion reads. Not independently re-fetched from afpc.af.mil -- re-check against the live page when the version date is bumped."
   },
-  "data": []
+  "data": [
+    {
+      "phrase": "AIR BATTLE MANAGER",
+      "abbr": "ABM"
+    },
+    {
+      "phrase": "AGILE COMBAT EMPLOYMENT",
+      "abbr": "ACE"
+    },
+    {
+      "phrase": "ACTIVE DUTY",
+      "abbr": "AD"
+    },
+    {
+      "phrase": "ADMINISTRATIVE CONTROL",
+      "abbr": "ADCON"
+    },
+    {
+      "phrase": "AIRCREW FLIGHT EQUIPMENT",
+      "abbr": "AFE"
+    },
+    {
+      "phrase": "AIR FORCE FORCE GENERATION",
+      "abbr": "AFFORGEN"
+    },
+    {
+      "phrase": "AIR FORCE INSTRUCTION",
+      "abbr": "AFI"
+    },
+    {
+      "phrase": "AIR FORCE MANUAL",
+      "abbr": "AFMAN"
+    },
+    {
+      "phrase": "AIR FORCE SPECIALTY CODE",
+      "abbr": "AFSC"
+    },
+    {
+      "phrase": "AIR FORCE SMART OPERATIONS FOR THE 21ST CENTURY",
+      "abbr": "AFSO21"
+    },
+    {
+      "phrase": "AEROSPACE GROUND EQUIPMENT",
+      "abbr": "AGE"
+    },
+    {
+      "phrase": "ACTIVE GUARD RESERVE",
+      "abbr": "AGR"
+    },
+    {
+      "phrase": "ARTIFICIAL INTELLIGENCE",
+      "abbr": "AI"
+    },
+    {
+      "phrase": "AIRMAN LEADERSHIP QUALITY",
+      "abbr": "ALQ"
+    },
+    {
+      "phrase": "AIRMAN LEADERSHIP SCHOOL",
+      "abbr": "ALS"
+    },
+    {
+      "phrase": "AIR OPERATIONS CENTER",
+      "abbr": "AOC"
+    },
+    {
+      "phrase": "AREA OF RESPONSIBILITY",
+      "abbr": "AOR"
+    },
+    {
+      "phrase": "APPROPRIATED FUNDS",
+      "abbr": "APF"
+    },
+    {
+      "phrase": "AIR RESERVE TECHNICIAN",
+      "abbr": "ART"
+    },
+    {
+      "phrase": "ANNUAL TOUR",
+      "abbr": "AT"
+    },
+    {
+      "phrase": "AIR TRAFFIC CONTROL",
+      "abbr": "ATC"
+    },
+    {
+      "phrase": "AIR TASKING ORDER",
+      "abbr": "ATO"
+    },
+    {
+      "phrase": "BASIC MILITARY TRAINING",
+      "abbr": "BMT"
+    },
+    {
+      "phrase": "BY NAME REQUEST",
+      "abbr": "BNR"
+    },
+    {
+      "phrase": "BELOW-THE-ZONE",
+      "abbr": "BTZ"
+    },
+    {
+      "phrase": "COMMAND AND CONTROL",
+      "abbr": "C2"
+    },
+    {
+      "phrase": "COMMAND, CONTROL, COMMUNICATIONS, COMPUTERS, INTELLIGENCE, SURVEILLANCE AND RECONNAISSANCE",
+      "abbr": "C4ISR"
+    },
+    {
+      "phrase": "COMBINED AIR OPERATIONS CENTER",
+      "abbr": "CAOC"
+    },
+    {
+      "phrase": "CLOSE AIR SUPPORT",
+      "abbr": "CAS"
+    },
+    {
+      "phrase": "CRISIS ACTION TEAM",
+      "abbr": "CAT"
+    },
+    {
+      "phrase": "COMBAT ARMS TRAINING AND MAINTENANCE",
+      "abbr": "CATM"
+    },
+    {
+      "phrase": "CHEMICAL, BIOLOGICAL, RADIOLOGICAL, NUCLEAR",
+      "abbr": "CBRN"
+    },
+    {
+      "phrase": "COMPUTER BASED TRAINING",
+      "abbr": "CBT"
+    },
+    {
+      "phrase": "COMMUNITY COLLEGE OF THE AIR FORCE",
+      "abbr": "CCAF"
+    },
+    {
+      "phrase": "COMMANDER'S INSPECTION PROGRAM",
+      "abbr": "CCIP"
+    },
+    {
+      "phrase": "COMMANDER DIRECTED INVESTIGATION",
+      "abbr": "CDI"
+    },
+    {
+      "phrase": "CAREER FIELD EDUCATION AND TRAINING PLAN",
+      "abbr": "CFETP"
+    },
+    {
+      "phrase": "CAREER FIELD MANAGER",
+      "abbr": "CFM"
+    },
+    {
+      "phrase": "CHIEF MASTER SERGEANT LEADERSHIP ACADEMY",
+      "abbr": "CLA"
+    },
+    {
+      "phrase": "CHIEF MASTER SERGEANT LEADERSHIP COURSE",
+      "abbr": "CLC"
+    },
+    {
+      "phrase": "COURSE OF ACTION",
+      "abbr": "COA"
+    },
+    {
+      "phrase": "CONGRESSIONAL DELEGATION",
+      "abbr": "CODEL"
+    },
+    {
+      "phrase": "CONCEPT OF OPERATIONS",
+      "abbr": "CONOPS"
+    },
+    {
+      "phrase": "CONTINENTAL UNITED STATES",
+      "abbr": "CONUS"
+    },
+    {
+      "phrase": "CONTINUITY OF OPERATIONS",
+      "abbr": "COOP"
+    },
+    {
+      "phrase": "CONTINUOUS PROCESS IMPROVEMENT",
+      "abbr": "CPI"
+    },
+    {
+      "phrase": "CARDIOPULMONARY RESUSCITATION",
+      "abbr": "CPR"
+    },
+    {
+      "phrase": "COMBAT SEARCH AND RESCUE",
+      "abbr": "CSAR"
+    },
+    {
+      "phrase": "CONTROLLED UNCLASSIFIED INFORMATION",
+      "abbr": "CUI"
+    },
+    {
+      "phrase": "DEPARTMENT OF THE AIR FORCE INSTRUCTION",
+      "abbr": "DAFI"
+    },
+    {
+      "phrase": "DEPARTMENT OF THE AIR FORCE MANUAL",
+      "abbr": "DAFMAN"
+    },
+    {
+      "phrase": "DEFENSE EQUAL OPPORTUNITY CLIMATE SURVEY",
+      "abbr": "DEOCS"
+    },
+    {
+      "phrase": "DISTINGUISHED GRADUATE",
+      "abbr": "DG"
+    },
+    {
+      "phrase": "DEFENSE HEALTH AGENCY",
+      "abbr": "DHA"
+    },
+    {
+      "phrase": "DRILL STATUS GUARDSMAN",
+      "abbr": "DSG"
+    },
+    {
+      "phrase": "DISTINGUISHED VISITOR",
+      "abbr": "DV"
+    },
+    {
+      "phrase": "ENEMY KILLED IN ACTION",
+      "abbr": "EKIA"
+    },
+    {
+      "phrase": "EMERGENCY OPERATIONS CENTER",
+      "abbr": "EOC"
+    },
+    {
+      "phrase": "EXPLOSIVE ORDNANCE DISPOSAL",
+      "abbr": "EOD"
+    },
+    {
+      "phrase": "END OF YEAR",
+      "abbr": "EOY"
+    },
+    {
+      "phrase": "ENLISTED PERFORMANCE BRIEF",
+      "abbr": "EPB"
+    },
+    {
+      "phrase": "ELECTRONIC WARFARE",
+      "abbr": "EW"
+    },
+    {
+      "phrase": "FUNCTIONAL AREA MANAGER",
+      "abbr": "FAM"
+    },
+    {
+      "phrase": "FLYING HOUR PROGRAM",
+      "abbr": "FHP"
+    },
+    {
+      "phrase": "FULLY MISSION CAPABLE",
+      "abbr": "FMC"
+    },
+    {
+      "phrase": "FORWARD OPERATING BASE",
+      "abbr": "FOB"
+    },
+    {
+      "phrase": "FULL OPERATIONAL CAPABILITY",
+      "abbr": "FOC"
+    },
+    {
+      "phrase": "FORWARD OPERATING LOCATION",
+      "abbr": "FOL"
+    },
+    {
+      "phrase": "FORCE PROTECTION CONDITIONS",
+      "abbr": "FPCON"
+    },
+    {
+      "phrase": "FIRST TERM ENLISTED COURSE",
+      "abbr": "FTEC"
+    },
+    {
+      "phrase": "FORMAL TRAINING UNIT",
+      "abbr": "FTU"
+    },
+    {
+      "phrase": "GRADE POINT AVERAGE",
+      "abbr": "GPA"
+    },
+    {
+      "phrase": "GLOBAL POSITIONING SYSTEM",
+      "abbr": "GPS"
+    },
+    {
+      "phrase": "GEOGRAPHICALLY SEPARATED UNIT",
+      "abbr": "GSU"
+    },
+    {
+      "phrase": "GOVERNMENT TRAVEL CARD",
+      "abbr": "GTC"
+    },
+    {
+      "phrase": "INACTIVE DUTY TRAINING",
+      "abbr": "IDT"
+    },
+    {
+      "phrase": "INTERMEDIATE DEVELOPMENTAL EDUCATION",
+      "abbr": "IDE"
+    },
+    {
+      "phrase": "IMPROVISED EXPLOSIVE DEVICE",
+      "abbr": "IED"
+    },
+    {
+      "phrase": "INDIVIDUAL MOBILIZATION AUGMENTEE",
+      "abbr": "IMA"
+    },
+    {
+      "phrase": "INITIAL OPERATIONAL CAPABILITY",
+      "abbr": "IOC"
+    },
+    {
+      "phrase": "INSTRUCTOR PILOT",
+      "abbr": "IP"
+    },
+    {
+      "phrase": "INTELLIGENCE, SURVEILLANCE, AND RECONNAISSANCE",
+      "abbr": "ISR"
+    },
+    {
+      "phrase": "INFORMATION TECHNOLOGY",
+      "abbr": "IT"
+    },
+    {
+      "phrase": "JOINT ALL DOMAIN COMMAND AND CONTROL",
+      "abbr": "JADC2"
+    },
+    {
+      "phrase": "JUNIOR RESERVE OFFICER TRAINING CORPS",
+      "abbr": "JROTC"
+    },
+    {
+      "phrase": "KILLED IN ACTION",
+      "abbr": "KIA"
+    },
+    {
+      "phrase": "LINE OF EFFORT",
+      "abbr": "LOE"
+    },
+    {
+      "phrase": "MULTI-CAPABLE AIRMEN",
+      "abbr": "MCA"
+    },
+    {
+      "phrase": "MISSION DESIGN SERIES",
+      "abbr": "MDS"
+    },
+    {
+      "phrase": "MILITARY CONSTRUCTION",
+      "abbr": "MILCON"
+    },
+    {
+      "phrase": "MILITARY PERSONNEL DATA SYSTEM",
+      "abbr": "MILPDS"
+    },
+    {
+      "phrase": "MEMORANDUM OF AGREEMENT",
+      "abbr": "MOA"
+    },
+    {
+      "phrase": "MEMORANDUM OF UNDERSTANDING",
+      "abbr": "MOU"
+    },
+    {
+      "phrase": "MEDICAL TREATMENT FACILITY",
+      "abbr": "MTF"
+    },
+    {
+      "phrase": "MORALE, WELFARE, AND RECREATION",
+      "abbr": "MWR"
+    },
+    {
+      "phrase": "MAINTENANCE",
+      "abbr": "MX"
+    },
+    {
+      "phrase": "NUCLEAR COMMAND, CONTROL, AND COMMUNICATIONS",
+      "abbr": "NC3"
+    },
+    {
+      "phrase": "NONCOMMISSIONED OFFICER ACADEMY",
+      "abbr": "NCOA"
+    },
+    {
+      "phrase": "NATIONAL CAPITAL REGION",
+      "abbr": "NCR"
+    },
+    {
+      "phrase": "NATIONAL DEFENSE AUTHORIZATION ACT",
+      "abbr": "NDAA"
+    },
+    {
+      "phrase": "NATIONAL DEFENSE STRATEGY",
+      "abbr": "NDS"
+    },
+    {
+      "phrase": "NONCOMBATANT EVACUATION OPERATION",
+      "abbr": "NEO"
+    },
+    {
+      "phrase": "NON-SECURE INTERNET PROTOCOL ROUTER",
+      "abbr": "NIPR"
+    },
+    {
+      "phrase": "NON MISSION CAPABLE",
+      "abbr": "NMC"
+    },
+    {
+      "phrase": "OPERATIONS AND MAINTENANCE",
+      "abbr": "O&M"
+    },
+    {
+      "phrase": "OVERSEAS CONTINGENCY OPERATIONS",
+      "abbr": "OCO"
+    },
+    {
+      "phrase": "OUTSIDE CONTINENTAL UNITED STATES",
+      "abbr": "OCONUS"
+    },
+    {
+      "phrase": "ON THE JOB TRAINING",
+      "abbr": "OJT"
+    },
+    {
+      "phrase": "OPERATIONS PLAN",
+      "abbr": "OPLAN"
+    },
+    {
+      "phrase": "OPERATIONAL SECURITY",
+      "abbr": "OPSEC"
+    },
+    {
+      "phrase": "OFFICER TRAINING SCHOOL",
+      "abbr": "OTS"
+    },
+    {
+      "phrase": "PERMANENT CHANGE OF STATION",
+      "abbr": "PCS"
+    },
+    {
+      "phrase": "PRIMARY DEVELOPMENTAL EDUCATION",
+      "abbr": "PDE"
+    },
+    {
+      "phrase": "PHYSICAL FITNESS ASSESSMENT",
+      "abbr": "PFA"
+    },
+    {
+      "phrase": "PROFESSIONAL MILITARY EDUCATION",
+      "abbr": "PME"
+    },
+    {
+      "phrase": "POINT OF CONTACT",
+      "abbr": "POC"
+    },
+    {
+      "phrase": "PHYSICAL TRAINING",
+      "abbr": "PT"
+    },
+    {
+      "phrase": "QUALITY ASSURANCE",
+      "abbr": "QA"
+    },
+    {
+      "phrase": "QUALITY OF LIFE",
+      "abbr": "QoL"
+    },
+    {
+      "phrase": "RULES OF ENGAGEMENT",
+      "abbr": "ROE"
+    },
+    {
+      "phrase": "RESERVE OFFICER TRAINING CORPS",
+      "abbr": "ROTC"
+    },
+    {
+      "phrase": "REMOTELY PILOTED AIRCRAFT",
+      "abbr": "RPA"
+    },
+    {
+      "phrase": "SEXUAL ASSAULT PREVENTION AND RESPONSE",
+      "abbr": "SAPR"
+    },
+    {
+      "phrase": "SENSITIVE COMPARTMENTED INFORMATION FACILITY",
+      "abbr": "SCIF"
+    },
+    {
+      "phrase": "SENIOR DEVELOPMENTAL EDUCATION",
+      "abbr": "SDE"
+    },
+    {
+      "phrase": "SURVIVAL, EVASION, RESISTANCE, ESCAPE",
+      "abbr": "SERE"
+    },
+    {
+      "phrase": "SECRET INTERNET PROTOCOL ROUTER",
+      "abbr": "SIPR"
+    },
+    {
+      "phrase": "SUBJECT MATTER EXPERT",
+      "abbr": "SME"
+    },
+    {
+      "phrase": "SENIOR NONCOMMISSIONED OFFICER ACADEMY",
+      "abbr": "SNCOA"
+    },
+    {
+      "phrase": "SPECIAL OPERATIONS FORCES",
+      "abbr": "SOF"
+    },
+    {
+      "phrase": "STANDARD OPERATING PROCEDURE",
+      "abbr": "SOP"
+    },
+    {
+      "phrase": "SQUADRON OFFICER SCHOOL",
+      "abbr": "SOS"
+    },
+    {
+      "phrase": "SCIENCE, TECHNOLOGY, ENGINEERING, AND MATHEMATICS",
+      "abbr": "STEM"
+    },
+    {
+      "phrase": "TACTICAL AIR CONTROL PARTY",
+      "abbr": "TACP"
+    },
+    {
+      "phrase": "TACTICAL COMBAT CASUALTY CARE",
+      "abbr": "TCCC"
+    },
+    {
+      "phrase": "TEMPORARY DUTY",
+      "abbr": "TDY"
+    },
+    {
+      "phrase": "TOTAL FORCE INTEGRATION",
+      "abbr": "TFI"
+    },
+    {
+      "phrase": "TRADITIONAL RESERVIST",
+      "abbr": "TR"
+    },
+    {
+      "phrase": "TOP SECRET",
+      "abbr": "TS"
+    },
+    {
+      "phrase": "TACTICS, TECHNIQUES, AND PROCEDURES",
+      "abbr": "TTP"
+    },
+    {
+      "phrase": "UNIT COMPLIANCE INSPECTION",
+      "abbr": "UCI"
+    },
+    {
+      "phrase": "UNIFORM CODE OF MILITARY JUSTICE",
+      "abbr": "UCMJ"
+    },
+    {
+      "phrase": "UNIT EFFECTIVENESS INSPECTION",
+      "abbr": "UEI"
+    },
+    {
+      "phrase": "UNIT TRAINING ASSEMBLY",
+      "abbr": "UTA"
+    },
+    {
+      "phrase": "UNIT TYPE CODE",
+      "abbr": "UTC"
+    },
+    {
+      "phrase": "UNEXPLODED ORDNANCE",
+      "abbr": "UXO"
+    },
+    {
+      "phrase": "WAR RESERVE MATERIEL",
+      "abbr": "WRM"
+    },
+    {
+      "phrase": "EXPEDITIONARY AIRBASE",
+      "abbr": "XAB"
+    }
+  ]
 }

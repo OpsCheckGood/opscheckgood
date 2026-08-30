@@ -20,11 +20,12 @@ import sandbox from '../../data/forms/sandbox.json';
  * see constraint 4 in CLAUDE.md.
  */
 
+// Order drives the form picker, and the first usable entry is the default.
 const RAW_FORMS: ReadonlyArray<readonly [string, unknown]> = [
-  ['src/data/forms/sandbox.json', sandbox],
   ['src/data/forms/af1206.json', af1206],
   ['src/data/forms/af910.json', af910],
   ['src/data/forms/af911.json', af911],
+  ['src/data/forms/sandbox.json', sandbox],
 ];
 
 function isConstraint(value: unknown): value is Constraint {

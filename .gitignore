@@ -3,3 +3,6 @@ dist/
 .astro/
 .DS_Store
 *.log
+
+# Screenshots pasted into the working directory during development.
+/image*.png

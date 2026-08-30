@@ -38,10 +38,17 @@ export interface FontMetrics {
   readonly unitsPerEm: number;
   /** Which table kerning was actually read from. Asserted in tests. */
   readonly kerningSource: KerningSource;
-  /** Kerned advance width of `text`, in font units. */
-  advanceUnits(text: string): number;
-  /** Kerned advance width of `text`, in millimetres at `sizePt`. */
-  widthMm(text: string, sizePt: number): number;
+  /**
+   * Advance width of `text` in font units.
+   *
+   * `kerning` defaults to true, which is correct typography. Pass false to
+   * measure the way a PDF form field lays plain text out -- glyph advances
+   * only, no GPOS adjustment. That is what the shaping path uses; see the note
+   * in shape/optimizer.ts.
+   */
+  advanceUnits(text: string, kerning?: boolean): number;
+  /** Advance width of `text` in millimetres at `sizePt`. */
+  widthMm(text: string, sizePt: number, kerning?: boolean): number;
   /** Kerning adjustment between two characters, in font units (usually <= 0). */
   kernUnits(left: string, right: string): number;
   /** Characters with no glyph in this font. Empty is the healthy case. */
@@ -138,12 +145,12 @@ export function createFontMetrics(
    * not something we can know, and skipping the ligature over-estimates width
    * slightly, which errs toward a shorter line rather than an overflowing one.
    */
-  function advanceUnits(text: string): number {
+  function advanceUnits(text: string, kerning = true): number {
     let total = 0;
     let previous: opentype.Glyph | null = null;
     for (const char of text) {
       const glyph = glyphFor(char.codePointAt(0)!);
-      if (previous) total += kernBetween(previous, glyph);
+      if (kerning && previous) total += kernBetween(previous, glyph);
       total += glyph.advanceWidth ?? 0;
       previous = glyph;
     }
@@ -155,8 +162,8 @@ export function createFontMetrics(
     unitsPerEm,
     kerningSource: source,
     advanceUnits,
-    widthMm(text: string, sizePt: number): number {
-      return fontUnitsToMm(advanceUnits(text), unitsPerEm, sizePt);
+    widthMm(text: string, sizePt: number, kerning = true): number {
+      return fontUnitsToMm(advanceUnits(text, kerning), unitsPerEm, sizePt);
     },
     kernUnits(left: string, right: string): number {
       return kernBetween(

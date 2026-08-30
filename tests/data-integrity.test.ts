@@ -6,6 +6,7 @@ import { readMeta, isPlaceholderString, isPlaceholderNumber } from '@/lib/data/l
 import { FORMS, isFieldPopulated, isFormUsable, usableForms } from '@/lib/data/forms';
 import { STOPWORDS, VERBS } from '@/lib/data/vocab';
 import { HQ_APPROVED, COMMON } from '@/lib/data/abbreviationSets';
+import { normalizeAbbreviations } from '@/lib/data/abbreviations';
 import { embeddedFontPaths } from '@/lib/metrics/registry';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
@@ -104,13 +105,26 @@ describe('form definitions', () => {
     },
   );
 
-  it('marks the unpopulated AF forms unusable and keeps them out of the picker', () => {
+  // The AF forms carry widths taken from AF-VCD/pdf-bullets, whose own field
+  // name is "likelyWidth". That is good enough to measure against and not good
+  // enough to call verified, so they are usable AND still stub -- the banner
+  // stays up until someone reads the real XFA stream.
+  it('has the AF forms populated but still marked unverified', () => {
     for (const id of ['af1206', 'af910', 'af911']) {
       const form = FORMS.find((f) => f.data.id === id)!;
+      expect(isFormUsable(form.data)).toBe(true);
       expect(form.isStub).toBe(true);
-      expect(isFormUsable(form.data)).toBe(false);
+      expect(form.meta.status).toBe('stub');
+      expect(form.meta.sourceUrl).toContain('AF-VCD/pdf-bullets');
+      for (const field of form.data.fields) {
+        expect(field.constraint).toBe('width');
+        expect(field.widthMm).toBeCloseTo(202.321, 3);
+      }
     }
-    expect(usableForms().map((f) => f.data.id)).toEqual(['sandbox']);
+  });
+
+  it('defaults to the 1206, not the synthetic sandbox', () => {
+    expect(usableForms()[0]!.data.id).toBe('af1206');
   });
 
   it('keeps the synthetic sandbox form marked stub so it can never pose as real', () => {
@@ -123,10 +137,49 @@ describe('form definitions', () => {
 
 describe('other datasets', () => {
   it('loads the abbreviation tables', () => {
-    expect(HQ_APPROVED.data.entries).toEqual([]);
-    expect(COMMON.data.entries).toEqual([]);
-    expect(HQ_APPROVED.isStub).toBe(true);
+    expect(HQ_APPROVED.data.entries.length).toBeGreaterThan(100);
+    expect(COMMON.data.entries.length).toBeGreaterThan(100);
+    // HQ comes from the official AFPC page; Common is locally variable by
+    // definition and so stays unverified however long it gets.
+    expect(HQ_APPROVED.isStub).toBe(false);
     expect(COMMON.isStub).toBe(true);
+  });
+
+  it('sorts both tables longest phrase first, whatever the file order', () => {
+    for (const table of [HQ_APPROVED.data, COMMON.data]) {
+      const lengths = table.entries.map((e) => e.phrase.length);
+      expect(lengths).toEqual([...lengths].sort((a, b) => b - a));
+    }
+  });
+
+  // applyAbbreviations is single-pass, so it is idempotent only while no
+  // abbreviation is itself a phrase in the same table. Real data could break
+  // that invariant, so it is checked against the real data, not a fixture.
+  it('has no abbreviation that is also a phrase in the same table', () => {
+    for (const table of [HQ_APPROVED.data, COMMON.data]) {
+      const phrases = new Set(table.entries.map((e) => e.phrase.toLowerCase()));
+      const offenders = table.entries
+        .filter((e) => phrases.has(e.abbr.toLowerCase()))
+        .map((e) => `${e.phrase} -> ${e.abbr}`);
+      expect(offenders).toEqual([]);
+    }
+  });
+
+  /**
+   * A phrase may legitimately carry two abbreviations -- "Quarterly" is both
+   * QTR and QTRLY, and a bullet using either should be recognised. Replacement
+   * still has to pick one, so what matters is not that collisions are absent
+   * but that resolving them does not depend on the file's line order.
+   */
+  it('resolves a phrase with two abbreviations the same way whatever the file order', () => {
+    for (const dataset of [HQ_APPROVED, COMMON]) {
+      const entries = [...dataset.data.entries];
+      const shuffled = [...entries].reverse();
+      const rebuilt = normalizeAbbreviations(shuffled, {} as never, 'shuffled.json');
+      expect([...rebuilt.byPhrase.entries()].sort()).toEqual(
+        [...dataset.data.byPhrase.entries()].sort(),
+      );
+    }
   });
 
   it('loads stopwords lowercased', () => {

@@ -3,20 +3,32 @@
     "source": "AF Form 1206, Nomination for Award",
     "version": "TBD",
     "verifiedDate": "2026-08-30",
-    "sourceUrl": "https://www.e-publishing.af.mil/",
+    "sourceUrl": "https://github.com/AF-VCD/pdf-bullets/blob/master/src/const/const.js",
     "status": "stub",
-    "notes": "NOT YET POPULATED. Field widths and the font come from the form's XFA stream and must be extracted from the official PDF; do not estimate them. Research lead only, not data: the reference implementation AF-VCD/pdf-bullets vendors TimesNewRomanPSMT.ttf alongside a file named 12pt-times.json, which suggests Times New Roman at 12pt for this form. That is third-party inference, not a reading of the form, so it stays in this note until confirmed. Liberation Serif is metrically compatible with Times New Roman and is what /public/fonts ships."
+    "notes": "Width and type size are taken from the reference implementation AF-VCD/pdf-bullets (MIT), src/const/const.js, where the field is literally named \"likelyWidth\" -- their own hedge. NOT read from this form's XFA stream, so this file stays status=stub and the UI keeps its unverified banner. To promote to verified: open the official PDF, read the XFA stream, confirm or correct widthMm and font, then set status and verifiedDate. Font: pdf-bullets vendors TimesNewRomanPSMT.ttf with a companion 12pt-times.json, indicating Times New Roman at 12pt. We ship Liberation Serif, which is metrically identical to Times New Roman and redistributable under the SIL OFL."
   },
   "data": {
     "id": "af1206",
     "label": "AF Form 1206 - Nomination for Award",
-    "font": { "family": "TBD", "sizePt": 0, "file": "" },
+    "font": {
+      "family": "Liberation Serif (Times New Roman metrics)",
+      "sizePt": 12,
+      "file": "/fonts/LiberationSerif-Regular.ttf"
+    },
     "fields": [
       {
-        "id": "accomplishments",
+        "id": "specificAccomplishments",
         "label": "Specific Accomplishments",
         "constraint": "width",
-        "widthMm": null,
+        "widthMm": 202.321,
+        "maxChars": null,
+        "lines": null
+      },
+      {
+        "id": "p2SpecificAccomplishments",
+        "label": "Specific Accomplishments (page 2)",
+        "constraint": "width",
+        "widthMm": 202.321,
         "maxChars": null,
         "lines": null
       }

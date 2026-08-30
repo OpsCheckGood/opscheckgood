@@ -1,17 +1,18 @@
 @import 'tailwindcss';
 
 /**
- * Ops Check Good -- visual language.
+ * Bullet Bench -- visual language.
  *
- * The subject is administrative precision: field widths in millimetres, exact
- * fit, pass or fail. So the page reads as an instrument panel. Flat surfaces,
- * hairline rules, tabular numerals everywhere a measurement appears, and colour
- * reserved almost entirely for the three states that matter (short, in
- * tolerance, over). The fill bars are the one place that spends any design
- * budget, because they are what a user actually stares at.
+ * A serious internal utility, not a product. The reference points are developer
+ * tooling and maintenance software: dense, flat, fast, slightly industrial.
+ * No gradients, no glows, no floating cards, no oversized anything. Corners are
+ * 2px, which reads as "squared off" without looking broken on a hairline border.
  *
- * No web fonts: hard constraint 1. The stacks below resolve to system faces
- * with real tabular numerals.
+ * Colour carries meaning and nothing else. Green appears only where a state is
+ * genuinely good, amber only for a warning, red only for a hard failure. Every
+ * other surface is charcoal and every other rule is one thin gray line.
+ *
+ * No web fonts: hard constraint 1. The stacks resolve to system faces.
  */
 
 @theme {
@@ -20,80 +21,165 @@
     Arial, sans-serif;
   --font-mono:
     ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
-    monospace;
+    'Roboto Mono', monospace;
 }
 
+/*
+ * Dark is the intended look and the default. The light palette exists because
+ * the toggle does; it stays utilitarian rather than becoming a second design.
+ */
 :root {
-  color-scheme: light dark;
+  color-scheme: dark;
 
-  --ground: #eef0f3;
-  --panel: #ffffff;
-  --panel-sunk: #f7f8fa;
-  --ink: #12161c;
-  --ink-muted: #59616e;
-  --ink-faint: #868f9d;
-  --rule: #d3d8e0;
-  --rule-strong: #b6bdc8;
+  --ground: #0a0b0c;
+  --panel: #0f1011;
+  --panel-sunk: #0c0d0e;
+  --panel-raised: #16181a;
 
-  /* The three states a line can be in. Nothing else gets colour. */
-  --state-ok: #17795e;
-  --state-ok-bg: #d8efe6;
-  --state-short: #8a6100;
-  --state-short-bg: #f6e8c8;
-  --state-over: #b3261e;
-  --state-over-bg: #f7dedc;
+  --ink: #d9d8d6;
+  --ink-muted: #8e9296;
+  --ink-faint: #6d7276;
 
-  --accent: #1f4e79;
-  --focus: #1f6feb;
+  --rule: #24262a;
+  --rule-strong: #34373c;
+
+  --ok: #6ec77a;
+  --ok-dim: #14231a;
+  --warn: #d3a244;
+  --warn-dim: #2a2213;
+  --bad: #cf6058;
+  --bad-dim: #2a1715;
+
+  --accent: #7f95a6;
+  --focus: #4f8fc0;
+  --control: #3f7fbf;
+
+  /*
+   * The row you scored, on a scoring chart. Gold, as in the source PDF.
+   * Deliberately not --warn: this marks where you landed, it does not warn.
+   */
+  --mark: #e3b341;
+  --mark-dim: #2b220d;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --ground: #0c0f13;
-    --panel: #151a21;
-    --panel-sunk: #10151b;
-    --ink: #e4e9f0;
-    --ink-muted: #98a2b1;
-    --ink-faint: #6d7684;
-    --rule: #262d37;
-    --rule-strong: #38414e;
+:root[data-theme='light'] {
+  color-scheme: light;
 
-    --state-ok: #4ec99f;
-    --state-ok-bg: #12312a;
-    --state-short: #d6a53c;
-    --state-short-bg: #33280f;
-    --state-over: #f28b82;
-    --state-over-bg: #3a1d1b;
+  --ground: #e9eaec;
+  --panel: #f7f8f9;
+  --panel-sunk: #eef0f1;
+  --panel-raised: #ffffff;
 
-    --accent: #7aa7d4;
-    --focus: #5b9bff;
-  }
+  --ink: #16191c;
+  --ink-muted: #565c62;
+  --ink-faint: #7c838a;
+
+  --rule: #cdd1d5;
+  --rule-strong: #adb3b9;
+
+  --ok: #3f7a2e;
+  --ok-dim: #e0edda;
+  --warn: #8a6d10;
+  --warn-dim: #f3ead0;
+  --bad: #a33b32;
+  --bad-dim: #f4dedb;
+
+  --accent: #3c5a72;
+  --focus: #2f6ea8;
+  --control: #2f6ea8;
+
+  --mark: #7a5c0c;
+  --mark-dim: #f7edd2;
 }
 
 html {
   background: var(--ground);
   color: var(--ink);
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   -webkit-text-size-adjust: 100%;
 }
 
+/*
+ * Sticky footer. Without the column flexbox the footer just follows the
+ * content, which on a short page leaves it floating mid-screen with empty
+ * space beneath. `#main` takes the slack so the footer sits on the bottom
+ * edge when content is short, and after the content when it is long.
+ *
+ * dvh follows mobile browser chrome as it hides and shows; the vh line above
+ * it is the fallback for browsers without dvh.
+ */
 body {
   margin: 0;
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
-/* Every measurement is a number you compare against another number. */
+#main {
+  flex: 1 0 auto;
+}
+
+body > footer {
+  flex-shrink: 0;
+}
+
+/*
+ * Labels, readouts and every piece of utility chrome. Mono, uppercase and
+ * tracked out: it reads as instrumentation and, more usefully, it stops any of
+ * it competing with the text the user is actually writing.
+ */
+/* Section and field labels. Small, tracked out, always uppercase. */
+.util {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+/* Panel titles: same treatment, one step up and brighter. */
+.title {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.util-value {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  text-transform: none;
+}
+
 .tabular {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
-  font-feature-settings: 'tnum' 1;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
 }
 
 /* Focus must be obvious: the editor has to be usable by keyboard alone. */
 :where(a, button, input, select, textarea, [tabindex]):focus-visible {
   outline: 2px solid var(--focus);
-  outline-offset: 2px;
-  border-radius: 2px;
+  outline-offset: 1px;
+}
+
+/* Squared-off native controls that inherit the panel surface. */
+select,
+button,
+input[type='text'] {
+  border-radius: 4px;
+  font-family: var(--font-mono);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -105,18 +191,4 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-}
-
-.panel {
-  background: var(--panel);
-  border: 1px solid var(--rule);
-}
-
-/* Small caps-ish label used on every panel header and readout. */
-.label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
 }

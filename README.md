@@ -31,13 +31,33 @@ failure diagnosis, draft persistence.
 
 ### PT calculator
 
-Phase 2. Uses the same data-layer pattern.
+Scores an Air Force physical fitness assessment: body composition by waist-to-height
+ratio, upper body, core, and cardio, with the composite prorated over the components
+actually assessed. Every event the AFMAN allows is a table entry rather than a code
+branch — push-up or hand-release push-up, sit-up or cross-leg reverse crunch or forearm
+plank, run or HAMR shuttle or the 2 km walk — so adding one is a data edit.
+
+It handles the parts that are easy to get wrong: exemptions leave both sides of the
+composite fraction rather than scoring zero, a passed walk scores like an exemption and
+caps the rating below Excellent, a single component minimum fails the whole assessment,
+and the waist-to-height ratio truncates rather than rounds. Your row is marked on the
+scoring chart, so you can see how many more reps buy the next point.
+
+The scoring tables and the engine were ported from a fillable PDF calculator the
+maintainer wrote. `tests/pt-score.test.ts` runs that PDF's own JavaScript as an oracle
+and scores several hundred cases through both engines, comparing composite, rating,
+per-component points, and which chart row each one landed on. The data still carries
+`status: "stub"` because the PDF is one step removed from the AFMAN itself — see
+[Populating the data](#populating-the-data).
 
 ---
 
 ## Status
 
-The engine is finished and tested. **The reference data is not populated.**
+Both engines are finished and tested. **Most of the reference data is not populated.**
+
+The PT scoring tables are populated, from the maintainer's own PDF calculator, and still
+marked `stub` until someone checks them against AFMAN 36-2905 itself.
 
 Form field widths, fonts, point sizes, and abbreviation lists must be transcribed from
 official sources. They are deliberately left empty rather than guessed, because a
@@ -192,6 +212,20 @@ Every file in `/src/data` carries a `meta` block:
 Flipping a file to `verified` is what turns the banner off. Never flip it without the
 official source in hand.
 
+### To promote the PT standards
+
+The tables in `src/data/pt/afman36-2905.json` were extracted by script from the
+maintainer's fillable PDF, so they match that PDF exactly — but the PDF is not the
+official source. To promote the file:
+
+1. Open AFMAN 36-2905 and check the tables against it.
+2. Set `meta.sourceUrl` to the e-publishing URL, set `meta.status` to `verified`, and set
+   `verifiedDate` to the date you checked.
+3. While you are in there: male 30-34 push-ups list 26 reps on both the 3.0 and the 2.5
+   rows, which makes the 2.5 row unreachable. Confirm or correct it against the AFMAN.
+   `tests/pt-data.test.ts` pins that plateau, so changing it will fail a test that names
+   exactly this.
+
 ### To populate a form
 
 1. Open the official PDF and read its XFA stream for the field widths, font family, and
@@ -237,8 +271,12 @@ preserve the `kern` table — a naive opentype.js re-serialise drops it.
 
 ## The offline copy
 
-`npm run build:offline` produces `dist/bullet-bench-offline.html`: one self-contained
-file, no subresources, that works when double-clicked from a thumb drive.
+`npm run build:offline` produces one self-contained file per tool —
+`dist/bullet-bench-offline.html` and `dist/pt-calculator-offline.html` — with no
+subresources, each working when double-clicked from a thumb drive. Each carries only its
+own bundle, so the calculator does not drag Bullet Bench's embedded font data along.
+Adding a tool is one entry in the `TOOLS` list in `scripts/build-offline.mjs` plus its
+own offline entry point.
 
 It exists because constraint 3 is stricter than it first looks. The normal build makes no
 network requests, but a page opened from disk faces two further problems: Astro emits
@@ -247,9 +285,10 @@ block ES module loading from a file origin — so Astro's island hydration, whic
 dynamic `import()`, never runs. The offline build bundles to a classic IIFE with every
 dynamic import inlined and the stylesheet inlined.
 
-`tests/offline.test.ts` boots that file in jsdom with `fetch` replaced by a recorder that
-fails the test if the page reaches for the network, then asserts the editor mounts and
-produces millimetre readouts.
+`tests/offline.test.ts` boots each file in jsdom with `fetch` replaced by a recorder that
+fails the test if the page reaches for the network. It then asserts the editor mounts and
+produces millimetre readouts, and separately types a full assessment into the calculator
+and reads the composite back off the page.
 
 ---
 
@@ -271,6 +310,13 @@ npm run test
 - **Data integrity** — walks `src/data` on disk, so a new file nobody wired up still gets
   validated; no file claims `verified` while holding placeholders; no form references a
   font that is missing or unembedded.
+- **PT standards** — age brackets tile the whole range with no gaps or overlaps; every
+  table row has one cell per age group and sex; table rows and point ladders are the same
+  length; no column ever reverses direction; the one flat spot in the data is pinned by
+  name so a new one has to be looked at.
+- **PT scoring** — proration, exemptions, the walk cap, component minimums, and the
+  Tier 2 trigger, plus a differential test that scores several hundred cases through both
+  this engine and the source PDF's own script and compares the answers.
 - **Offline** — the built single file has no subresources and works with no network.
 
 ---

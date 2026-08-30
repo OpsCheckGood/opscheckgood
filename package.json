@@ -14,7 +14,8 @@
     "ci": "npm run typecheck && npm run build && npm run build:offline && npm run test && npm run verify:offline",
     "embed:fonts": "node scripts/embed-fonts.mjs",
     "build:offline": "node scripts/build-offline.mjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "build:synonyms": "node scripts/build-synonyms.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^6.0.4",
@@ -34,6 +35,10 @@
     "esbuild": "^0.28.2",
     "jsdom": "^30.0.1",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.11",
+    "wordnet-db": "^3.1.14"
+  },
+  "engines": {
+    "node": ">=20.11"
   }
 }

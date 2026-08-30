@@ -4,9 +4,49 @@ import '../styles/global.css';
 interface Props {
   title: string;
   description?: string;
+  /**
+   * Name of the tool on this page. The site is Ops Check Good; a tool such as
+   * Bullet Bench sits inside it, so the header shows both. Omitted on the home
+   * page, which is the site itself.
+   */
+  brand?: string;
+  /** The tool's own tagline, shown beside its name. */
+  tagline?: string;
 }
 
-const { title, description = 'Free, offline Air Force administrative tools.' } = Astro.props;
+const {
+  title,
+  description = 'Free, offline Air Force administrative tools.',
+  brand,
+  tagline,
+} = Astro.props;
+const home = import.meta.env.BASE_URL;
+
+// Tools is the only one built. The rest are named because the brief calls for
+// them, and marked unavailable rather than linked to a page that does not
+// exist -- a dead link is worse than an honest "not yet".
+const base = home.replace(/\/$/, '');
+const year = new Date().getFullYear();
+
+const footerTools = [
+  { label: 'Bullet Bench', href: `${base}/tools/bullet-bench/` },
+  { label: 'PT Calculator', href: `${base}/tools/pt-calculator/` },
+];
+
+// External references a user might want to check the data against. Plain
+// links the reader chooses to follow -- the page never requests them, so
+// constraint 1 is untouched.
+const footerReference = [
+  { label: 'AFPC Acronyms', href: 'https://www.afpc.af.mil/Career-Management/Acronyms/' },
+  { label: 'AF e-Publishing', href: 'https://www.e-publishing.af.mil/' },
+];
+
+const nav = [
+  { label: 'Tools', href: home, ready: true },
+  { label: 'Abbreviations', href: null, ready: false },
+  { label: 'Thesaurus', href: null, ready: false },
+  { label: 'Settings', href: null, ready: false },
+];
 ---
 
 <!doctype html>
@@ -17,6 +57,23 @@ const { title, description = 'Free, offline Air Force administrative tools.' } =
     <title>{title}</title>
     <meta name="description" content={description} />
     <!-- No favicon link, no web fonts, no analytics: hard constraint 1. -->
+    <!--
+      Runs before first paint so a stored theme choice is applied to <html>
+      before anything is drawn. Inline and synchronous on purpose: an external
+      or deferred script would paint the wrong theme first and then correct it.
+    -->
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem('ocg.theme');
+          if (stored === 'light' || stored === 'dark') {
+            document.documentElement.setAttribute('data-theme', stored);
+          }
+        } catch (e) {
+          /* Blocked storage: fall through to the default. */
+        }
+      })();
+    </script>
   </head>
   <body>
     <a
@@ -28,13 +85,62 @@ const { title, description = 'Free, offline Air Force administrative tools.' } =
     </a>
 
     <header
-      class="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b px-3 py-2"
-      style="border-color: var(--rule); background: var(--panel);"
+      class="flex flex-wrap items-center gap-x-6 gap-y-2 border-b px-6 py-4"
+      style="border-color: var(--rule);"
     >
-      <a href="/" class="label no-underline" style="color: var(--ink-faint);">Ops Check Good</a>
-      <slot name="tool-name" />
-      <nav class="ml-auto text-[12px]">
-        <a href="/" style="color: var(--accent);">Tools</a>
+      <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+        <a
+          href={home}
+          class="no-underline"
+          style={`font-weight: 700; letter-spacing: 0.16em; color: var(--ink); font-size: ${brand ? '13px' : '17px'};`}
+        >
+          OPS CHECK GOOD
+        </a>
+        {
+          brand && (
+            <>
+              <span aria-hidden style="color: var(--rule-strong);">/</span>
+              <span
+                style="font-size: 17px; font-weight: 700; letter-spacing: 0.16em; color: var(--ink);"
+              >
+                {brand.toUpperCase()}
+              </span>
+            </>
+          )
+        }
+        {tagline && <span class="util">{tagline}</span>}
+      </div>
+
+      <nav class="ml-auto flex flex-wrap items-center gap-x-7 gap-y-2">
+        {
+          nav.map((item) =>
+            item.ready ? (
+              <a
+                href={item.href}
+                class="util no-underline"
+                style="color: var(--ink-muted); letter-spacing: 0.13em;"
+              >
+                {item.label}
+              </a>
+            ) : (
+              <span
+                class="util"
+                title="Not built yet"
+                style="letter-spacing: 0.13em; opacity: 0.5;"
+              >
+                {item.label}
+              </span>
+            ),
+          )
+        }
+        <button
+          id="theme-toggle"
+          type="button"
+          class="util border px-2 py-1"
+          style="background: var(--panel); border-color: var(--rule-strong); letter-spacing: 0.13em;"
+        >
+          Theme
+        </button>
       </nav>
     </header>
 
@@ -42,18 +148,114 @@ const { title, description = 'Free, offline Air Force administrative tools.' } =
       <slot />
     </main>
 
-    <footer
-      class="mx-auto max-w-[1400px] px-3 py-6 text-[11px] leading-relaxed"
-      style="color: var(--ink-faint);"
-    >
-      <p class="m-0">
-        Unofficial personal project. Not affiliated with, endorsed by, or produced by the
-        United States Air Force or the Department of Defense. Official guidance governs;
-        check current instructions and your chain of command before relying on anything here.
-      </p>
-      <p class="m-0 mt-1">
-        Runs entirely in your browser. Nothing you type is uploaded, logged, or tracked.
-      </p>
+    <footer class="mt-10 border-t" style="border-color: var(--rule);">
+      <div class="mx-auto grid max-w-[1560px] gap-8 px-6 py-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="lg:col-span-2">
+          <a
+            href={home}
+            class="no-underline"
+            style="font-size: 14px; font-weight: 700; letter-spacing: 0.16em; color: var(--ink);"
+          >
+            OPS CHECK GOOD
+          </a>
+          <p
+            class="m-0 mt-2 max-w-[46ch] text-[11.5px] leading-relaxed"
+            style="color: var(--ink-muted);"
+          >
+            Free, open-source Air Force administrative tools.
+          </p>
+        </div>
+
+        <nav aria-label="Tools">
+          <h2 class="util m-0">Tools</h2>
+          <ul class="m-0 mt-3 list-none space-y-2 p-0">
+            {
+              footerTools.map((item) => (
+                <li>
+                  <a
+                    href={item.href}
+                    class="text-[11.5px] no-underline"
+                    style="color: var(--ink-muted);"
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+
+        <nav aria-label="Reference">
+          <h2 class="util m-0">Reference</h2>
+          <ul class="m-0 mt-3 list-none space-y-2 p-0">
+            {
+              footerReference.map((item) => (
+                <li>
+                  <a
+                    href={item.href}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    class="text-[11.5px] no-underline"
+                    style="color: var(--ink-muted);"
+                  >
+                    {item.label} <span aria-hidden style="color: var(--ink-faint);">↗</span>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </div>
+
+      <div class="border-t" style="border-color: var(--rule);">
+        <div class="mx-auto flex max-w-[1560px] flex-wrap items-center gap-x-6 gap-y-2 px-6 py-4">
+          <p class="util m-0" style="letter-spacing: 0.08em;">
+            &copy; {year} &middot; MIT Licence
+          </p>
+        </div>
+      </div>
+
+      <div class="border-t" style="border-color: var(--rule);">
+        <p
+          class="mx-auto m-0 max-w-[1560px] px-6 py-3 text-[10.5px] leading-relaxed"
+          style="color: var(--ink-faint);"
+        >
+          Unofficial personal project. Not affiliated with, endorsed by, or produced by the
+          United States Air Force or the Department of Defense. Official guidance governs;
+          check current instructions and your chain of command before relying on anything here.
+        </p>
+      </div>
     </footer>
+
+    <script is:inline>
+      (function () {
+        var button = document.getElementById('theme-toggle');
+        if (!button) return;
+        var root = document.documentElement;
+
+        function current() {
+          return root.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+        }
+        function label() {
+          // Names the action, not the state: pressing it gives you the other one.
+          var next = current() === 'dark' ? 'Light' : 'Dark';
+          button.textContent = next;
+          button.setAttribute('aria-label', 'Switch to ' + next.toLowerCase() + ' mode');
+        }
+
+        button.addEventListener('click', function () {
+          var next = current() === 'dark' ? 'light' : 'dark';
+          root.setAttribute('data-theme', next);
+          try {
+            localStorage.setItem('ocg.theme', next);
+          } catch (e) {
+            /* Choice applies for this page view only. */
+          }
+          label();
+        });
+
+        label();
+      })();
+    </script>
   </body>
 </html>

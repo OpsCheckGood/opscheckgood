@@ -17,10 +17,19 @@ export interface AbbreviationTable {
   readonly byPhrase: ReadonlyMap<string, string>;
 }
 
-/** Longest phrase first; ties broken alphabetically so the order is stable. */
+/**
+ * Longest phrase first, then alphabetical by phrase, then by abbreviation.
+ *
+ * The final tiebreak matters: a phrase may legitimately have two abbreviations
+ * ("Quarterly" is both QTR and QTRLY, and both should be *recognised* in a
+ * bullet). Replacement has to pick one, and sorting by abbreviation makes that
+ * choice a property of the data rather than of the file's line order.
+ */
 function byPhraseLengthDesc(a: AbbreviationEntry, b: AbbreviationEntry): number {
-  const delta = b.phrase.length - a.phrase.length;
-  return delta !== 0 ? delta : a.phrase.localeCompare(b.phrase);
+  const byLength = b.phrase.length - a.phrase.length;
+  if (byLength !== 0) return byLength;
+  const byPhrase = a.phrase.localeCompare(b.phrase);
+  return byPhrase !== 0 ? byPhrase : a.abbr.localeCompare(b.abbr);
 }
 
 export function normalizeAbbreviations(
@@ -118,4 +127,22 @@ export function applyAbbreviations(text: string, table: AbbreviationTable): stri
 /** The approved abbreviation for a single word, if the table has one. */
 export function lookupAbbreviation(word: string, table: AbbreviationTable): string | null {
   return table.byPhrase.get(word.trim().toLowerCase()) ?? null;
+}
+
+/** Empty table, for a list the user has switched off. */
+export const NO_ABBREVIATIONS: AbbreviationTable = Object.freeze({
+  entries: Object.freeze([] as AbbreviationEntry[]),
+  byPhrase: new Map<string, string>(),
+});
+
+/**
+ * Combines tables into one, re-sorted. Earlier tables win a phrase collision,
+ * so callers pass the authoritative list first.
+ */
+export function mergeAbbreviations(
+  tables: readonly AbbreviationTable[],
+  file = 'merged',
+): AbbreviationTable {
+  const entries = tables.flatMap((t) => [...t.entries]);
+  return normalizeAbbreviations(entries, {} as DataMeta, file);
 }

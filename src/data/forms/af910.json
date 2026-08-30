@@ -3,20 +3,64 @@
     "source": "AF Form 910, Enlisted Performance Report (AB thru TSgt)",
     "version": "TBD",
     "verifiedDate": "2026-08-30",
-    "sourceUrl": "https://www.e-publishing.af.mil/",
+    "sourceUrl": "https://github.com/AF-VCD/pdf-bullets/blob/master/src/const/const.js",
     "status": "stub",
-    "notes": "NOT YET POPULATED. Extract block widths, font, and point size from the form's XFA stream. Performance blocks on this form are width-driven; if any block turns out to be character-limited instead, set that field's constraint to \"chars\" and populate maxChars."
+    "notes": "Width and type size are taken from the reference implementation AF-VCD/pdf-bullets (MIT), src/const/const.js, where the field is literally named \"likelyWidth\" -- their own hedge. NOT read from this form's XFA stream, so this file stays status=stub and the UI keeps its unverified banner. To promote to verified: open the official PDF, read the XFA stream, confirm or correct widthMm and font, then set status and verifiedDate. Font: pdf-bullets vendors TimesNewRomanPSMT.ttf with a companion 12pt-times.json, indicating Times New Roman at 12pt. We ship Liberation Serif, which is metrically identical to Times New Roman and redistributable under the SIL OFL."
   },
   "data": {
     "id": "af910",
     "label": "AF Form 910 - Enlisted Performance Report",
-    "font": { "family": "TBD", "sizePt": 0, "file": "" },
+    "font": {
+      "family": "Liberation Serif (Times New Roman metrics)",
+      "sizePt": 12,
+      "file": "/fonts/LiberationSerif-Regular.ttf"
+    },
     "fields": [
       {
-        "id": "performance",
-        "label": "Performance Assessment",
+        "id": "KeyDuties",
+        "label": "Key Duties, Tasks and Responsibilities",
         "constraint": "width",
-        "widthMm": null,
+        "widthMm": 202.321,
+        "maxChars": null,
+        "lines": null
+      },
+      {
+        "id": "IIIComments",
+        "label": "Section III Comments",
+        "constraint": "width",
+        "widthMm": 202.321,
+        "maxChars": null,
+        "lines": null
+      },
+      {
+        "id": "IVComments",
+        "label": "Section IV Comments",
+        "constraint": "width",
+        "widthMm": 202.321,
+        "maxChars": null,
+        "lines": null
+      },
+      {
+        "id": "VComments",
+        "label": "Section V Comments",
+        "constraint": "width",
+        "widthMm": 202.321,
+        "maxChars": null,
+        "lines": null
+      },
+      {
+        "id": "VIIIComments",
+        "label": "Section VIII Comments",
+        "constraint": "width",
+        "widthMm": 202.321,
+        "maxChars": null,
+        "lines": null
+      },
+      {
+        "id": "IXComments",
+        "label": "Section IX Comments",
+        "constraint": "width",
+        "widthMm": 202.321,
         "maxChars": null,
         "lines": null
       }

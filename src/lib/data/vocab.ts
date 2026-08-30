@@ -1,5 +1,5 @@
 import { loadDataset } from './loader';
-import { DataFileError, type Dataset, type SynonymMap, type VerbEntry } from './types';
+import { DataFileError, type Dataset, type SynonymData, type VerbEntry } from './types';
 
 import stopwordsRaw from '../../data/vocab/stopwords.json';
 import verbsRaw from '../../data/vocab/verbs.json';
@@ -40,19 +40,27 @@ export const VERBS: Dataset<VerbEntry[]> = loadDataset(
   normalizeVerbs,
 );
 
-let synonymsPromise: Promise<Dataset<SynonymMap>> | null = null;
+let synonymsPromise: Promise<Dataset<SynonymData>> | null = null;
 
 /** Lazily loads the synonym map as its own chunk. Safe to call repeatedly. */
-export function loadSynonyms(): Promise<Dataset<SynonymMap>> {
+export function loadSynonyms(): Promise<Dataset<SynonymData>> {
   synonymsPromise ??= import('../../data/vocab/synonyms.json').then((module) =>
-    loadDataset<SynonymMap, SynonymMap>(
+    loadDataset<SynonymData, SynonymData>(
       'src/data/vocab/synonyms.json',
       module.default,
       (raw, _meta, file) => {
         if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) {
-          throw new DataFileError(file, 'data must be an object of lemma -> synonyms');
+          throw new DataFileError(file, 'data must be an object');
         }
-        return raw;
+        const { synonyms, exceptions, definitions } = raw as Partial<SynonymData>;
+        if (typeof synonyms !== 'object' || synonyms === null) {
+          throw new DataFileError(file, 'data.synonyms must be an object of lemma -> synonyms');
+        }
+        return {
+          synonyms,
+          exceptions: exceptions ?? {},
+          definitions: definitions ?? {},
+        };
       },
     ),
   );

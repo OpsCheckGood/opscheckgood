@@ -1,84 +1,126 @@
 import type { FontMetrics } from '../metrics/font';
-import { fontUnitsToMm, mmToFontUnits } from '../metrics/units';
-import { tokenizeLine, splitLines } from '../text/tokenize';
-import { NORMAL_LEVEL, SPACE_LEVELS, type SpaceChar } from './spaces';
+import { SPACE_CHARS, SPACE_LEVELS, unshape } from './spaces';
+import { splitLines } from '../text/tokenize';
 
 /**
- * Deterministic width shaping.
+ * Width shaping, ported to match AF-VCD/pdf-bullets exactly.
  *
- * Each inter-word gap independently takes one of three space characters, so a
- * bullet with N gaps has 3^N renderings. We want the widest one that does not
- * exceed the target, with the padding spread evenly rather than dumped at a
- * single break.
+ * This is a behavioural port, written fresh from a reading of their
+ * `optimize()` and `renderBulletText()`. Matching them precisely matters more
+ * than any improvement, because a bullet shaped here has to be
+ * indistinguishable from one shaped there when it lands in the same form.
  *
- * The reference implementation (AF-VCD/pdf-bullets) picks gap positions at
- * random until the overflow resolves, so the same bullet can shape two
- * different ways on two runs. This does not: gaps start at the narrowest level
- * and are promoted a whole level at a time, and when a level can only be
- * partially afforded the promoted positions are chosen by even spacing. Same
- * input, same output, always.
+ * Three things about their implementation are load-bearing and easy to get
+ * wrong -- I got all three wrong before reading the source:
  *
- * ## Exactness
+ * 1. **The gap is chosen by a hash, not at random.** `getRandomInt` looks
+ *    random but seeds off `optWords.join("")`, so it is a pure function of the
+ *    text. Their output is deterministic, and the choice of gap moves as words
+ *    merge, which is why the substituted spaces cluster rather than spread.
  *
- * Width is not `sum(word widths) + sum(space widths)`, because kerning applies
- * across the word/space boundary too. Each gap's cost is measured as
- * `kern(lastCharOfLeftWord, space) + advance(space) + kern(space, firstCharOfRightWord)`,
- * which makes the arithmetic used during the search exactly equal to measuring
- * the assembled string. The final width is re-measured from the output anyway.
+ * 2. **Merging consumes two words into one.** `splice(i, 2, a + space + b)`
+ *    replaces a pair with a single element, so the next pass can merge that
+ *    element with its neighbour and produce a run of three words joined by
+ *    narrow spaces. Every gap not merged stays an ordinary space.
+ *
+ * 3. **It stops the moment the line fits.** There is no attempt to reach the
+ *    right margin when shrinking; `overflow <= 0` ends the loop.
+ *
+ * ## Measurement
+ *
+ * Widths here are taken WITHOUT kerning. The reference measures with canvas
+ * `measureText`, and more importantly a PDF form field lays plain text out
+ * from glyph advances alone. Kerning this sample line makes it 0.51mm narrower
+ * -- about one and a half substitutions -- which is enough to flip a borderline
+ * bullet. Measuring kerned would mean declaring lines to fit that do not fit in
+ * the form, which is the one failure this tool must not have.
+ *
+ * We still parse the real bundled font rather than using canvas, so the numbers
+ * cannot change because of a missing local font.
  */
 
+/** Their target is `widthPx + 0.55`, at 96dpi. In millimetres that is: */
+const TARGET_SLACK_MM = 0.55 / (96 / 25.4);
+
+/**
+ * The width the engine actually measures against.
+ *
+ * Anything that draws or wraps shaped text must use this, not the nominal
+ * field width, or the display contradicts the verdict: a line the optimizer
+ * just accepted would visibly fall onto a second row because it sits inside
+ * the slack. The reference feeds the same adjusted width to its renderer for
+ * exactly this reason.
+ */
+export function effectiveTargetMm(targetMm: number): number {
+  return targetMm + TARGET_SLACK_MM;
+}
+
+/** Shaping measures without kerning; see the note above. */
+export const SHAPING_KERNING = false;
+
+/** Their `STATUS.MAX_UNDERFLOW`, -4 pixels, expressed in millimetres. */
+const MAX_UNDERFLOW_MM = -4 / (96 / 25.4);
+
 export type ShapeStatus =
-  /** Blank line. */
   | 'empty'
-  /** Ordinary spacing already lands within tolerance; text left untouched. */
+  /** Ordinary spacing already fits; text untouched. */
   | 'at-target'
-  /** Space characters were substituted to reach the target. */
+  /** Space characters were substituted to make it fit. */
   | 'shaped'
-  /** Too wide even at the narrowest spacing. The text itself must shrink. */
+  /** Too wide even with every gap narrowed. */
   | 'too-long'
-  /** Too narrow even at the widest spacing. The text itself must grow. */
+  /** Too narrow even with every gap widened. */
   | 'too-short';
 
 export interface ShapeOptions {
   targetMm: number;
   sizePt: number;
-  /** How close to the target counts as flush. Default 0.5mm. */
+  /** Retained for callers; the reference's own -4px bound is what binds. */
   toleranceMm?: number;
 }
 
 export interface ShapeResult {
   status: ShapeStatus;
-  /** The shaped text. For 'too-long' this is the user's own text, unmodified. */
   text: string;
   widthMm: number;
   targetMm: number;
-  /** Positive means over the target, negative means short of it. */
+  /** Positive means over the target. Their `overflow`. */
   deltaMm: number;
-  /** widthMm / targetMm. Drives the fill bars. */
   fillRatio: number;
   charCount: number;
   gapCount: number;
-  /** Width with ordinary spaces throughout -- what the user typed. */
   naturalWidthMm: number;
-  /** Width at the narrowest and widest spacings, i.e. the achievable range. */
   minWidthMm: number;
   maxWidthMm: number;
 }
 
-export const DEFAULT_TOLERANCE_MM = 0.5;
+export const DEFAULT_TOLERANCE_MM = -MAX_UNDERFLOW_MM;
+
+/** Their `hashCode`: a 32-bit rolling string hash. */
+function hashCode(text: string): number {
+  let hash = 0;
+  for (let i = 0; i < text.length; i += 1) {
+    hash = (hash << 5) - hash + text.charCodeAt(i);
+    hash |= 0;
+  }
+  return hash;
+}
 
 /**
- * Picks `count` positions from `pool` spread as evenly across it as possible.
- *
- * Bresenham-style sampling at the midpoint of each of `count` equal segments.
- * Strictly increasing (and so duplicate-free) whenever count <= pool.length.
+ * Their `getRandomInt`: deterministic despite the name. Reproduced exactly,
+ * including the sign behaviour of `%` on a negative hash, because the gap it
+ * picks is the difference between matching their output and merely resembling
+ * it.
  */
-function evenlySpaced<T>(pool: readonly T[], count: number): T[] {
-  const picked: T[] = [];
-  for (let j = 0; j < count; j += 1) {
-    picked.push(pool[Math.floor(((j + 0.5) * pool.length) / count)]!);
-  }
-  return picked;
+function hashedIndex(seed: string, max: number): number {
+  return Math.floor(
+    Math.abs((Math.floor(9 * hashCode(seed) + 5) % 100000) / 100000) *
+      Math.floor(max),
+  );
+}
+
+function tokenize(sentence: string): string[] {
+  return sentence.split(/\s+/).filter((w) => w.length > 0);
 }
 
 export function shapeLine(
@@ -86,148 +128,110 @@ export function shapeLine(
   font: FontMetrics,
   options: ShapeOptions,
 ): ShapeResult {
-  const { targetMm, sizePt } = options;
-  const toleranceMm = options.toleranceMm ?? DEFAULT_TOLERANCE_MM;
-  const { unitsPerEm } = font;
-  const toUnits = (mm: number) => mmToFontUnits(mm, unitsPerEm, sizePt);
-  const toMm = (units: number) => fontUnitsToMm(units, unitsPerEm, sizePt);
+  const { sizePt } = options;
+  // Their `widthPxAdjusted`. Small, but it is the difference between a line
+  // being declared over and being declared flush.
+  const target = effectiveTargetMm(options.targetMm);
 
-  const { words, lockedGaps } = tokenizeLine(line);
+  /** Unkerned, matching the reference and the form field. */
+  const width = (text: string) => font.widthMm(text, sizePt, false);
 
-  const blank = (): ShapeResult => ({
-    status: 'empty',
-    text: '',
-    widthMm: 0,
-    targetMm,
-    deltaMm: -targetMm,
-    fillRatio: 0,
-    charCount: 0,
-    gapCount: 0,
-    naturalWidthMm: 0,
-    minWidthMm: 0,
-    maxWidthMm: 0,
-  });
+  const plain = unshape(line);
+  const words = tokenize(plain);
 
-  if (words.length === 0) return blank();
-
-  const targetUnits = toUnits(targetMm);
-  const toleranceUnits = toUnits(toleranceMm);
-
-  // Words carry their own internal kerning; only the gaps are variable.
-  const wordUnits = words.map((w) => font.advanceUnits(w));
-  const wordsTotal = wordUnits.reduce((a, b) => a + b, 0);
-  const gapCount = words.length - 1;
-
-  /** gapUnits[gap][level] -- includes kerning into and out of the space. */
-  const gapUnits: number[][] = [];
-  for (let i = 0; i < gapCount; i += 1) {
-    const left = words[i]!.at(-1)!;
-    const right = words[i + 1]![0]!;
-    gapUnits.push(
-      SPACE_LEVELS.map(
-        (space) =>
-          font.kernUnits(left, space) +
-          font.advanceUnits(space) +
-          font.kernUnits(space, right),
-      ),
-    );
-  }
-
-  const levelFloor = (gap: number) => (lockedGaps.has(gap) ? NORMAL_LEVEL : 0);
-  const levelCeiling = (gap: number) =>
-    lockedGaps.has(gap) ? NORMAL_LEVEL : SPACE_LEVELS.length - 1;
-
-  const widthAt = (levels: readonly number[]) =>
-    wordsTotal + levels.reduce((sum, level, i) => sum + gapUnits[i]![level]!, 0);
-
-  const minLevels = Array.from({ length: gapCount }, (_, i) => levelFloor(i));
-  const maxLevels = Array.from({ length: gapCount }, (_, i) => levelCeiling(i));
-  const naturalLevels = Array.from({ length: gapCount }, () => NORMAL_LEVEL);
-
-  const minUnits = widthAt(minLevels);
-  const maxUnits = widthAt(maxLevels);
-  const naturalUnits = widthAt(naturalLevels);
-
-  const finish = (
-    status: ShapeStatus,
-    levels: readonly number[],
-  ): ShapeResult => {
-    const text = words.reduce(
-      (acc, word, i) =>
-        i === 0 ? word : acc + (SPACE_LEVELS[levels[i - 1]!] as SpaceChar) + word,
-      '',
-    );
-    // Re-measure the assembled string rather than trusting the arithmetic.
-    const widthMm = font.widthMm(text, sizePt);
+  const build = (status: ShapeStatus, text: string): ShapeResult => {
+    const widthMm = width(text);
+    const normalWords = words.length > 0 ? words : [''];
     return {
       status,
       text,
       widthMm,
-      targetMm,
-      deltaMm: widthMm - targetMm,
-      fillRatio: targetMm > 0 ? widthMm / targetMm : 0,
+      targetMm: options.targetMm,
+      deltaMm: widthMm - target,
+      fillRatio: options.targetMm > 0 ? widthMm / options.targetMm : 0,
       charCount: [...text].length,
-      gapCount,
-      naturalWidthMm: toMm(naturalUnits),
-      minWidthMm: toMm(minUnits),
-      maxWidthMm: toMm(maxUnits),
+      gapCount: Math.max(0, normalWords.length - 1),
+      naturalWidthMm: width(plain),
+      minWidthMm: width(joinAll(words, SPACE_CHARS.SIX_PER_EM)),
+      maxWidthMm: width(joinAll(words, SPACE_CHARS.THREE_PER_EM)),
     };
   };
 
-  // Over the target even at the narrowest spacing. Nothing we do to whitespace
-  // fixes this, so hand back the user's own text rather than emitting narrow
-  // spaces that still overflow.
-  if (minUnits > targetUnits) return finish('too-long', naturalLevels);
-
-  // Promote levels evenly: raise every gap sitting at the current minimum level
-  // together when the whole step is affordable, otherwise promote an evenly
-  // spaced subset and stop.
-  const levels = [...minLevels];
-  let total = minUnits;
-
-  for (;;) {
-    const promotable: number[] = [];
-    let lowest = Number.POSITIVE_INFINITY;
-    for (let i = 0; i < gapCount; i += 1) {
-      if (levels[i]! < levelCeiling(i)) lowest = Math.min(lowest, levels[i]!);
-    }
-    if (!Number.isFinite(lowest)) break;
-    for (let i = 0; i < gapCount; i += 1) {
-      if (levels[i] === lowest && levels[i]! < levelCeiling(i)) promotable.push(i);
-    }
-    if (promotable.length === 0) break;
-
-    const costOf = (gap: number) =>
-      gapUnits[gap]![levels[gap]! + 1]! - gapUnits[gap]![levels[gap]!]!;
-    const fullStep = promotable.reduce((sum, gap) => sum + costOf(gap), 0);
-
-    if (total + fullStep <= targetUnits) {
-      for (const gap of promotable) levels[gap] += 1;
-      total += fullStep;
-      continue;
-    }
-
-    // Only part of the step fits. Take the largest evenly spaced subset that
-    // does, then stop -- anything further would concentrate padding unevenly.
-    for (let k = promotable.length - 1; k >= 1; k -= 1) {
-      const chosen = evenlySpaced(promotable, k);
-      const cost = chosen.reduce((sum, gap) => sum + costOf(gap), 0);
-      if (total + cost <= targetUnits) {
-        for (const gap of chosen) levels[gap] += 1;
-        total += cost;
-        break;
-      }
-    }
-    break;
+  if (words.length === 0) {
+    return {
+      status: 'empty',
+      text: '',
+      widthMm: 0,
+      targetMm: options.targetMm,
+      deltaMm: -target,
+      fillRatio: 0,
+      charCount: 0,
+      gapCount: 0,
+      naturalWidthMm: 0,
+      minWidthMm: 0,
+      maxWidthMm: 0,
+    };
   }
 
-  const shortfall = targetUnits - total;
-  if (shortfall > toleranceUnits) return finish('too-short', levels);
-  if (levels.every((level) => level === NORMAL_LEVEL)) return finish('at-target', levels);
-  return finish('shaped', levels);
+  const initialOverflow = width(plain) - target;
+  if (initialOverflow === 0) return build('at-target', plain);
+
+  const shrinking = initialOverflow > 0;
+  const newSpace = shrinking ? SPACE_CHARS.SIX_PER_EM : SPACE_CHARS.THREE_PER_EM;
+
+  // Their worst case leaves the first space after the dash alone.
+  const worstCase = joinAll(words, newSpace);
+  const worstOverflow = width(worstCase) - target;
+
+  if (shrinking && worstOverflow > 0) return build('too-long', plain);
+  if (!shrinking && worstOverflow < MAX_UNDERFLOW_MM) {
+    return build('too-short', worstCase);
+  }
+
+  // A line already inside the underflow bound needs no widening.
+  if (!shrinking && initialOverflow >= MAX_UNDERFLOW_MM) {
+    return build('at-target', plain);
+  }
+
+  let optWords = [...words];
+  let previous = plain;
+
+  for (;;) {
+    if (optWords.length <= 2) return build('shaped', optWords.join(' '));
+
+    const index = hashedIndex(optWords.join(''), optWords.length - 2) + 1;
+    optWords.splice(
+      index,
+      2,
+      optWords.slice(index, index + 2).join(newSpace),
+    );
+
+    const candidate = optWords.join(' ');
+    const overflow = width(candidate) - target;
+
+    if (!shrinking && overflow > 0) {
+      // Widening any further would push it over; keep the last good one.
+      return build('shaped', previous);
+    }
+    if (shrinking && overflow <= 0) return build('shaped', candidate);
+
+    if (optWords.length <= 2) {
+      const status: ShapeStatus =
+        !shrinking && overflow > MAX_UNDERFLOW_MM ? 'shaped' : 'too-long';
+      return build(status, candidate);
+    }
+
+    previous = candidate;
+  }
 }
 
-/** Shapes every line of a document, preserving blank lines and line order. */
+/** First gap stays a normal space, as in the reference. */
+function joinAll(words: readonly string[], space: string): string {
+  if (words.length <= 1) return words.join('');
+  return words[0] + SPACE_CHARS.NORMAL + words.slice(1).join(space);
+}
+
+/** Shapes every line of a document, preserving blank lines and order. */
 export function shapeDocument(
   text: string,
   font: FontMetrics,
@@ -235,3 +239,5 @@ export function shapeDocument(
 ): ShapeResult[] {
   return splitLines(text).map((line) => shapeLine(line, font, options));
 }
+
+export { SPACE_LEVELS };

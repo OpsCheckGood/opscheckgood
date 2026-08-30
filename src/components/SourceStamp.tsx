@@ -14,7 +14,7 @@ export function SourceStamp({ sources }: { sources: readonly DataMeta[] }) {
     <dl className="m-0 grid gap-x-3 gap-y-1 text-[11px] sm:grid-cols-[auto_1fr]">
       {sources.map((meta) => (
         <div key={`${meta.source}-${meta.version}`} className="contents">
-          <dt className="label pt-[2px]">{meta.status === 'verified' ? 'Source' : 'Source (stub)'}</dt>
+          <dt className="util pt-[2px]">{meta.status === 'verified' ? 'Source' : 'Source (stub)'}</dt>
           <dd className="m-0" style={{ color: 'var(--ink-muted)' }}>
             {meta.sourceUrl ? (
               <a
@@ -41,10 +41,10 @@ export function StubBanner({ what }: { what: string }) {
   return (
     <div
       role="status"
-      className="px-3 py-2 text-[12px] leading-snug"
+      className="panel px-3 py-2.5 text-[11.5px] leading-relaxed"
       style={{
-        background: 'var(--state-short-bg)',
-        color: 'var(--state-short)',
+        background: 'var(--warn-dim)',
+        color: 'var(--warn)',
         border: '1px solid currentColor',
       }}
     >

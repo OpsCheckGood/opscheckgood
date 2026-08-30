@@ -2,36 +2,69 @@
 import Base from '../layouts/Base.astro';
 import { FORMS, isFormUsable } from '../lib/data/forms';
 
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const populated = FORMS.filter((f) => isFormUsable(f.data)).length;
+
+// Listed in build order. `ready` gates the link so a tool that is not finished
+// is named honestly rather than linked to a half-built page.
+const tools = [
+  {
+    name: 'Bullet Bench',
+    tagline: 'Write sharp. Get recognized.',
+    href: `${base}/tools/bullet-bench/`,
+    ready: true,
+    blurb:
+      'Fits a statement onto the single line a form allows by substituting half spaces, ' +
+      'measured against the real rendered width rather than a character count.',
+    meta: `${populated} of ${FORMS.length} form definitions populated`,
+  },
+  {
+    name: 'PT Calculator',
+    tagline: 'Score a fitness assessment.',
+    href: `${base}/tools/pt-calculator/`,
+    ready: true,
+    blurb:
+      'Scores a Physical Fitness Assessment from the published tables, with component ' +
+      'options handled as table entries rather than special cases.',
+    meta: 'In progress',
+  },
+];
 ---
 
 <Base title="Ops Check Good">
-  <div class="mx-auto max-w-[720px] px-3 py-10">
-    <h1 class="m-0 text-[26px] font-semibold tracking-tight">Ops Check Good</h1>
-    <p class="mt-2 mb-8 text-[14px] leading-relaxed" style="color: var(--ink-muted);">
-      Free, open-source Air Force administrative tools. No accounts, no tracking, no ads.
-      Everything runs in your browser and works with no network connection.
+  <div class="mx-auto max-w-[1000px] px-6 py-10">
+    <h1 class="m-0 text-[15px]" style="letter-spacing: 0.06em; color: var(--ink);">
+      Air Force administrative tools
+    </h1>
+    <p class="m-0 mt-3 max-w-[70ch] text-[12.5px] leading-relaxed" style="color: var(--ink-muted);">
+      Free and open source. No accounts, no backend, no tracking, no ads. Everything runs in
+      your browser, and each tool keeps working with no network connection at all.
     </p>
 
-    <ul class="m-0 list-none p-0">
-      <li class="panel px-4 py-3">
-        <a href="/tools/bullet-bench/" class="text-[15px] font-medium no-underline" style="color: var(--ink);">
-          Bullet Bench
-        </a>
-        <p class="m-0 mt-1 text-[13px]" style="color: var(--ink-muted);">
-          Write, measure, and fit your bullets. Shapes each line to the exact width a form
-          allows, and tells you what to cut when it will not fit.
-        </p>
-        <p class="tabular m-0 mt-2 text-[11px]" style="color: var(--ink-faint);">
-          {populated} of {FORMS.length} form definitions populated
-        </p>
-      </li>
+    <ul class="m-0 mt-8 grid list-none gap-3 p-0 sm:grid-cols-2">
+      {
+        tools.map((tool) => (
+          <li class="panel p-4">
+            <div class="flex items-baseline justify-between gap-3">
+              <a
+                href={tool.href}
+                class="no-underline"
+                style="font-size: 13px; font-weight: 700; letter-spacing: 0.13em; color: var(--ink);"
+              >
+                {tool.name.toUpperCase()}
+              </a>
+              <span class="util">{tool.meta}</span>
+            </div>
+            <p class="util m-0 mt-1.5">{tool.tagline}</p>
+            <p
+              class="m-0 mt-3 text-[11.5px] leading-relaxed"
+              style="color: var(--ink-muted);"
+            >
+              {tool.blurb}
+            </p>
+          </li>
+        ))
+      }
     </ul>
-
-    <h2 class="mt-8 mb-2 text-[13px] font-semibold">Coming next</h2>
-    <p class="m-0 text-[13px]" style="color: var(--ink-muted);">
-      Duplicate highlighting, acronym checking, a verb bank, and click-a-word synonyms,
-      all inside the same editor. Then a PT calculator.
-    </p>
   </div>
 </Base>
