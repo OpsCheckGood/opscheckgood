@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import BugReport from '../components/BugReport.tsx';
 import type { DataMeta } from '../lib/data/types';
+import { REPO_IS_PUBLIC } from '../lib/site';
 
 import { FORMS } from '../lib/data/forms';
 import { PT_STANDARDS } from '../lib/data/pt';
@@ -71,8 +72,9 @@ const tools = [
   <div class="mx-auto max-w-[900px] px-6 pt-8">
     <p class="m-0 max-w-[70ch] text-[12.5px] leading-relaxed" style="color: var(--ink-muted);">
       Wrong number, broken layout, something that will not work offline — all worth
-      reporting. Fill this in and the page builds a report you can paste into a GitHub
-      issue. Nothing is submitted from here; there is no server to submit it to.
+      reporting. Fill this in and the page builds a report you can {
+        REPO_IS_PUBLIC ? 'paste into a GitHub issue' : 'copy and send on'
+      }. Nothing is submitted from here; there is no server to submit it to.
     </p>
   </div>
 

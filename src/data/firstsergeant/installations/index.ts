@@ -7,8 +7,152 @@
  */
 import type { DataFileRef } from '../../../lib/data/installationIndex';
 
-import i0 from './kadena-ab.json';
+import i0 from './altus-afb.json';
+import i1 from './arnold-afb.json';
+import i2 from './barksdale-air-force-base.json';
+import i3 from './beale-afb.json';
+import i4 from './buckley-afb.json';
+import i5 from './cannon-afb.json';
+import i6 from './columbus-afb.json';
+import i7 from './creech-afb.json';
+import i8 from './davis-monthan-afb.json';
+import i9 from './dover-afb.json';
+import i10 from './dyess-afb.json';
+import i11 from './edwards-afb.json';
+import i12 from './eglin-afb.json';
+import i13 from './eielson-afb.json';
+import i14 from './ellsworth-air-force-base.json';
+import i15 from './f-e-warren-afb.json';
+import i16 from './fairchild-afb.json';
+import i17 from './fort-myer-joint-base-myer-henderson-hall.json';
+import i18 from './goodfellow-afb.json';
+import i19 from './grand-forks-afb.json';
+import i20 from './hanscom-afb.json';
+import i21 from './henderson-hall-joint-base-myer-henderson-hall.json';
+import i22 from './hill-afb.json';
+import i23 from './holloman-afb.json';
+import i24 from './incirlik-ab.json';
+import i25 from './joint-base-anacostia-bolling.json';
+import i26 from './joint-base-andrews-naval-air-facility-washington.json';
+import i27 from './joint-base-charleston.json';
+import i28 from './joint-base-elmendorf-richardson-jber.json';
+import i29 from './joint-base-langley-eustis.json';
+import i30 from './joint-base-lewis-mcchord.json';
+import i31 from './joint-base-mcguire-dix-lakehurst.json';
+import i32 from './joint-base-pearl-harbor-hickam.json';
+import i33 from './joint-base-san-antonio-lackland-randolph-sam-houston.json';
+import i34 from './joint-region-marianas-andersen-afb.json';
+import i35 from './kadena-ab.json';
+import i36 from './keesler-afb.json';
+import i37 from './kirtland-air-force-base.json';
+import i38 from './kunsan-ab.json';
+import i39 from './laughlin-afb.json';
+import i40 from './little-rock-afb.json';
+import i41 from './los-angeles-afb.json';
+import i42 from './luke-afb.json';
+import i43 from './macdill-afb.json';
+import i44 from './malmstrom-air-force-base.json';
+import i45 from './maxwell-afb-and-gunter-annex.json';
+import i46 from './mcconnell-afb.json';
+import i47 from './minot-afb.json';
+import i48 from './misawa-ab.json';
+import i49 from './moody-afb.json';
+import i50 from './moron-ab.json';
+import i51 from './mountain-home-afb.json';
+import i52 from './nellis-afb.json';
+import i53 from './offutt-afb.json';
+import i54 from './patrick-afb.json';
+import i55 from './pentagon-air-force.json';
+import i56 from './peterson-afb.json';
+import i57 from './ramstein-ab.json';
+import i58 from './robins-afb.json';
+import i59 from './schriever-afb.json';
+import i60 from './scott-air-force-base.json';
+import i61 from './seymour-johnson-afb.json';
+import i62 from './shaw-air-force-base.json';
+import i63 from './sheppard-afb.json';
+import i64 from './spangdahlem-ab.json';
+import i65 from './tinker-afb.json';
+import i66 from './travis-air-force-base.json';
+import i67 from './tyndall-afb.json';
+import i68 from './vance-afb.json';
+import i69 from './vandenberg-afb.json';
+import i70 from './whiteman-afb.json';
+import i71 from './wright-patterson-afb.json';
+import i72 from './yokota-ab.json';
 
 export const INSTALLATION_FILES: DataFileRef[] = [
-  ['src/data/firstsergeant/installations/kadena-ab.json', i0],
+  ['src/data/firstsergeant/installations/altus-afb.json', i0],
+  ['src/data/firstsergeant/installations/arnold-afb.json', i1],
+  ['src/data/firstsergeant/installations/barksdale-air-force-base.json', i2],
+  ['src/data/firstsergeant/installations/beale-afb.json', i3],
+  ['src/data/firstsergeant/installations/buckley-afb.json', i4],
+  ['src/data/firstsergeant/installations/cannon-afb.json', i5],
+  ['src/data/firstsergeant/installations/columbus-afb.json', i6],
+  ['src/data/firstsergeant/installations/creech-afb.json', i7],
+  ['src/data/firstsergeant/installations/davis-monthan-afb.json', i8],
+  ['src/data/firstsergeant/installations/dover-afb.json', i9],
+  ['src/data/firstsergeant/installations/dyess-afb.json', i10],
+  ['src/data/firstsergeant/installations/edwards-afb.json', i11],
+  ['src/data/firstsergeant/installations/eglin-afb.json', i12],
+  ['src/data/firstsergeant/installations/eielson-afb.json', i13],
+  ['src/data/firstsergeant/installations/ellsworth-air-force-base.json', i14],
+  ['src/data/firstsergeant/installations/f-e-warren-afb.json', i15],
+  ['src/data/firstsergeant/installations/fairchild-afb.json', i16],
+  ['src/data/firstsergeant/installations/fort-myer-joint-base-myer-henderson-hall.json', i17],
+  ['src/data/firstsergeant/installations/goodfellow-afb.json', i18],
+  ['src/data/firstsergeant/installations/grand-forks-afb.json', i19],
+  ['src/data/firstsergeant/installations/hanscom-afb.json', i20],
+  ['src/data/firstsergeant/installations/henderson-hall-joint-base-myer-henderson-hall.json', i21],
+  ['src/data/firstsergeant/installations/hill-afb.json', i22],
+  ['src/data/firstsergeant/installations/holloman-afb.json', i23],
+  ['src/data/firstsergeant/installations/incirlik-ab.json', i24],
+  ['src/data/firstsergeant/installations/joint-base-anacostia-bolling.json', i25],
+  ['src/data/firstsergeant/installations/joint-base-andrews-naval-air-facility-washington.json', i26],
+  ['src/data/firstsergeant/installations/joint-base-charleston.json', i27],
+  ['src/data/firstsergeant/installations/joint-base-elmendorf-richardson-jber.json', i28],
+  ['src/data/firstsergeant/installations/joint-base-langley-eustis.json', i29],
+  ['src/data/firstsergeant/installations/joint-base-lewis-mcchord.json', i30],
+  ['src/data/firstsergeant/installations/joint-base-mcguire-dix-lakehurst.json', i31],
+  ['src/data/firstsergeant/installations/joint-base-pearl-harbor-hickam.json', i32],
+  ['src/data/firstsergeant/installations/joint-base-san-antonio-lackland-randolph-sam-houston.json', i33],
+  ['src/data/firstsergeant/installations/joint-region-marianas-andersen-afb.json', i34],
+  ['src/data/firstsergeant/installations/kadena-ab.json', i35],
+  ['src/data/firstsergeant/installations/keesler-afb.json', i36],
+  ['src/data/firstsergeant/installations/kirtland-air-force-base.json', i37],
+  ['src/data/firstsergeant/installations/kunsan-ab.json', i38],
+  ['src/data/firstsergeant/installations/laughlin-afb.json', i39],
+  ['src/data/firstsergeant/installations/little-rock-afb.json', i40],
+  ['src/data/firstsergeant/installations/los-angeles-afb.json', i41],
+  ['src/data/firstsergeant/installations/luke-afb.json', i42],
+  ['src/data/firstsergeant/installations/macdill-afb.json', i43],
+  ['src/data/firstsergeant/installations/malmstrom-air-force-base.json', i44],
+  ['src/data/firstsergeant/installations/maxwell-afb-and-gunter-annex.json', i45],
+  ['src/data/firstsergeant/installations/mcconnell-afb.json', i46],
+  ['src/data/firstsergeant/installations/minot-afb.json', i47],
+  ['src/data/firstsergeant/installations/misawa-ab.json', i48],
+  ['src/data/firstsergeant/installations/moody-afb.json', i49],
+  ['src/data/firstsergeant/installations/moron-ab.json', i50],
+  ['src/data/firstsergeant/installations/mountain-home-afb.json', i51],
+  ['src/data/firstsergeant/installations/nellis-afb.json', i52],
+  ['src/data/firstsergeant/installations/offutt-afb.json', i53],
+  ['src/data/firstsergeant/installations/patrick-afb.json', i54],
+  ['src/data/firstsergeant/installations/pentagon-air-force.json', i55],
+  ['src/data/firstsergeant/installations/peterson-afb.json', i56],
+  ['src/data/firstsergeant/installations/ramstein-ab.json', i57],
+  ['src/data/firstsergeant/installations/robins-afb.json', i58],
+  ['src/data/firstsergeant/installations/schriever-afb.json', i59],
+  ['src/data/firstsergeant/installations/scott-air-force-base.json', i60],
+  ['src/data/firstsergeant/installations/seymour-johnson-afb.json', i61],
+  ['src/data/firstsergeant/installations/shaw-air-force-base.json', i62],
+  ['src/data/firstsergeant/installations/sheppard-afb.json', i63],
+  ['src/data/firstsergeant/installations/spangdahlem-ab.json', i64],
+  ['src/data/firstsergeant/installations/tinker-afb.json', i65],
+  ['src/data/firstsergeant/installations/travis-air-force-base.json', i66],
+  ['src/data/firstsergeant/installations/tyndall-afb.json', i67],
+  ['src/data/firstsergeant/installations/vance-afb.json', i68],
+  ['src/data/firstsergeant/installations/vandenberg-afb.json', i69],
+  ['src/data/firstsergeant/installations/whiteman-afb.json', i70],
+  ['src/data/firstsergeant/installations/wright-patterson-afb.json', i71],
+  ['src/data/firstsergeant/installations/yokota-ab.json', i72],
 ];

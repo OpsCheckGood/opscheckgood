@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "source": "MilitaryINSTALLATIONS — Minot AFB",
+    "version": "retrieved 2026-08-30",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "https://installations.militaryonesource.mil/military-installation/minot-afb",
+    "status": "verified",
+    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+  },
+  "data": {
+    "id": "minot-afb",
+    "label": "Minot AFB",
+    "example": false,
+    "contacts": [
+      {
+        "categoryId": "command-post",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "mental-health",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "chaplain",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "sarc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "security-forces",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "medical",
+        "name": "Hospital Appointments",
+        "phone": "701-723-5633",
+        "dsn": "312-453-5633",
+        "location": "10 Missile Ave Minot AFB, ND 58705",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/minot-afb/health/health-care",
+        "notes": "Mon - Fri 7:30 a.m. - 4:30 p.m. Closed Wed 7:30 a.m.- 10:00 Sat-Sun closed"
+      },
+      {
+        "categoryId": "mfrc",
+        "name": "Military and Family Readiness Center",
+        "phone": "701-723-3950",
+        "dsn": "312-453-3950",
+        "location": "291 Peacekeeper Place Minot AFB, ND 58705",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/minot-afb/military-and-family-support-center/military-and-family-support-center",
+        "notes": "Mon - Fri 7:30 a.m. - 4:30 p.m. Sat and Sun - closed Holidays - closed"
+      },
+      {
+        "categoryId": "finance",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "legal",
+        "name": "Legal Office",
+        "phone": "701-723-3026",
+        "dsn": "312-453-3026",
+        "location": "475 Summit Drive Suite 211 Minot AFB, ND 58705",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/minot-afb/legal/legal-assistance",
+        "notes": "Mon - Fri 8:00 a.m. - 4:00 p.m. Thurs -(Closed from 1300 p.m-1430p.m) Fri - (closed from 10:00 a.m. -11:00 a.m.) Legal Assistance hours Tuesdays 0730-1100, Wednesdays 1400-1600, Thursdays 0900-1100. Making an appointment is highly recommended as previously scheduled appointments will take priority. Sat, Sun, and Holidays - Closed"
+      },
+      {
+        "categoryId": "housing",
+        "name": "Minot AFB Housing",
+        "phone": "701-723-4661",
+        "dsn": "",
+        "location": "445 Peacekeeper Place Suite 141 Minot AFB, ND 58705",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/minot-afb/housing/housing",
+        "notes": "Military Housing Office Phone: 701-723-4661 DSN: 312-453-4661 Mon - Thur – 7:30 a.m. – 5:00 p.m. Fri 7:30 a.m. – 4:00 p.m. Sat and Sun - Closed Holidays - Closed Minot AFB Homes Leasing Office (BBC) Commercial: 701-727-0007 Toll Free: 844-334-1088 Fax: 701-727-0012 Mon, Tue, Thur and Fri – 8:00 a.m. – 5:00 p.m. Wed - 8:00 a.m. - 7:00 p.m. Sat - 10:00 a.m. – 4:00 p.m. Sun – Closed Most Major Holidays - Closed"
+      },
+      {
+        "categoryId": "mpf",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "family-advocacy",
+        "name": "Family Advocacy Program",
+        "phone": "701-723-5096",
+        "dsn": "312-453-5096",
+        "location": "194 Missile Avenue Minot AFB, ND 50705",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/minot-afb/military-and-family-support-center/family-advocacy-program",
+        "notes": "Mon - Fri 7:30 a.m. - 4:30 p.m. Sat and Sun - closed Holidays - closed"
+      },
+      {
+        "categoryId": "efmp",
+        "name": "EFMP-Family Support",
+        "phone": "701-723-3950",
+        "dsn": "312-453-3950",
+        "location": "291 Peacekeeper Place Minot AFB, ND 58705",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/minot-afb/exceptional-family-member-program/exceptional-family-member-program",
+        "notes": "Mon - Fri 7:30 a.m. - 4:30 p.m. Sat and Sun - closed Holidays - closed"
+      },
+      {
+        "categoryId": "childcare",
+        "name": "Child Development Center",
+        "phone": "701-723-3750",
+        "dsn": "312-453-3750",
+        "location": "166 Missile Ave Minot AFB, ND 58705",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/minot-afb/child-and-youth-services/child-care",
+        "notes": "Mon - Fri 6:30 a.m. - Fri 5:30 p.m. Family Days - Reservations Only Closed Sat, Sun & Federal Holidays"
+      },
+      {
+        "categoryId": "emergency-relief",
+        "name": "Military and Family Readiness Center",
+        "phone": "701-723-3950",
+        "dsn": "312-453-3950",
+        "location": "291 Peacekeeper Place Minot AFB, ND 58705",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/minot-afb/military-and-family-support-center/financial-assistance",
+        "notes": "Mon - Fri 7:30 a.m. - 4:30 p.m. Sat and Sun - closed Holidays - closed"
+      },
+      {
+        "categoryId": "military-onesource",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "equal-opportunity",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      }
+    ]
+  }
+}

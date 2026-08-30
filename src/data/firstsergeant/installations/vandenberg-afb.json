@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "source": "MilitaryINSTALLATIONS — Vandenberg SFB",
+    "version": "retrieved 2026-08-30",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "https://installations.militaryonesource.mil/military-installation/vandenberg-afb",
+    "status": "verified",
+    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+  },
+  "data": {
+    "id": "vandenberg-afb",
+    "label": "Vandenberg SFB",
+    "example": false,
+    "contacts": [
+      {
+        "categoryId": "command-post",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "mental-health",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "chaplain",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "sarc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "security-forces",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "medical",
+        "name": "30th Medical Group Family Practice",
+        "phone": "805-606-2273",
+        "dsn": "312-276-2273",
+        "location": "338 South Dakota Ave. Bldg 13850 Vandenberg AFB, CA 93437",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/vandenberg-afb/health/health-care",
+        "notes": "Mon - Fri 7:15 a.m. - 4:30 p.m. Federal Holidays - closed 3rd Thu of every month - closed for training day"
+      },
+      {
+        "categoryId": "mfrc",
+        "name": "Military and Family Readiness Center",
+        "phone": "805-606-0039",
+        "dsn": "312-276-0039",
+        "location": "706 Washington Avenue Bldg. 10122 30 FSS/FSH Vandenberg AFB, CA 93437-6223",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/vandenberg-afb/military-and-family-support-center/military-and-family-support-center",
+        "notes": "Walk-in Hours: Mon - Fri 7:30 a.m. - 4:30 p.m. Sat and Sun - Closed Family Days & Federal Holidays - Closed Closed 3rd Thursday of the month for training * Appointments can be scheduled any time between 7:30 - 4:30 pm"
+      },
+      {
+        "categoryId": "finance",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "legal",
+        "name": "Legal Assistance",
+        "phone": "805-605-6200",
+        "dsn": "312-275-6200",
+        "location": "747 Nebraska Ste C-100 Bldg 10577 Vandenberg SFB, CA 93437",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/vandenberg-afb/legal/legal-assistance",
+        "notes": "The legal office is located on the first floor of Building 10577, in Suite C-100. For all matters, please call 805-605-6200. If our staff is unavailable due to other ongoing legal matters, please leave a message with your name, callback number, and brief message. Our voicemail is monitored Monday through Friday (0830-1600), and a staff member will return or route your call as soon as available. Please note that we are closed for training Thursday mornings, 0830-1130 Closed daily from 1130-1230 and on Friday from 1000-1100"
+      },
+      {
+        "categoryId": "housing",
+        "name": "Housing Office",
+        "phone": "805-606-3434",
+        "dsn": "312-276-3434",
+        "location": "602 Juniper Street Vandenberg SFB, CA 93437",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/vandenberg-afb/housing/housing",
+        "notes": "M,T,Th,F - 7:00am - 4:00pm W - 10:00am - 4:00pm Sat-Sun Closed"
+      },
+      {
+        "categoryId": "mpf",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "family-advocacy",
+        "name": "Family Advocacy",
+        "phone": "805-606-8217",
+        "dsn": "312-276-8217",
+        "location": "338 South Dakota Bldg 13850 Vandenberg SFB, CA 93437",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/vandenberg-afb/military-and-family-support-center/family-advocacy-program",
+        "notes": "Mon - Fri 7:30 a.m. - 4:30 p.m. Sat and Sun - closed"
+      },
+      {
+        "categoryId": "efmp",
+        "name": "Military and Family Readiness Center – EFMP Family Support",
+        "phone": "805-606-0039",
+        "dsn": "312-276-0039",
+        "location": "706 Washington Avenue Bldg. 10122 30 FSS/FSFR Vandenberg SFB, CA 93437-6223",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/vandenberg-afb/exceptional-family-member-program/exceptional-family-member-program",
+        "notes": "Walk-in Hours: Mon - Fri 9:00 a.m. - 4:00 p.m. Sat and Sun - closed Family Days and Federal Holidays - Closed Closed 3rd Thursday of each month for training"
+      },
+      {
+        "categoryId": "childcare",
+        "name": "Child Development Center",
+        "phone": "805-606-1555",
+        "dsn": "312-276-4595",
+        "location": "1036 California Blvd Bldg 16177 Vandenberg AFB, CA 93437",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/vandenberg-afb/child-and-youth-services/child-care",
+        "notes": "Mon - Fri 7 a.m. - 5 p.m. Sat and Sun - closed Federal Holidays - Closed"
+      },
+      {
+        "categoryId": "emergency-relief",
+        "name": "Personal Financial Counselor Services",
+        "phone": "805-606-0039",
+        "dsn": "312-276-3743",
+        "location": "706 Washington Ave Bldg 10122 Vandenberg AFB, CA 93437-6223",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/vandenberg-afb/military-and-family-support-center/financial-assistance",
+        "notes": "Walk-in Hours: Mon - Fri 7:30 a.m. - 16:30 p.m. Sat and Sun - closed"
+      },
+      {
+        "categoryId": "military-onesource",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "equal-opportunity",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      }
+    ]
+  }
+}

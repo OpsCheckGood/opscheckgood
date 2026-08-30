@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "source": "MilitaryINSTALLATIONS — Kirtland Air Force Base",
+    "version": "retrieved 2026-08-30",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "https://installations.militaryonesource.mil/military-installation/kirtland-air-force-base",
+    "status": "verified",
+    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+  },
+  "data": {
+    "id": "kirtland-air-force-base",
+    "label": "Kirtland Air Force Base",
+    "example": false,
+    "contacts": [
+      {
+        "categoryId": "command-post",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "mental-health",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "chaplain",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "sarc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "security-forces",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "medical",
+        "name": "377th Medical Group",
+        "phone": "505-846-3200",
+        "dsn": "",
+        "location": "1501 San Pedro SE Building 47 Albuquerque, NM 87108",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/kirtland-air-force-base/health/health-care",
+        "notes": "Monday – Friday, 7:30 a.m. to 4:30 p.m. Closed: Sat, Sun, Holidays, AFGSC Family Days, & Training Days Main Pharmacy: 7:30 a.m. to 4:30 p.m. BX Pharmacy: Monday - Friday, 8 a.m. to 5 p.m."
+      },
+      {
+        "categoryId": "mfrc",
+        "name": "Military and Family Readiness Center",
+        "phone": "505-846-0741",
+        "dsn": "312-246-0741",
+        "location": "1451 4th Street SE Consolidated Support Bldg. 20245 Suite 126 Kirtland AFB, NM 87117",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/kirtland-air-force-base/military-and-family-support-center/military-and-family-support-center",
+        "notes": "Mon – Fri: 7:15 a.m. – 4:00 p.m. Sat & Sun - closed Holidays - closed Wing Training Day (Third Thursday of every month) - closed"
+      },
+      {
+        "categoryId": "finance",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "legal",
+        "name": "Legal Office",
+        "phone": "505-846-4217",
+        "dsn": "312-246-4217",
+        "location": "2000 Wyoming Blvd SE Building 20604 Kirtland AFB, NM 87117",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/kirtland-air-force-base/legal/legal-assistance",
+        "notes": "Mon & Fri 8:30 a.m. – 4:00 p.m. Tue & Thurs 0730 a.m. - 4:00 p.m. Wed, Sat, & Sun - closed Holidays - closed Notary & Power of Attorney (POA) Walk-Ins Welcome Legal Assistance By Appointment Only Please email: kirtland.legal.assistance@us.af.mil"
+      },
+      {
+        "categoryId": "housing",
+        "name": "Housing Management Office",
+        "phone": "505-846-8217",
+        "dsn": "312-246-8217",
+        "location": "1451 4th St SE Consolidated Support Building 20245 Suite 145 Kirtland AFB, NM 87117",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/kirtland-air-force-base/housing/housing",
+        "notes": "Mon - Fri: 9:00 a.m. - 3:00 p.m. (walk-ins) Weekends/Holidays/AFGSC Family Days and Training Days - closed"
+      },
+      {
+        "categoryId": "mpf",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "family-advocacy",
+        "name": "Family Advocacy",
+        "phone": "505-846-0139",
+        "dsn": "312-246-0139",
+        "location": "1501 San Pedro SE Building 47 Albuquerque, NM 87108",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/kirtland-air-force-base/military-and-family-support-center/family-advocacy-program",
+        "notes": "Mon – Fri: 7:30 a.m. – 4:30 p.m. Sat & Sun - closed Holidays and Family Days - closed Training Day - closed"
+      },
+      {
+        "categoryId": "efmp",
+        "name": "Military and Family Readiness Center – EFMP Family Support",
+        "phone": "505-846-0741",
+        "dsn": "312-246-0741",
+        "location": "1451 4th Street SE Consolidated SupportCenter, Building 20245 Suite 126 Kirtland AFB, NM 87117",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/kirtland-air-force-base/exceptional-family-member-program/exceptional-family-member-program",
+        "notes": "Mon – Fri: 7:15 a.m. – 4:00 p.m. Sat & Sun - closed Holidays - closed Wing Training Days (Third Thursday of each month) - closed"
+      },
+      {
+        "categoryId": "childcare",
+        "name": "Child and Youth Registration and Referral",
+        "phone": "505-853-5437",
+        "dsn": "312-263-5437",
+        "location": "8001 G Street, Building 20234 Kirtland AFB, NM 87117",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/kirtland-air-force-base/child-and-youth-services/child-care",
+        "notes": "Mon – Fri: 6:30 a.m. – 6:00 p.m. Sat - Sun: closed Holidays: closed"
+      },
+      {
+        "categoryId": "emergency-relief",
+        "name": "Personal Financial Readiness Services (Military & Family Readiness Center)",
+        "phone": "505-846-0741",
+        "dsn": "312-246-0741",
+        "location": "1451 4th Street SE Consolidated Support Center, Building 20245 Suite 126 Kirtland AFB, NM 87117",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/kirtland-air-force-base/military-and-family-support-center/financial-assistance",
+        "notes": "Mon – Fri: 7:15 a.m. – 4:00 p.m. Sat & Sun: closed Holidays: closed Wing Training Day (Third Thursday of every month): closed"
+      },
+      {
+        "categoryId": "military-onesource",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "equal-opportunity",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      }
+    ]
+  }
+}

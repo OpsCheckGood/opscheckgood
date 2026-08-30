@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "source": "MilitaryINSTALLATIONS — Peterson SFB",
+    "version": "retrieved 2026-08-30",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "https://installations.militaryonesource.mil/military-installation/peterson-afb",
+    "status": "verified",
+    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+  },
+  "data": {
+    "id": "peterson-afb",
+    "label": "Peterson SFB",
+    "example": false,
+    "contacts": [
+      {
+        "categoryId": "command-post",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "mental-health",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "chaplain",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "sarc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "security-forces",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "medical",
+        "name": "21st Medical Clinic",
+        "phone": "719-524-2273",
+        "dsn": "",
+        "location": "559 Vincent Street Bldg 959 Peterson SFB, CO 80914",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/peterson-afb/health/health-care",
+        "notes": "Mon, Tues, Thurs, Fri - 0730-1630 Wed - 0930-1630 Sat - closed Sun - closed Federal Holidays - closed"
+      },
+      {
+        "categoryId": "mfrc",
+        "name": "Health Promotions",
+        "phone": "719-556-6674",
+        "dsn": "",
+        "location": "225 W. Ent St. building 560, 2nd floor Peterson SFB, CO 80914",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/peterson-afb/military-and-family-support-center/military-and-family-support-center",
+        "notes": "Mon 8:15 a.m. - 9:00 a.m. (walk-ins) Thurs 3:15 p.m. - 4:00 p.m. (walk-ins) Mon, Tues, Thurs, Fri 7:30 a.m. - 4:30 p.m. Wed 9:30 a.m. - 4:30 p.m. Sat. Closed Sun. Closed Federal Holidays Closed"
+      },
+      {
+        "categoryId": "finance",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "legal",
+        "name": "Legal Office",
+        "phone": "719-556-4872",
+        "dsn": "312-834-4872",
+        "location": "135 Dover St. building 350, suite 2068 Peterson SFB, CO 80914",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/peterson-afb/legal/legal-assistance",
+        "notes": "Mon - Fri 8:30 a.m. - 3:30 p.m. (walk-ins for POA and notary services) Sat - closed Sun - closed Holidays - closed"
+      },
+      {
+        "categoryId": "housing",
+        "name": "Housing Office",
+        "phone": "719-556-4777",
+        "dsn": "312-834-4777",
+        "location": "650 McChord St. building 1098 Peterson SFB, CO 80914",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/peterson-afb/housing/housing",
+        "notes": "Mon - Fri 8:00 a.m. - 5:00 p.m. Sat - closed Sun - closed Holidays - closed"
+      },
+      {
+        "categoryId": "mpf",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "family-advocacy",
+        "name": "Family Advocacy Program",
+        "phone": "719-556-8943",
+        "dsn": "",
+        "location": "110 W. Ent Ave. building 725 Peterson SFB, CO 80914-1540",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/peterson-afb/military-and-family-support-center/family-advocacy-program",
+        "notes": "Mon, Tues, Thursday, Fri 7:30 a.m. - 4:30 p.m. Wed 9:30 a.m. - 4:30 p.m. Sat - closed Sun - closed Holidays - closed If you are experiencing a Domestic Crisis call: 719-291-6625"
+      },
+      {
+        "categoryId": "efmp",
+        "name": "Military & Family Readiness Center – EFMP Family Support",
+        "phone": "719-556-6141",
+        "dsn": "312-834-6141",
+        "location": "135 Dover St. building 350 Peterson SFB, CO 80914-1160",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/peterson-afb/exceptional-family-member-program/exceptional-family-member-program",
+        "notes": "Mon, Tues, Thurs, Fri 8:00 a.m. - 4:00 p.m. Wed 8:00 a.m. -3:00 p.m. Sat - closed Sun - closed Holidays - closed"
+      },
+      {
+        "categoryId": "childcare",
+        "name": "Main Child Development Center",
+        "phone": "719-554-9573",
+        "dsn": "",
+        "location": "135 W. Paine St. building 1350 Peterson SFB, CO 80914",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/peterson-afb/child-and-youth-services/child-care",
+        "notes": "Mon - Fri 6:30 a.m. - 5:30 p.m. Sat - closed Sun - closed Holidays - closed"
+      },
+      {
+        "categoryId": "emergency-relief",
+        "name": "Military & Family Readiness Center",
+        "phone": "719-556-6141",
+        "dsn": "312-834-6141",
+        "location": "135 Dover St Ste 1203 building 560 Peterson SFB, CO 80914-1160",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/peterson-afb/military-and-family-support-center/financial-assistance",
+        "notes": "Mon, Tues, Thurs, Fri 8:00 a.m. - 4:00 p.m. Wed 8:00 a.m. -3:00 p.m. Sat - closed Sun - closed Holidays - closed"
+      },
+      {
+        "categoryId": "military-onesource",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "equal-opportunity",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      }
+    ]
+  }
+}

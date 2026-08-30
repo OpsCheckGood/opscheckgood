@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { DataMeta } from '@/lib/data/types';
-import { ISSUES_URL, NEW_ISSUE_URL } from '@/lib/site';
+import { CONTACT_EMAIL, ISSUES_URL, NEW_ISSUE_URL, REPO_IS_PUBLIC } from '@/lib/site';
 import { buildReport, readEnvironment, type Environment } from '@/lib/report';
 
 /**
@@ -230,48 +230,100 @@ export default function BugReport({ tools, sources }: Props) {
       </section>
 
       {/* ---- Where it goes ------------------------------------------------ */}
+      <Destination />
+    </div>
+  );
+}
+
+/**
+ * Where the report goes, which depends on whether the repository is reachable.
+ *
+ * While it is private there are no GitHub links at all. A link to a private
+ * repository 404s for everyone who is not a collaborator, and pointing a
+ * reporter at a 404 spends their effort and returns nothing. The report still
+ * assembles and still copies; only the destination is withheld, and the page
+ * says so plainly rather than implying a tracker anyone can reach.
+ */
+function Destination() {
+  if (!REPO_IS_PUBLIC) {
+    return (
       <section className="panel p-5">
-        <SectionTitle step={3} title="Open an issue" />
+        <SectionTitle step={3} title="Send it" />
         <p
           className="m-0 mt-3 max-w-[70ch] text-[12px] leading-relaxed"
           style={{ color: 'var(--ink-muted)' }}
         >
-          Paste the report into a new issue. If GitHub is blocked on your network — it
-          often is on .mil — copy the report now and open the issue later from a phone or a
-          home machine. The report is plain text and keeps.
+          The source repository is private for now, so there is no public issue tracker to
+          file this in. Copy the report above and send it to whoever gave you this tool.
+          It is plain text and it keeps — nothing about it expires.
         </p>
 
-        <div className="mt-4 flex flex-wrap items-center gap-3">
-          <a
-            href={NEW_ISSUE_URL}
-            target="_blank"
-            rel="noreferrer noopener"
-            className="util flex items-center gap-2 border px-4 py-2.5 no-underline"
-            style={{
-              background: 'var(--panel)',
-              borderColor: 'var(--rule-strong)',
-              color: 'var(--ink)',
-              letterSpacing: '0.1em',
-            }}
-          >
-            New issue <span aria-hidden style={{ color: 'var(--ink-faint)' }}>↗</span>
-          </a>
-          <a
-            href={ISSUES_URL}
-            target="_blank"
-            rel="noreferrer noopener"
-            className="util no-underline"
-            style={{ color: 'var(--accent)', letterSpacing: '0.09em' }}
-          >
-            Browse existing issues ↗
-          </a>
-        </div>
-
-        <p className="m-0 mt-4 text-[11px] leading-relaxed" style={{ color: 'var(--ink-faint)' }}>
-          Opening either link leaves this site. This page itself makes no network requests.
-        </p>
+        {CONTACT_EMAIL !== '' && (
+          <div className="mt-4">
+            <a
+              href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Ops Check Good — bug report')}`}
+              className="util inline-flex items-center gap-2 border px-4 py-2.5 no-underline"
+              style={{
+                background: 'var(--panel)',
+                borderColor: 'var(--rule-strong)',
+                color: 'var(--ink)',
+                letterSpacing: '0.1em',
+              }}
+            >
+              Email the report
+            </a>
+            <p className="m-0 mt-3 text-[11px] leading-relaxed" style={{ color: 'var(--ink-faint)' }}>
+              Opens your own mail app with the subject filled in. Paste the report into the
+              body — this page sends nothing itself.
+            </p>
+          </div>
+        )}
       </section>
-    </div>
+    );
+  }
+
+  return (
+    <section className="panel p-5">
+      <SectionTitle step={3} title="Open an issue" />
+      <p
+        className="m-0 mt-3 max-w-[70ch] text-[12px] leading-relaxed"
+        style={{ color: 'var(--ink-muted)' }}
+      >
+        Paste the report into a new issue. If GitHub is blocked on your network — it often
+        is on .mil — copy the report now and open the issue later from a phone or a home
+        machine. The report is plain text and keeps.
+      </p>
+
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <a
+          href={NEW_ISSUE_URL}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="util flex items-center gap-2 border px-4 py-2.5 no-underline"
+          style={{
+            background: 'var(--panel)',
+            borderColor: 'var(--rule-strong)',
+            color: 'var(--ink)',
+            letterSpacing: '0.1em',
+          }}
+        >
+          New issue <span aria-hidden style={{ color: 'var(--ink-faint)' }}>↗</span>
+        </a>
+        <a
+          href={ISSUES_URL}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="util no-underline"
+          style={{ color: 'var(--accent)', letterSpacing: '0.09em' }}
+        >
+          Browse existing issues ↗
+        </a>
+      </div>
+
+      <p className="m-0 mt-4 text-[11px] leading-relaxed" style={{ color: 'var(--ink-faint)' }}>
+        Opening either link leaves this site. This page itself makes no network requests.
+      </p>
+    </section>
   );
 }
 

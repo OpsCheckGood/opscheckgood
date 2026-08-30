@@ -3,7 +3,15 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildReport, readEnvironment, type Environment } from '@/lib/report';
-import { ISSUES_URL, NEW_ISSUE_URL, REPO, REPO_URL, VERSION } from '@/lib/site';
+import {
+  CONTACT_EMAIL,
+  ISSUES_URL,
+  NEW_ISSUE_URL,
+  REPO,
+  REPO_IS_PUBLIC,
+  REPO_URL,
+  VERSION,
+} from '@/lib/site';
 
 /**
  * The bug report.
@@ -199,13 +207,54 @@ describe('the repository URL', () => {
     expect(pkg.version).toBe(VERSION);
   });
 
-  it('agrees with the offline build script', () => {
+  /**
+   * The offline build cannot import TypeScript, so it parses site.ts instead of
+   * keeping its own copy. This checks that it still does -- a hardcoded URL
+   * there would go stale the next time the repository moves, and nobody would
+   * notice until a thumb drive pointed somewhere wrong.
+   */
+  it('is read from site.ts by the offline build rather than copied', () => {
     const script = readFileSync(join(root, 'scripts', 'build-offline.mjs'), 'utf8');
-    expect(script).toContain(ISSUES_URL);
+    expect(script).toContain("'site.ts'");
+    expect(script).toContain('REPO_IS_PUBLIC');
+    expect(script).not.toMatch(/const \w+ = 'https:\/\/github\.com/);
   });
 
   it('carries no prefilled issue body, which the browser would truncate', () => {
     expect(NEW_ISSUE_URL).not.toContain('?');
     expect(NEW_ISSUE_URL).not.toContain('body=');
+  });
+});
+
+/**
+ * Visibility.
+ *
+ * A link to a private repository is a 404 for everyone who is not a
+ * collaborator. While REPO_IS_PUBLIC is false nothing in the UI may offer one,
+ * and the report page has to stay useful anyway -- the copy button is the
+ * product, the destination is not.
+ */
+describe('repository visibility', () => {
+  it('is declared explicitly rather than inferred', () => {
+    expect(typeof REPO_IS_PUBLIC).toBe('boolean');
+  });
+
+  it('never guesses a contact address', () => {
+    // Publishing an address is the maintainer's decision. Empty is the only
+    // safe default; setting it is a deliberate edit.
+    expect(typeof CONTACT_EMAIL).toBe('string');
+    if (CONTACT_EMAIL !== '') expect(CONTACT_EMAIL).toContain('@');
+  });
+
+  it('keeps the URLs correct whatever the visibility', () => {
+    // Visibility governs whether a link is *shown*, never whether it is right.
+    expect(ISSUES_URL).toBe(`https://github.com/${REPO}/issues`);
+    expect(REPO_URL).toContain('OpsCheckGood');
+  });
+
+  it('builds the same report either way', () => {
+    // The report is the part that must not depend on the destination.
+    expect(report()).toContain('WHAT HAPPENED');
+    expect(report()).toContain('Nothing entered into the tool is included');
   });
 });

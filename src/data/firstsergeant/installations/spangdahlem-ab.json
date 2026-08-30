@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "source": "MilitaryINSTALLATIONS — Spangdahlem AB",
+    "version": "retrieved 2026-08-30",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "https://installations.militaryonesource.mil/military-installation/spangdahlem-ab",
+    "status": "verified",
+    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+  },
+  "data": {
+    "id": "spangdahlem-ab",
+    "label": "Spangdahlem AB",
+    "example": false,
+    "contacts": [
+      {
+        "categoryId": "command-post",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "mental-health",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "chaplain",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "sarc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "security-forces",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "medical",
+        "name": "52 FW Medical Clinic",
+        "phone": "06-565-61-8333",
+        "dsn": "314-452-8333",
+        "location": "Bldg 550 Spangdahlem Germany 54529",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/spangdahlem-ab/health/health-care",
+        "notes": "Mon - Fri: 7:30 a.m. - 4:30 p.m. Sat, Sun, & Holidays: closed"
+      },
+      {
+        "categoryId": "mfrc",
+        "name": "Military and Family Readiness Center",
+        "phone": "+49-6565-61-6422",
+        "dsn": "314-452-6422",
+        "location": "Bldg. 307 Spangdahlem Germany 54529",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/spangdahlem-ab/military-and-family-support-center/military-and-family-support-center",
+        "notes": "Mon - Fri 8:00 a.m. - 4:00 p.m. Weekends, Holidays, & Family Days - Closed"
+      },
+      {
+        "categoryId": "finance",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "legal",
+        "name": "Legal Assistance Office",
+        "phone": "06-565-61-6796",
+        "dsn": "314-452-6796",
+        "location": "Bldg. 125 1st Floor Spangdahlem Germany 54529",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/spangdahlem-ab/legal/legal-assistance",
+        "notes": "Mon - Wed: 9:00 a.m. - 3:00 p.m. Thurs & Fri 9:00 a.m. - 1:00 p.m."
+      },
+      {
+        "categoryId": "housing",
+        "name": "Housing Office",
+        "phone": "+49-6565-61-7133",
+        "dsn": "314-452-7133",
+        "location": "Bldg 454 Spangdahlem Germany 54529",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/spangdahlem-ab/housing/housing",
+        "notes": "Mon - Fri: 8:00 a.m. - 3:00 p.m."
+      },
+      {
+        "categoryId": "mpf",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "family-advocacy",
+        "name": "Military & Family Life Counselor (MFLC)",
+        "phone": "+49-6565-61-6422",
+        "dsn": "314-452-6422",
+        "location": "Bldg 307 Spangdahlem Germany 54529",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/spangdahlem-ab/military-and-family-support-center/family-advocacy-program",
+        "notes": "By Appointment, Please call to schedule."
+      },
+      {
+        "categoryId": "efmp",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "childcare",
+        "name": "Youth Sports",
+        "phone": "06-565-61-8041",
+        "dsn": "314-452-8041",
+        "location": "Bldg. 457 Spangdahlem Germany 54529",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/spangdahlem-ab/child-and-youth-services/child-care",
+        "notes": "Mon - Fri: 9:30 a.m. - 6:00 p.m. Weekends, Holidays, & Family Days - Closed"
+      },
+      {
+        "categoryId": "emergency-relief",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "military-onesource",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "equal-opportunity",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      }
+    ]
+  }
+}

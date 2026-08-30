@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "source": "MilitaryINSTALLATIONS — Patrick SFB",
+    "version": "retrieved 2026-08-30",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "https://installations.militaryonesource.mil/military-installation/patrick-afb",
+    "status": "verified",
+    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+  },
+  "data": {
+    "id": "patrick-afb",
+    "label": "Patrick SFB",
+    "example": false,
+    "contacts": [
+      {
+        "categoryId": "command-post",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "mental-health",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "chaplain",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "sarc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "security-forces",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "medical",
+        "name": "Hospital Medical (Clinic)",
+        "phone": "321-494-8241",
+        "dsn": "312-854-8241",
+        "location": "1381 South Patrick Dr. Bldg. 1381 Patrick SFB, FL 32925",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/patrick-afb/health/health-care",
+        "notes": "Primary Care Hours: Mon, Wed, Fri 7:30 am – 4:30 pm Tue & Thu 8:30 am 4:30 pm Closed Weekends, Holidays & Training Days"
+      },
+      {
+        "categoryId": "mfrc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "finance",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "legal",
+        "name": "Legal Office",
+        "phone": "321-494-2281",
+        "dsn": "312-854-7357",
+        "location": "1303 Edward H. White II St. Bldg. 402 Patrick SFB, FL 32925",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/patrick-afb/legal/legal-assistance",
+        "notes": "Office Hours: Monday- Thursday: 0800-1600 Thursday (closure for staff meeting): 1300-1400 Friday: 0800-1400 (closed every third Friday of each month for Delta Training Days) *Attorneys are available by appointment only Monday-Thursday PLEASE NOTE: Our office experiences very high call volume due to the very close ties between Patrick SFB and the surrounding communities. If you cannot reach us by phone and/or leave a voicemail, you can also contact us by email at: sld45.jad.workflow@spaceforce.mil"
+      },
+      {
+        "categoryId": "housing",
+        "name": "Housing Office",
+        "phone": "321-494-2594",
+        "dsn": "312-854-2594",
+        "location": "514 Falcon Ave. Bldg. 415 Patrick SFB, FL 32925",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/patrick-afb/housing/housing",
+        "notes": ""
+      },
+      {
+        "categoryId": "mpf",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "family-advocacy",
+        "name": "Family Advocacy",
+        "phone": "321-494-8171",
+        "dsn": "312-854-8171",
+        "location": "1370 South Patrick Dr. Bldg. 1370 Patrick SFB, FL 32925",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/patrick-afb/military-and-family-support-center/family-advocacy-program",
+        "notes": "Mon - Fri 7:30 am – 4:30 pm Closed Holidays, Weekends, & Training Days"
+      },
+      {
+        "categoryId": "efmp",
+        "name": "Military and Family Readiness Center – EFMP Family Support",
+        "phone": "321-494-5676",
+        "dsn": "312-854-5676",
+        "location": "842 Falcon Ave. Bldg. 722B 45 FSS/FSH Patrick SFB, FL 32925-3439",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/patrick-afb/exceptional-family-member-program/exceptional-family-member-program",
+        "notes": "Mon - Fri 7:30 am – 4:30 pm Closed on Weekends, Holidays, & Training Days"
+      },
+      {
+        "categoryId": "childcare",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "emergency-relief",
+        "name": "Military and Family Readiness Center",
+        "phone": "321-494-5676",
+        "dsn": "312-854-5676",
+        "location": "842 Falcon Ave. Bldg. 722B 45 FSS/FSH Patrick SFB, FL 32925-3439",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/patrick-afb/military-and-family-support-center/financial-assistance",
+        "notes": "Mon - Fri 7:30 am – 4:30 pm Closed on Weekends, Holidays, & Training Days"
+      },
+      {
+        "categoryId": "military-onesource",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "equal-opportunity",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      }
+    ]
+  }
+}

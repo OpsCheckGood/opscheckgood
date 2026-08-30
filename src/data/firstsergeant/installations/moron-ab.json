@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "source": "MilitaryINSTALLATIONS — Morón AB",
+    "version": "retrieved 2026-08-30",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "https://installations.militaryonesource.mil/military-installation/moron-ab",
+    "status": "verified",
+    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+  },
+  "data": {
+    "id": "moron-ab",
+    "label": "Morón AB",
+    "example": false,
+    "contacts": [
+      {
+        "categoryId": "command-post",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "mental-health",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "chaplain",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "sarc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "security-forces",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "medical",
+        "name": "Medical Care",
+        "phone": "011-34-956-82-3618",
+        "dsn": "314-727-3618",
+        "location": "Building 1802- 1st Street Rota Naval Station Rota (CADIZ) Spain",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/moron-ab/health/health-care",
+        "notes": "BEFORE ARRIVAL You and your family are required to undergo a medical screening upon receipt of our orders to transfer to an overseas location. The screening must be completed at your current MTF (Medical Treatment Facility). You can find additional information on this topic at mynavyhr.navy.mil. UPON ARRIVAL There is no on-base hospital or pharmacy, but the Medical Aid Station at Moron Air Base provides basic support to military members only. Therefore, it is very important to call TRICARE ISOS to ensure that you and your family are enrolled while overseas. You can attend any medical station t"
+      },
+      {
+        "categoryId": "mfrc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "finance",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "legal",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "housing",
+        "name": "Furnishing Management Office",
+        "phone": "011-34-955-84-8156",
+        "dsn": "314-722-8156",
+        "location": "Bldg 106, E Avenue Moron AB Spain",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/moron-ab/housing/housing",
+        "notes": "Mon-Fri 0800 - 1200 1300-1700 UPON ARRIVAL Furniture Loan The Morón Air Base Furnishings Management Section (FMS) is your contact for all loaner furniture matters during your assignment here in Spain. Military personnel and DoD civilian personnel authorized Overseas Housing Allowance or Living Quarters Allowance, and shipment of their household goods, are entitled to temporary loaner furniture. Loaner furniture support is authorized for a period of 90 days pending the arrival of your household goods. An extension due to loss, damage, or delay of household goods may be authorized; approval must"
+      },
+      {
+        "categoryId": "mpf",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "family-advocacy",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "efmp",
+        "name": "Military & Family Readiness Coordinator",
+        "phone": "+34-955-84-8359",
+        "dsn": "314-722-8359",
+        "location": "Bldg 219 APO, AE 09604",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/moron-ab/exceptional-family-member-program/exceptional-family-member-program",
+        "notes": "Military Family Readiness Coordinator Bldg 219 DSN: 722-8403 COM: +34-955-84-8403 Email: abel.beltran_salas.es@us.af.mil"
+      },
+      {
+        "categoryId": "childcare",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "emergency-relief",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "military-onesource",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "equal-opportunity",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      }
+    ]
+  }
+}

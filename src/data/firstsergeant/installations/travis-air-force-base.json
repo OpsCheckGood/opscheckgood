@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "source": "MilitaryINSTALLATIONS — Travis Air Force Base",
+    "version": "retrieved 2026-08-30",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "https://installations.militaryonesource.mil/military-installation/travis-air-force-base",
+    "status": "verified",
+    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+  },
+  "data": {
+    "id": "travis-air-force-base",
+    "label": "Travis Air Force Base",
+    "example": false,
+    "contacts": [
+      {
+        "categoryId": "command-post",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "mental-health",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "chaplain",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "sarc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "security-forces",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "medical",
+        "name": "Optometry Care",
+        "phone": "707-437-4095",
+        "dsn": "",
+        "location": "461 Skymaster Circle Bldg. 650 Travis AFB, CA 94535",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/travis-air-force-base/health/health-care",
+        "notes": "Located at BX Mini-Mall Mon-Fri: 9:30 a.m. to 5:00 p.m. Sat: 10:00 a.m. to 4:00 p.m. Sun: CLOSED Note: Services are provided by appointment only for dependents and retirees (AD members seen at DGMC)"
+      },
+      {
+        "categoryId": "mfrc",
+        "name": "Military and Family Readiness Center",
+        "phone": "707-424-2486",
+        "dsn": "312-837-2486",
+        "location": "351 Travis Avenue Bldg. 660 Travis AFB, CA 94535",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/travis-air-force-base/military-and-family-support-center/military-and-family-support-center",
+        "notes": "Mon, Tue, Wed, Fri: 0730–1630 Thu: 0730–1200 Closed: Sat, Sun, Federal Holidays, and AMC Family Days"
+      },
+      {
+        "categoryId": "finance",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "legal",
+        "name": "Legal Office",
+        "phone": "707-424-3251",
+        "dsn": "312-837-3251",
+        "location": "510 Mulheron Street Bldg 383 Travis AFB, CA 94535",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/travis-air-force-base/legal/legal-assistance",
+        "notes": "Power of Attorneys and Notaries (Walk-ins): Regular Hours Mon: 0900–1600 (Closed 1400–1500) Tues: 0900–1600 (Closed 1330–1430) Wed: 0900–1600 Thurs: 0900–1500 Fri: 1030–1600 Closed: Sat & Sun, Federal holidays and AMC Pass/Goal Days. Wills (By Appointment Only) Complete the worksheet at Aflegalassistance.law.af.mil, then email your ticket number and basic details to: 60AMW.JAG.LegalAssistance@us.af.mil Legal Assistance (By Appointment Only) Email 60AMW.JAG.LegalAssistance@us.af.mil with your contact info, issue summary, any deadlines, and documents for review."
+      },
+      {
+        "categoryId": "housing",
+        "name": "Travis Housing Office",
+        "phone": "707-424-1746",
+        "dsn": "312-837-1746",
+        "location": "344 Hanger Ave. Bldg. 576 Travis AFB, CA 94535",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/travis-air-force-base/housing/housing",
+        "notes": "Mon - Tue - Thu - Fri: 0800 – 1600 Wed - 0800 – 1400 Sat, Sun & Holidays - Closed"
+      },
+      {
+        "categoryId": "mpf",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "family-advocacy",
+        "name": "Family Advocacy Program",
+        "phone": "707-423-5168",
+        "dsn": "",
+        "location": "101 Bodin Circle Travis AFB, CA 94535",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/travis-air-force-base/military-and-family-support-center/family-advocacy-program",
+        "notes": "Regular Hours Mon–Fri: 0730–1630 Closed: Sat, Sun & Federal Holidays After‑Hours Support Weekend Emergencies (Victim Advocate): 24/7 On‑Call — 707‑232‑5109"
+      },
+      {
+        "categoryId": "efmp",
+        "name": "Military and Family Readiness Center – EFMP Family Support",
+        "phone": "707-424-2486",
+        "dsn": "",
+        "location": "351 Travis Avenue Bldg. 660 60 FSS/FSFR Travis AFB, CA 94535-1903",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/travis-air-force-base/exceptional-family-member-program/exceptional-family-member-program",
+        "notes": "Mon, Tue, Wed, Fri: 0730–1630 Thu: 0730–1200 Closed: Sat, Sun, Federal Holidays, and AMC Family Days"
+      },
+      {
+        "categoryId": "childcare",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "emergency-relief",
+        "name": "Military and Family Readiness Center",
+        "phone": "707-424-2486",
+        "dsn": "312-837-2486",
+        "location": "351 Travis Avenue Bldg. 660 Travis AFB, CA 94535",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/travis-air-force-base/military-and-family-support-center/financial-assistance",
+        "notes": "Mon, Tue, Wed, Fri: 0730–1630 Thu: 0730–1200 Closed: Sat, Sun, Federal Holidays, and AMC Family Days"
+      },
+      {
+        "categoryId": "military-onesource",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "equal-opportunity",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      }
+    ]
+  }
+}

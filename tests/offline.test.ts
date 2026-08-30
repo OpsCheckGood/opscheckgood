@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll, vi } from 'vitest';
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { REPO, REPO_IS_PUBLIC } from '@/lib/site';
 
 /**
  * Hard constraint 3: a page saved to disk and opened with no network must fully
@@ -25,6 +26,20 @@ if (!built && process.env.CI) {
   );
 }
 const describeBuilt = built ? describe : describe.skip;
+
+/**
+ * Strips script and style bodies, leaving the markup a reader actually sees.
+ *
+ * Bundled libraries embed URLs in their own error messages -- opentype.js names
+ * its issue tracker in a deprecation warning -- and those are not links this
+ * site offers. Assertions about what the page points at have to look at the
+ * markup, not at every string that happens to be in the file.
+ */
+function stripCode(html: string): string {
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, '<script></script>')
+    .replace(/<style[\s\S]*?<\/style>/gi, '<style></style>');
+}
 if (!built) {
   console.warn(
     'dist/bullet-bench-offline.html missing; offline tests skipped. ' +
@@ -108,11 +123,22 @@ describeBuilt('single-file offline build', () => {
     await vi.waitFor(
       () => {
         expect(root.querySelector('textarea')).not.toBeNull();
-        // The font has to parse and the optimizer has to run before any
-        // millimetre readout can appear.
-        // A millimetre readout only appears once the font has parsed and the
-        // optimizer has run, so this proves the whole chain works offline.
-        expect(root.textContent).toMatch(/\d+(\.\d+)?\s?mm/);
+        /*
+         * Wait on the substituted spaces themselves.
+         *
+         * This used to wait on a millimetre readout, on the reasoning that one
+         * could only appear after the font parsed. That was wrong: the
+         * Requirements label prints the form's own width straight out of the
+         * data, so it renders immediately and satisfied the wait before the
+         * font had loaded -- leaving the assertions below to run against a
+         * page still showing "LOADING". It passed on a quiet machine and went
+         * red under parallel load, which is the worst way for a test to fail.
+         *
+         * U+2004 or U+2006 in the output can only come from the optimizer,
+         * which cannot run until the font has parsed, so this gates on the end
+         * of the chain rather than on something that looks like it.
+         */
+        expect(root.textContent).toMatch(/[\u2004\u2006]/);
       },
       { timeout: 45000, interval: 100 },
     );
@@ -120,9 +146,8 @@ describeBuilt('single-file offline build', () => {
     const text = root.textContent ?? '';
     expect(text).toContain('AF Form 1206');
     expect(text).toContain('Copy Output');
-    // The shaped output carries the substituted spaces, which is the whole
-    // product: U+2004 or U+2006 present means the optimizer actually ran.
-    expect(text).toMatch(/[\u2004\u2006]/);
+    // The measured width appears once the font is in, alongside the shaping.
+    expect(text).toMatch(/\d+(\.\d+)?\s?mm/);
     expect(denied, `page attempted network requests: ${denied.join(', ')}`).toEqual([]);
 
     dom.window.close();
@@ -141,14 +166,57 @@ describeBuilt('every offline copy says where to report a problem', () => {
     'bullet-bench-offline.html',
     'pt-calculator-offline.html',
     'btz-calculator-offline.html',
-  ])('%s names the issue tracker without linking to it', (file) => {
+  ])('%s points somewhere real, and never links out', (file) => {
     const path = join(dist, file);
     if (!existsSync(path)) return;
     const html = readFileSync(path, 'utf8');
-    expect(html).toContain('github.com/ops-check-good/opscheckgood/issues');
-    // Written out, not linked: an anchor here would break the invariant that
-    // these files reference nothing at all.
-    expect(html).not.toContain('href="https://github.com');
+    // Markup only. The bundles carry github.com inside library error strings --
+    // opentype.js links its own issue tracker in a deprecation warning -- which
+    // is not a destination this page offers anybody.
+    const markup = stripCode(html);
+
+    expect(markup).toContain('Something wrong?');
+    if (REPO_IS_PUBLIC) {
+      expect(markup).toContain(`github.com/${REPO}/issues`);
+    } else {
+      // Naming a private tracker in a file that gets passed around on thumb
+      // drives would send people to a 404 with no way to ask why.
+      expect(markup).not.toContain('github.com');
+    }
+    // Written out, never linked: an anchor would break the invariant that these
+    // files reference nothing at all.
+    expect(markup).not.toContain('href="https://github.com');
+  });
+});
+
+/**
+ * The same rule for the hosted pages. This is the test that actually protects
+ * a visitor from a dead link, because it reads the built HTML rather than the
+ * source that was supposed to produce it.
+ */
+describeBuilt('GitHub links appear only when the repository is public', () => {
+  const pages = ['index.html', join('report', 'index.html'), join('tools', 'btz-calculator', 'index.html')];
+
+  it.each(pages)('%s', (page) => {
+    const path = join(dist, page);
+    if (!existsSync(path)) return;
+    const markup = stripCode(readFileSync(path, 'utf8'));
+    if (REPO_IS_PUBLIC) {
+      if (page.startsWith('report')) expect(markup).toContain(`github.com/${REPO}`);
+    } else {
+      expect(markup).not.toContain('github.com');
+    }
+  });
+
+  // Whatever the visibility, the bug report page itself must still be reachable
+  // and still able to assemble a report.
+  it('keeps the report page working either way', () => {
+    const path = join(dist, 'report', 'index.html');
+    if (!existsSync(path)) return;
+    const html = readFileSync(path, 'utf8');
+    expect(html).toContain('OPS CHECK GOOD — BUG REPORT');
+    expect(html).toContain('Copy report');
+    expect(html).toContain('Keep real records out of it');
   });
 });
 
@@ -668,6 +736,67 @@ describeBuilt('single-file offline MFR generator', () => {
 
     expect(denied, `page attempted network requests: ${denied.join(', ')}`).toEqual([]);
 
+    dom.window.close();
+  }, 90000);
+});
+
+/**
+ * The field boxes draw at the form's true width (765px for a 202.321mm line)
+ * and scale down to fit their column. The scale must be computed against the
+ * container's *content* box: clientWidth includes padding, and using it raw
+ * left the inner box ~24px too wide, which overflow:hidden then clipped --
+ * every line cut off mid-word at the right edge.
+ */
+describeBuilt('field boxes scale to fit rather than clip', () => {
+  it('never renders wider than the space available', async () => {
+    const { JSDOM } = await import('jsdom');
+    const dom = new JSDOM(readFileSync(offlineFile, 'utf8'), {
+      runScripts: 'dangerously',
+      pretendToBeVisual: true,
+      url: 'file:///bullet-bench-offline.html',
+    });
+    const w = dom.window;
+
+    // jsdom performs no layout, so supply a realistic column and padding.
+    const COLUMN = 722;
+    const PADDING = 12;
+    Object.defineProperty(w.HTMLElement.prototype, 'clientWidth', {
+      value: COLUMN,
+      configurable: true,
+    });
+    const realComputed = w.getComputedStyle.bind(w);
+    w.getComputedStyle = ((el: Element) => {
+      const style = realComputed(el as HTMLElement);
+      return new Proxy(style, {
+        get(target, key) {
+          if (key === 'paddingLeft' || key === 'paddingRight') return `${PADDING}px`;
+          return Reflect.get(target, key);
+        },
+      });
+    }) as typeof w.getComputedStyle;
+
+    const root = w.document.getElementById('bullet-bench-root')!;
+    await vi.waitFor(
+      () => {
+        expect(root.textContent).toMatch(/[  ]/);
+      },
+      { timeout: 45000, interval: 100 },
+    );
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    const boxes = [...root.querySelectorAll('div')].filter((el) =>
+      (el as HTMLElement).style.transform?.includes('scale'),
+    );
+    expect(boxes.length).toBeGreaterThan(0);
+
+    const available = COLUMN - PADDING * 2;
+    for (const box of boxes) {
+      const el = box as HTMLElement;
+      const scale = Number(/scale\(([\d.]+)\)/.exec(el.style.transform)?.[1] ?? 1);
+      const width = parseFloat(el.style.width);
+      expect(width).toBeGreaterThan(available); // true form width, not reflowed
+      expect(width * scale).toBeLessThanOrEqual(available + 0.5);
+    }
     dom.window.close();
   }, 90000);
 });

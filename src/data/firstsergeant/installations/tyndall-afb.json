@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "source": "MilitaryINSTALLATIONS — Tyndall AFB",
+    "version": "retrieved 2026-08-30",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "https://installations.militaryonesource.mil/military-installation/tyndall-afb",
+    "status": "verified",
+    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+  },
+  "data": {
+    "id": "tyndall-afb",
+    "label": "Tyndall AFB",
+    "example": false,
+    "contacts": [
+      {
+        "categoryId": "command-post",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "mental-health",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "chaplain",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "sarc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "security-forces",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "medical",
+        "name": "325th Medical Group Appointment System",
+        "phone": "850-283-2778",
+        "dsn": "312-523-2778",
+        "location": "340 Magnolia Circle Bldg 1465 Tyndall AFB, FL 32403-5612",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/tyndall-afb/health/health-care",
+        "notes": "Dependents and retirees are not seen in the main Operational Medicine Clinic. However, dependents and retirees are authorized to utilize the 325th MDG; Pharmacy, Basic Labs, and Diagnostic Radiology (X-Ray) ancillary services. For primary care, pediatrics, and other medical services, dependents and retirees are directed to the civilian TRICARE network in the Panama City area. Contact Information: Operating Hours: Pharmacy & Radiology • Monday, Tuesday, Thursday, Friday: 0730 - 1600 • Wednesday: 0930 – 1600 Laboratory • Monday, Tuesday, Thursday, Friday: 0730 - 1200 • Wednesday: 0930 - 1200 Imm"
+      },
+      {
+        "categoryId": "mfrc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "finance",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "legal",
+        "name": "Legal Office",
+        "phone": "850-283-3233",
+        "dsn": "312-523-3233",
+        "location": "445 Suwannee Road Building 662 Ste. 110 Tyndall AFB, FL 32403",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/tyndall-afb/legal/legal-assistance",
+        "notes": "Monday-Thursday: 8:00 a.m.-4:00 p.m. Friday: 8:00 a.m.-3:00 p.m. Federal Holidays and PASS Days: Closed"
+      },
+      {
+        "categoryId": "housing",
+        "name": "Housing Management Office",
+        "phone": "850-283-2737",
+        "dsn": "312-523-2737",
+        "location": "445 Suwannee Road BLDG 662 RM 128B Tyndall AFB, FL 32403",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/tyndall-afb/housing/housing",
+        "notes": "Mon - Fri 7:30 a.m. - 4:30 p.m."
+      },
+      {
+        "categoryId": "mpf",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "family-advocacy",
+        "name": "Family Advocacy",
+        "phone": "850-283-7511",
+        "dsn": "312-523-7511",
+        "location": "340 Magnolia Circle Bldg 1465 1st Floor Tyndall AFB, FL 32403-5604",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/tyndall-afb/military-and-family-support-center/family-advocacy-program",
+        "notes": "Monday-Friday: 7:30 a.m. – 4:30 p.m. Federal Holidays: Closed"
+      },
+      {
+        "categoryId": "efmp",
+        "name": "Military and Family Readiness Center – EFMP Family Support",
+        "phone": "850-283-2400",
+        "dsn": "312-523-2400",
+        "location": "445 Suwannee Road 325 FSS/FSH Building 662 Tyndall AFB, FL 32403-5428",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/tyndall-afb/exceptional-family-member-program/exceptional-family-member-program",
+        "notes": "Mon, Tues, Wed, & Fri 8:00 a.m. – 4:30 p.m. Thursdays 0800-1400 Sat & Sun - closed Holidays and Family Days - closed"
+      },
+      {
+        "categoryId": "childcare",
+        "name": "Family Child Care",
+        "phone": "850-283-2218",
+        "dsn": "312-523-2218",
+        "location": "445 Suwannee Road Building 662 Room 113 Tyndall AFB, FL 32403",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/tyndall-afb/child-and-youth-services/child-care",
+        "notes": "Monday-Friday: 7:30AM - 4:30PM Federal Holidays & PASS Days:Closed"
+      },
+      {
+        "categoryId": "emergency-relief",
+        "name": "Military and Family Readiness Center",
+        "phone": "850-283-2400",
+        "dsn": "312-523-2400",
+        "location": "445 SUWANNEE RD 325 FSS/FSH Building 662 Tyndall AFB, FL 32403",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/tyndall-afb/military-and-family-support-center/financial-assistance",
+        "notes": "Monday, Tuesday, Wednesday, Friday: 8:00 a.m. – 4:00 p.m. Thursday: 0800-1400 Federal Holidays & PASS Days: Closed"
+      },
+      {
+        "categoryId": "military-onesource",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "equal-opportunity",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      }
+    ]
+  }
+}

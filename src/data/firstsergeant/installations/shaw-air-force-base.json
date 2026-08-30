@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "source": "MilitaryINSTALLATIONS — Shaw Air Force Base",
+    "version": "retrieved 2026-08-30",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "https://installations.militaryonesource.mil/military-installation/shaw-air-force-base",
+    "status": "verified",
+    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+  },
+  "data": {
+    "id": "shaw-air-force-base",
+    "label": "Shaw Air Force Base",
+    "example": false,
+    "contacts": [
+      {
+        "categoryId": "command-post",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "mental-health",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "chaplain",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "sarc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "security-forces",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "medical",
+        "name": "Prisma Regional Medical Center",
+        "phone": "803-774-9000",
+        "dsn": "",
+        "location": "129 N. Washington Street Sumter, SC 29150",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/shaw-air-force-base/health/health-care",
+        "notes": "Visiting Hours 8:00 a.m. - 9:00 p.m. daily"
+      },
+      {
+        "categoryId": "mfrc",
+        "name": "VA Medical Services Coordinator contact/BDD",
+        "phone": "803-767-8370",
+        "dsn": "",
+        "location": "Building 1042, (ground floor) 20th Medical Group Ms. Allyson Tjaarad",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/shaw-air-force-base/military-and-family-support-center/military-and-family-support-center",
+        "notes": "Pick up pamphlets at office."
+      },
+      {
+        "categoryId": "finance",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "legal",
+        "name": "Legal Office",
+        "phone": "803-895-1560",
+        "dsn": "312-965-1560",
+        "location": "504 Shaw Drive Shaw AFB, SC 29152",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/shaw-air-force-base/legal/legal-assistance",
+        "notes": "Legal Assistance (except Wills): Mon - Fri 0:800 AM- 4:00 PM One Stop Will Hours: Mon 1:00 p.m.- 3:30 p.m. (By appointment only) Notaries and power of attorney: Mon - Fri 08:00 a.m.- 4:00 p.m."
+      },
+      {
+        "categoryId": "housing",
+        "name": "Housing Office",
+        "phone": "803-895-2422",
+        "dsn": "312-965-2422",
+        "location": "369 Rhodes Avenue Shaw AFB, SC 29152",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/shaw-air-force-base/housing/housing",
+        "notes": "Mon - Fri 7:30 a.m. to 16:00 p.m. Sat and Sun - Closed Federal and State Holidays"
+      },
+      {
+        "categoryId": "mpf",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "family-advocacy",
+        "name": "Family Advocacy",
+        "phone": "803-895-6201",
+        "dsn": "312-965-6201",
+        "location": "420 Polifka Dr Bldg 1042 Shaw AFB, SC 29152",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/shaw-air-force-base/military-and-family-support-center/family-advocacy-program",
+        "notes": "Mon - Fri 7:30 a.m. to 4:30 p.m. Sat and Sun - closed"
+      },
+      {
+        "categoryId": "efmp",
+        "name": "Exceptional Family Member Program Support Services",
+        "phone": "803-895-1253",
+        "dsn": "312-965-1253",
+        "location": "Airman and Family Readiness Center – Family Support 524 Stuart Avenue Building 1127 Shaw AFB, SC 29152",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/shaw-air-force-base/exceptional-family-member-program/exceptional-family-member-program",
+        "notes": "Mon - Fri 7:30 a.m. to 4:30 p.m. Sat and Sun - closed"
+      },
+      {
+        "categoryId": "childcare",
+        "name": "Child and Youth Programs",
+        "phone": "803-895-2250",
+        "dsn": "312-965-2250",
+        "location": "320 Laurel Street Bldg 2449 Shaw AFB, SC 29152",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/shaw-air-force-base/child-and-youth-services/child-care",
+        "notes": "Mon-Fri 6:00 a.m. - 6:00 p.m."
+      },
+      {
+        "categoryId": "emergency-relief",
+        "name": "Military and Family Readiness Center -Personnel Financial Management",
+        "phone": "803-895-1252",
+        "dsn": "312-965-1252",
+        "location": "20FSS/FSFR 524 Stuart Avenue Shaw AFB, SC 29152",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/shaw-air-force-base/military-and-family-support-center/financial-assistance",
+        "notes": "Mon - Fri 7:30 a.m. to 4:30 p.m. Sat and Sun - closed"
+      },
+      {
+        "categoryId": "military-onesource",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "equal-opportunity",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      }
+    ]
+  }
+}

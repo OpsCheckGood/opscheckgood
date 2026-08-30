@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "source": "MilitaryINSTALLATIONS — MacDill AFB",
+    "version": "retrieved 2026-08-30",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "https://installations.militaryonesource.mil/military-installation/macdill-afb",
+    "status": "verified",
+    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+  },
+  "data": {
+    "id": "macdill-afb",
+    "label": "MacDill AFB",
+    "example": false,
+    "contacts": [
+      {
+        "categoryId": "command-post",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "mental-health",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "chaplain",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "sarc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "security-forces",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "medical",
+        "name": "Sabal Park Clinic",
+        "phone": "813-828-2273",
+        "dsn": "",
+        "location": "9208 King Palm Dr Tampa, FL 33619",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/macdill-afb/health/health-care",
+        "notes": "Mon – Fri 7:30 a.m. – 4:30 p.m. Sat and Sun - closed"
+      },
+      {
+        "categoryId": "mfrc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "finance",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "legal",
+        "name": "Legal Services",
+        "phone": "813-828-4421",
+        "dsn": "312-968-4421",
+        "location": "8208 Hangar Loop Dr. Building 299 MacDill AFB, FL 33621",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/macdill-afb/legal/legal-assistance",
+        "notes": "Mon – Fri 8am – 4pm Sat and Sun - closed"
+      },
+      {
+        "categoryId": "housing",
+        "name": "Military Housing Office",
+        "phone": "813-828-5404",
+        "dsn": "",
+        "location": "8414 Fortress Drive MacDill AFB, FL 33621",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/macdill-afb/housing/housing",
+        "notes": "Mon – Fri 8am – 4pm"
+      },
+      {
+        "categoryId": "mpf",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "family-advocacy",
+        "name": "Family Advocacy",
+        "phone": "813-827-9172",
+        "dsn": "312-651-9172",
+        "location": "3250 Zemke Avenue MacDill AFB, FL 33621",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/macdill-afb/military-and-family-support-center/family-advocacy-program",
+        "notes": "Mon – Fri 7:30am – 4:30pm Sat and Sun - closed"
+      },
+      {
+        "categoryId": "efmp",
+        "name": "Military and Family Readiness Center - EFMP Family Support",
+        "phone": "813-828-0122",
+        "dsn": "312-968-0122",
+        "location": "8105 Condor Street Bldg. 18 6 FSS/FSH MacDill AFB, FL 33621-5313",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/macdill-afb/exceptional-family-member-program/exceptional-family-member-program",
+        "notes": "Mon, Tue, Wed 8am – 4pm Thurs 11am – 4pm Sat, Sun, Holidays – closed"
+      },
+      {
+        "categoryId": "childcare",
+        "name": "Family Child Care",
+        "phone": "813-828-7760",
+        "dsn": "312-968-0196",
+        "location": "8105 Condor St Bldg 18 MacDill AFB, FL 33621",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/macdill-afb/child-and-youth-services/child-care",
+        "notes": "Mon – Fri 8am - 4pm Sat and Sun - closed"
+      },
+      {
+        "categoryId": "emergency-relief",
+        "name": "Personal Financial Readiness (PFR) Program",
+        "phone": "813-828-0145",
+        "dsn": "312-968-0141",
+        "location": "8105 Condor Street Bldg18 MacDill AFB, FL 33621",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/macdill-afb/military-and-family-support-center/financial-assistance",
+        "notes": "Mon - Wed, Fri 8:00 a.m. – 4:00 p.m. Thu 11:00 a.m. – 4:00 p.m. Sat, Sun, Holidays – closed"
+      },
+      {
+        "categoryId": "military-onesource",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "equal-opportunity",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      }
+    ]
+  }
+}

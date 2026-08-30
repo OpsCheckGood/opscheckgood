@@ -892,7 +892,20 @@ function FieldBox({
     const innerEl = inner.current;
     if (!outerEl || !innerEl || widthPx <= 0) return;
     const update = () => {
-      const next = Math.min(1, (outerEl.clientWidth || widthPx) / widthPx);
+      // clientWidth includes padding, but the scaled box sits inside it. Using
+      // it raw computed the scale against ~24px more room than exists, and the
+      // overflow was silently clipped -- lines cut off mid-word at the edge.
+      const styles = getComputedStyle(outerEl);
+      const available =
+        outerEl.clientWidth -
+        (parseFloat(styles.paddingLeft) || 0) -
+        (parseFloat(styles.paddingRight) || 0);
+
+      // Before layout, or while hidden, the element measures zero. Keep the
+      // last good scale rather than assuming 1, which is what clips.
+      if (!(available > 0)) return;
+
+      const next = Math.min(1, available / widthPx);
       setScale(next);
       setHeight(innerEl.offsetHeight * next);
     };

@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "source": "MilitaryINSTALLATIONS — Yokota AB",
+    "version": "retrieved 2026-08-30",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "https://installations.militaryonesource.mil/military-installation/yokota-ab",
+    "status": "verified",
+    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+  },
+  "data": {
+    "id": "yokota-ab",
+    "label": "Yokota AB",
+    "example": false,
+    "contacts": [
+      {
+        "categoryId": "command-post",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "mental-health",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "chaplain",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "sarc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "security-forces",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "medical",
+        "name": "Getting Medical Care",
+        "phone": "011-81-42-552-2510",
+        "dsn": "315-225-8864 57740",
+        "location": "Building 4408 Yokota AB (Fussa) Japan 197-0001",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/yokota-ab/health/health-care",
+        "notes": "Monday – Friday, except Federal Holidays and the Third Thursday of every month (Readiness training day) 7:30 a.m. – 4:30 p.m. Urgent Care Open 24/7 If you are on base and require emergency services, call DSN: 911 Commercial US: 011-81-42-552-2510, ext. 911 Commercial JP: 042-552-2510, ext. 911"
+      },
+      {
+        "categoryId": "mfrc",
+        "name": "Military and Family Readiness Center - Loan Locker",
+        "phone": "011-81-42-552-2510",
+        "dsn": "315-225-8726",
+        "location": "Building 535 Yokota AB (Fussa) Japan 197-0001",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/yokota-ab/military-and-family-support-center/military-and-family-support-center",
+        "notes": "The Loan Locker hours are 1000-1500 Tues & Thurs only"
+      },
+      {
+        "categoryId": "finance",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "legal",
+        "name": "Legal Office",
+        "phone": "011-81-42-552-2510",
+        "dsn": "315-225-8069",
+        "location": "Building 315, Room 125 First Floor Yokota AB (Fussa) Japan 197-0001",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/yokota-ab/legal/legal-assistance",
+        "notes": "Walk-in Hours for Notary & Power of Attorney: Mon 10:00 a.m. - 11:00 a.m. 1:00 p.m. - 3:00 p.m. Tue-Fri 9:00 a.m. - 11:00 1:00 p.m. - 3:00 p.m. All other services are by appointment only"
+      },
+      {
+        "categoryId": "housing",
+        "name": "Housing Management Office",
+        "phone": "011-81-42-552-2510",
+        "dsn": "315-225-9145",
+        "location": "Building 937 Yokota AB (Fussa) Japan 197-0001",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/yokota-ab/housing/housing",
+        "notes": "Mon-Fri 8:00 a.m. - 3:30 p.m. Closed weekends and Federal Holidays"
+      },
+      {
+        "categoryId": "mpf",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "family-advocacy",
+        "name": "Family Advocacy Program (FAP)",
+        "phone": "011-81-42-552-2510",
+        "dsn": "315-225-3649",
+        "location": "Building 1585 Yokota AB (Fussa) Japan 197-0001",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/yokota-ab/military-and-family-support-center/family-advocacy-program",
+        "notes": "Mon - Fri 7:30 a.m. - 4:30 p.m. Weekends, Training Days and Holidays - closed"
+      },
+      {
+        "categoryId": "efmp",
+        "name": "Military and Family Readiness Center – EFMP Family Support",
+        "phone": "+001-81-42-552-2510",
+        "dsn": "315-225-8725",
+        "location": "Building 535 Yokota AB (Fussa) Japan 197-0001",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/yokota-ab/exceptional-family-member-program/exceptional-family-member-program",
+        "notes": "Mon – Thu 8:00 a.m. – 4:00 p.m. Fri 9:00 a.m. - 4:00 p.m. Closed the last Friday of every month for training Closed weekends, U.S. Holidays"
+      },
+      {
+        "categoryId": "childcare",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "emergency-relief",
+        "name": "Military and Family Readiness Center - Personal Financial Readiness Program (PFRP)",
+        "phone": "011-81-42-552-2510",
+        "dsn": "315-225-8725",
+        "location": "Building 535 Yokota AB (Fussa) Japan 197-0001",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/yokota-ab/military-and-family-support-center/financial-assistance",
+        "notes": "Mon – Thu 8:00 a.m. – 4:00 p.m. Fri 9:00 a.m. - 4:00 p.m. Closed - Last Friday of every month for training Closed - All weekends and U.S. Federal Holidays"
+      },
+      {
+        "categoryId": "military-onesource",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "equal-opportunity",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      }
+    ]
+  }
+}

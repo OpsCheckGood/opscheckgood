@@ -6,12 +6,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ops-check-good/opscheckgood.git"
+    "url": "git+https://github.com/OpsCheckGood/opscheckgood.git"
   },
   "bugs": {
-    "url": "https://github.com/ops-check-good/opscheckgood/issues"
+    "url": "https://github.com/OpsCheckGood/opscheckgood/issues"
   },
-  "homepage": "https://github.com/ops-check-good/opscheckgood#readme",
+  "homepage": "https://github.com/OpsCheckGood/opscheckgood#readme",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",

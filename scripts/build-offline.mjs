@@ -26,10 +26,31 @@ import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-// Single source for the repository URL; see src/lib/site.ts.
-const ISSUES_URL = 'https://github.com/ops-check-good/opscheckgood/issues';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+
+/**
+ * The repository details, read out of src/lib/site.ts rather than copied here.
+ *
+ * This script cannot import TypeScript, and a hand-kept second copy of a URL is
+ * a copy that eventually disagrees with the first. Parsing the one source of
+ * truth is uglier than an import and correct for longer; if the shape of that
+ * file changes this throws immediately rather than shipping a stale link.
+ */
+function readSite() {
+  const src = readFileSync(join(root, 'src', 'lib', 'site.ts'), 'utf8');
+  const repo = /export const REPO = '([^']+)'/.exec(src);
+  const isPublic = /export const REPO_IS_PUBLIC = (true|false)/.exec(src);
+  if (!repo || !isPublic) {
+    console.error('Could not read REPO / REPO_IS_PUBLIC from src/lib/site.ts.');
+    process.exit(1);
+  }
+  return {
+    issuesUrl: `https://github.com/${repo[1]}/issues`,
+    isPublic: isPublic[1] === 'true',
+  };
+}
+const site = readSite();
 const dist = join(root, 'dist');
 
 /**
@@ -157,9 +178,15 @@ United States Air Force or the Department of Defense. Official guidance governs;
 instructions and your chain of command before relying on anything here.</p>
 <p class="m-0 mt-1">This file is completely self-contained. It makes no network requests and
 nothing you type leaves this device.</p>
-<p class="m-0 mt-1">Something wrong? Report it at ${ISSUES_URL.replace('https://', '')} &mdash;
-written out rather than linked, because this file has no links at all and the machine you
-open it on may have no network either.</p>
+<p class="m-0 mt-1">${
+  site.isPublic
+    ? `Something wrong? Report it at ${site.issuesUrl.replace('https://', '')} &mdash; written
+out rather than linked, because this file has no links at all and the machine you open it
+on may have no network either.`
+    : `Something wrong? Report it through the Ops Check Good site, which has a bug report
+page that assembles the details for you. The source repository is private for now, so
+there is no public tracker to point at.`
+}</p>
 </footer>
 <script>
 (function(){
