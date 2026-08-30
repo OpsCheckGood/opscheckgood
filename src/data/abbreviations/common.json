@@ -1,0 +1,11 @@
+{
+  "meta": {
+    "source": "Commonly used abbreviations",
+    "version": "TBD",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "",
+    "status": "stub",
+    "notes": "NOT YET POPULATED. These are widely used but locally variable, so the UI always pairs them with the note that Common terms are subject to local guidance and leadership preference. Same schema as hq-approved.json."
+  },
+  "data": []
+}

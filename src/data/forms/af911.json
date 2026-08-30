@@ -1,0 +1,25 @@
+{
+  "meta": {
+    "source": "AF Form 911, Enlisted Performance Report (MSgt thru CMSgt)",
+    "version": "TBD",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "https://www.e-publishing.af.mil/",
+    "status": "stub",
+    "notes": "NOT YET POPULATED. Extract block widths, font, and point size from the form's XFA stream."
+  },
+  "data": {
+    "id": "af911",
+    "label": "AF Form 911 - Enlisted Performance Report",
+    "font": { "family": "TBD", "sizePt": 0, "file": "" },
+    "fields": [
+      {
+        "id": "performance",
+        "label": "Performance Assessment",
+        "constraint": "width",
+        "widthMm": null,
+        "maxChars": null,
+        "lines": null
+      }
+    ]
+  }
+}

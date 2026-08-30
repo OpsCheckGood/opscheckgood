@@ -1,0 +1,12 @@
+{
+  "meta": {
+    "source": "WordNet 3.1, Princeton University",
+    "version": "TBD",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "https://wordnet.princeton.edu/",
+    "status": "stub",
+    "license": "WordNet 3.0 License (BSD-style). Attribution required; see README.",
+    "notes": "NOT YET POPULATED. Feature 5 (click-a-word synonyms) is out of first-session scope. Derive from WordNet filtered to roughly the top 20-30k lemmas across verbs, adjectives and common nouns. Format is {\"led\": [\"directed\", \"guided\"]}. Ship as a lazily loaded chunk so it does not bloat first paint, and never call a thesaurus API -- that would break the no-network constraint."
+  },
+  "data": {}
+}

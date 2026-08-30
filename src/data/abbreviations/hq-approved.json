@@ -1,0 +1,11 @@
+{
+  "meta": {
+    "source": "HQ-approved abbreviation list",
+    "version": "TBD",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "",
+    "status": "stub",
+    "notes": "NOT YET POPULATED. Transcribe from the official HQ list; do not generate entries from memory, they will be plausible and wrong. Format is [{\"phrase\": \"United States Air Force Academy\", \"abbr\": \"USAFA\"}]. The loader sorts descending by phrase length, so file order does not matter. Import from .xlsx in the UI writes to localStorage and does not modify this file."
+  },
+  "data": []
+}

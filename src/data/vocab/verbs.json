@@ -1,0 +1,11 @@
+{
+  "meta": {
+    "source": "Curated action verb list",
+    "version": "TBD",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "",
+    "status": "stub",
+    "notes": "NOT YET POPULATED. Feature 4 (verb bank) is out of first-session scope. Format is [{\"verb\": \"Spearheaded\", \"category\": \"leadership\"}]; category is optional and display-only. The panel shows each verb's rendered width in mm, so no width data belongs in this file."
+  },
+  "data": []
+}

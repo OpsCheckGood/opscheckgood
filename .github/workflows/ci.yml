@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+      # Build before testing: the offline tests assert against real build output, and
+      # they fail rather than skip when CI is set.
+      - name: Build
+        run: npm run build
+
+      - name: Build single-file offline copy
+        run: npm run build:offline
+
+      - name: Unit tests
+        run: npm run test
+        env:
+          CI: true
+
+      # Hard constraint 1. A CDN reference must never reach a .mil network.
+      - name: Offline check
+        run: npm run verify:offline
+
+      # The embedded fonts are what measurement actually reads, so they must not
+      # drift from the .ttf files in public/fonts.
+      - name: Fonts are in sync
+        run: |
+          npm run embed:fonts
+          git diff --exit-code -- src/lib/metrics/embedded \
+            || (echo "Embedded fonts are stale. Run: npm run embed:fonts" && exit 1)

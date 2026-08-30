@@ -1,0 +1,16 @@
+{
+  "meta": {
+    "source": "General English function words",
+    "version": "1",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "",
+    "status": "stub",
+    "notes": "Not Air Force reference data and not transcribed from an official source, so it stays marked stub. These are ordinary English function words excluded from duplicate detection because repeating them carries no signal. Safe to edit to taste; nothing depends on the exact membership."
+  },
+  "data": [
+    "a", "an", "and", "as", "at", "be", "been", "but", "by", "for", "from",
+    "had", "has", "have", "he", "her", "his", "in", "into", "is", "it", "its",
+    "of", "on", "or", "our", "she", "that", "the", "their", "them", "they",
+    "this", "to", "was", "were", "with", "which", "who", "will", "would"
+  ]
+}

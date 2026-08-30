@@ -1,0 +1,59 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Free, offline Air Force administrative tools.' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <!-- No favicon link, no web fonts, no analytics: hard constraint 1. -->
+  </head>
+  <body>
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only absolute left-2 top-2 z-10 px-3 py-2"
+      style="background: var(--panel); border: 1px solid var(--rule-strong);"
+    >
+      Skip to content
+    </a>
+
+    <header
+      class="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b px-3 py-2"
+      style="border-color: var(--rule); background: var(--panel);"
+    >
+      <a href="/" class="label no-underline" style="color: var(--ink-faint);">Ops Check Good</a>
+      <slot name="tool-name" />
+      <nav class="ml-auto text-[12px]">
+        <a href="/" style="color: var(--accent);">Tools</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer
+      class="mx-auto max-w-[1400px] px-3 py-6 text-[11px] leading-relaxed"
+      style="color: var(--ink-faint);"
+    >
+      <p class="m-0">
+        Unofficial personal project. Not affiliated with, endorsed by, or produced by the
+        United States Air Force or the Department of Defense. Official guidance governs;
+        check current instructions and your chain of command before relying on anything here.
+      </p>
+      <p class="m-0 mt-1">
+        Runs entirely in your browser. Nothing you type is uploaded, logged, or tracked.
+      </p>
+    </footer>
+  </body>
+</html>

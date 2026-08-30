@@ -1,0 +1,37 @@
+{
+  "meta": {
+    "source": "Synthetic. Not an Air Force form.",
+    "version": "1",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "",
+    "status": "stub",
+    "notes": "Deliberately fabricated round numbers whose only job is to exercise the measurement and shaping pipeline end to end while the real form definitions are unpopulated. 180mm at 12pt is a plausible line but corresponds to no actual form. Never cite these values, and never flip this file to verified."
+  },
+  "data": {
+    "id": "sandbox",
+    "label": "Sandbox - synthetic, not a real form",
+    "font": {
+      "family": "Liberation Serif",
+      "sizePt": 12,
+      "file": "/fonts/LiberationSerif-Regular.ttf"
+    },
+    "fields": [
+      {
+        "id": "width-demo",
+        "label": "Width-constrained block",
+        "constraint": "width",
+        "widthMm": 180,
+        "maxChars": null,
+        "lines": 10
+      },
+      {
+        "id": "chars-demo",
+        "label": "Character-limited block",
+        "constraint": "chars",
+        "widthMm": 180,
+        "maxChars": 120,
+        "lines": 10
+      }
+    ]
+  }
+}

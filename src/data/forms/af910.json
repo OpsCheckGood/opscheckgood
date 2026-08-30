@@ -1,0 +1,25 @@
+{
+  "meta": {
+    "source": "AF Form 910, Enlisted Performance Report (AB thru TSgt)",
+    "version": "TBD",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "https://www.e-publishing.af.mil/",
+    "status": "stub",
+    "notes": "NOT YET POPULATED. Extract block widths, font, and point size from the form's XFA stream. Performance blocks on this form are width-driven; if any block turns out to be character-limited instead, set that field's constraint to \"chars\" and populate maxChars."
+  },
+  "data": {
+    "id": "af910",
+    "label": "AF Form 910 - Enlisted Performance Report",
+    "font": { "family": "TBD", "sizePt": 0, "file": "" },
+    "fields": [
+      {
+        "id": "performance",
+        "label": "Performance Assessment",
+        "constraint": "width",
+        "widthMm": null,
+        "maxChars": null,
+        "lines": null
+      }
+    ]
+  }
+}

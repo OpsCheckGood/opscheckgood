@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+import { FORMS, isFormUsable } from '../lib/data/forms';
+
+const populated = FORMS.filter((f) => isFormUsable(f.data)).length;
+---
+
+<Base title="Ops Check Good">
+  <div class="mx-auto max-w-[720px] px-3 py-10">
+    <h1 class="m-0 text-[26px] font-semibold tracking-tight">Ops Check Good</h1>
+    <p class="mt-2 mb-8 text-[14px] leading-relaxed" style="color: var(--ink-muted);">
+      Free, open-source Air Force administrative tools. No accounts, no tracking, no ads.
+      Everything runs in your browser and works with no network connection.
+    </p>
+
+    <ul class="m-0 list-none p-0">
+      <li class="panel px-4 py-3">
+        <a href="/tools/bullet-bench/" class="text-[15px] font-medium no-underline" style="color: var(--ink);">
+          Bullet Bench
+        </a>
+        <p class="m-0 mt-1 text-[13px]" style="color: var(--ink-muted);">
+          Write, measure, and fit your bullets. Shapes each line to the exact width a form
+          allows, and tells you what to cut when it will not fit.
+        </p>
+        <p class="tabular m-0 mt-2 text-[11px]" style="color: var(--ink-faint);">
+          {populated} of {FORMS.length} form definitions populated
+        </p>
+      </li>
+    </ul>
+
+    <h2 class="mt-8 mb-2 text-[13px] font-semibold">Coming next</h2>
+    <p class="m-0 text-[13px]" style="color: var(--ink-muted);">
+      Duplicate highlighting, acronym checking, a verb bank, and click-a-word synonyms,
+      all inside the same editor. Then a PT calculator.
+    </p>
+  </div>
+</Base>

@@ -1,0 +1,12 @@
+---
+import Base from '../../layouts/Base.astro';
+import BulletBench from '../../components/BulletBench.tsx';
+---
+
+<Base
+  title="Bullet Bench — Ops Check Good"
+  description="Shape Air Force bullets to exact line width. Runs entirely in your browser."
+>
+  <span slot="tool-name" class="text-[13px] font-semibold">Bullet Bench</span>
+  <BulletBench client:load />
+</Base>
