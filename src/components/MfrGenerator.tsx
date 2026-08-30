@@ -1133,7 +1133,7 @@ export default function MfrGenerator() {
   };
 
   return (
-    <div className="mx-auto max-w-[1560px] px-6 py-8">
+    <div className="mx-auto max-w-[1560px] px-3 sm:px-6 py-8">
       <div className="flex flex-col gap-4">
         <section className="panel p-4">
           <div className="flex flex-wrap gap-3">

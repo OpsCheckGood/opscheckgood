@@ -800,3 +800,56 @@ describeBuilt('field boxes scale to fit rather than clip', () => {
     dom.window.close();
   }, 90000);
 });
+
+/**
+ * On a phone the form's true width (765px for a 202.321mm line) scales to about
+ * half, which is six-point type: accurate and unreadable. Below the narrow
+ * breakpoint the panes reflow at a readable size instead, and say so. The fit
+ * verdict is unaffected -- it comes from font metrics, never from the drawing.
+ */
+describeBuilt('narrow screens reflow rather than shrink to nothing', () => {
+  it('drops the true-width drawing and wraps instead', async () => {
+    const { JSDOM } = await import('jsdom');
+    const dom = new JSDOM(readFileSync(offlineFile, 'utf8'), {
+      runScripts: 'dangerously',
+      pretendToBeVisual: true,
+      url: 'file:///bullet-bench-offline.html',
+    });
+    const w = dom.window as unknown as Window & typeof globalThis;
+
+    // Report the narrow media query as matching, the way a phone would.
+    (w as unknown as { matchMedia: unknown }).matchMedia = (query: string) => ({
+      matches: /max-width:\s*760px/.test(query),
+      media: query,
+      addEventListener() {},
+      removeEventListener() {},
+      addListener() {},
+      removeListener() {},
+      onchange: null,
+      dispatchEvent: () => false,
+    });
+
+    const root = w.document.getElementById('bullet-bench-root')!;
+    await vi.waitFor(
+      () => {
+        expect(root.textContent).toMatch(/[  ]/);
+      },
+      { timeout: 45000, interval: 100 },
+    );
+    await new Promise((resolve) => setTimeout(resolve, 250));
+
+    const divs = [...root.querySelectorAll('div')] as HTMLElement[];
+    const scaled = divs.filter((el) => el.style.transform?.includes('scale'));
+    const fullWidth = divs.filter((el) => el.style.width === '100%');
+    const rows = divs.filter((el) => /pre/.test(el.style.whiteSpace));
+
+    expect(scaled, 'nothing should be scaled down on a phone').toHaveLength(0);
+    expect(fullWidth.length).toBeGreaterThanOrEqual(2);
+    // Pre-wrapped rows must be allowed to wrap, or they run off the screen.
+    expect([...new Set(rows.map((el) => el.style.whiteSpace))]).toEqual(['pre-wrap']);
+    // And the loss of fidelity is stated rather than left to be discovered.
+    expect(root.textContent).toContain('not to scale');
+
+    dom.window.close();
+  }, 90000);
+});

@@ -178,7 +178,7 @@ export default function BtzCalculator() {
   }
 
   return (
-    <div className="mx-auto flex max-w-[1100px] flex-col gap-4 px-6 py-6">
+    <div className="mx-auto flex max-w-[1100px] flex-col gap-4 px-3 sm:px-6 py-6">
       {/* ---- Member ------------------------------------------------------- */}
       <section className="panel p-5">
         <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-3">

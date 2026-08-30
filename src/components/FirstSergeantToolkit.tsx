@@ -82,8 +82,9 @@ export default function FirstSergeantToolkit() {
   }, [state, loaded]);
 
   const usable = useMemo(() => realInstallations(), []);
-  const installation =
-    INSTALLATIONS.find((i) => i.data.id === state.installationId)?.data ?? null;
+  const selected = INSTALLATIONS.find((i) => i.data.id === state.installationId);
+  const installation = selected?.data ?? null;
+  const installationMeta = selected?.meta ?? null;
 
   const categoryLabel = (id: string) => getCategory(id)?.label ?? id;
 
@@ -95,7 +96,7 @@ export default function FirstSergeantToolkit() {
   const situation = openSituation ? (getSituation(openSituation) ?? null) : null;
 
   return (
-    <div className="mx-auto flex max-w-[1400px] flex-col gap-4 px-6 py-6">
+    <div className="mx-auto flex max-w-[1400px] flex-col gap-4 px-3 sm:px-6 py-6">
       <IntroPanel installationCount={usable.length} />
 
       <InstallationBar
@@ -149,17 +150,34 @@ export default function FirstSergeantToolkit() {
 
       {tab === 'references' && <ReferenceList />}
 
-      <section className="panel p-4">
-        <SourceStamp
-          sources={[
-            NATIONAL.meta,
-            CATEGORIES.meta,
-            SITUATIONS.meta,
-            REFERENCES.meta,
-            ...INSTALLATIONS.map((i) => i.meta),
-          ]}
-        />
-      </section>
+      {/*
+        Provenance, out of the way.
+        
+        The stamp is collapsed rather than deleted: what actually matters is
+        attached to each number -- every contact card carries an "Official
+        source" link straight to the MilitaryINSTALLATIONS page it was read
+        from, which is better provenance than a page-level list ever was. This
+        is the file-level view for anyone who wants it.
+        
+        Only the sources behind what is on screen. Listing all seventy-odd
+        installation files would bury the four that matter.
+      */}
+      <details className="panel p-4">
+        <summary className="util cursor-pointer" style={{ color: 'var(--ink-muted)' }}>
+          Sources
+        </summary>
+        <div className="mt-3">
+          <SourceStamp
+            sources={[
+              NATIONAL.meta,
+              ...(installationMeta ? [installationMeta] : []),
+              CATEGORIES.meta,
+              SITUATIONS.meta,
+              REFERENCES.meta,
+            ]}
+          />
+        </div>
+      </details>
     </div>
   );
 }

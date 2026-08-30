@@ -91,7 +91,7 @@ export default function BugReport({ tools, sources }: Props) {
     setDraft((d) => ({ ...d, [key]: value }));
 
   return (
-    <div className="mx-auto flex max-w-[900px] flex-col gap-4 px-6 py-6">
+    <div className="mx-auto flex max-w-[900px] flex-col gap-4 px-3 sm:px-6 py-6">
       {/* ---- What happened ------------------------------------------------ */}
       <section className="panel p-5">
         <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2">

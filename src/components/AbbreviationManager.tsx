@@ -198,7 +198,7 @@ export default function AbbreviationManager() {
   };
 
   return (
-    <div className="mx-auto flex max-w-[1100px] flex-col gap-4 px-6 py-5">
+    <div className="mx-auto flex max-w-[1100px] flex-col gap-4 px-3 py-4 sm:px-6 sm:py-5">
       {/* ---- List selector ------------------------------------------------ */}
       <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
         {LISTS.map((id) => {
@@ -250,7 +250,7 @@ export default function AbbreviationManager() {
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search phrase or abbreviation"
           aria-label="Search"
-          className="w-[260px] max-w-full border px-2.5 py-1.5 text-[12px]"
+          className="w-full border px-2.5 py-1.5 text-[12px] sm:w-[260px]"
           style={control}
         />
 
@@ -336,7 +336,7 @@ export default function AbbreviationManager() {
             value={draft.phrase}
             onChange={(e) => setDraft((d) => ({ ...d, phrase: e.target.value }))}
             placeholder="Operations Support Squadron"
-            className="w-[300px] max-w-full border px-2.5 py-1.5 text-[12px]"
+            className="w-full border px-2.5 py-1.5 text-[12px] sm:w-[300px]"
             style={control}
           />
         </label>
@@ -347,7 +347,7 @@ export default function AbbreviationManager() {
             value={draft.abbr}
             onChange={(e) => setDraft((d) => ({ ...d, abbr: e.target.value }))}
             placeholder="OSS"
-            className="w-[160px] max-w-full border px-2.5 py-1.5 text-[12px]"
+            className="w-full border px-2.5 py-1.5 text-[12px] sm:w-[160px]"
             style={control}
           />
         </label>

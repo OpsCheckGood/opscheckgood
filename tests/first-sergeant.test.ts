@@ -177,37 +177,59 @@ describe('installations', () => {
   /**
    * The invariant that matters most, scoped to what is actually knowable.
    *
-   * Military OneSource does not publish a command post, chaplain, mental
-   * health, SARC or security forces number per installation -- those pages do
-   * not exist -- so a verified directory cannot be required to carry them. What
-   * it CAN be held to: every crisis agency the source does publish must be
-   * filled in, and at least one crisis agency must be reachable, so a Shirt
-   * opening this at 0200 always has somebody to call.
+   * Military OneSource publishes a page type, not a guaranteed contact: it has
+   * no command post, chaplain, mental health, SARC or security forces page at
+   * all, and even a page it does have can carry no card (Barksdale has no
+   * medical contact). So a verified directory cannot be held to a fixed list of
+   * agencies. What it CAN be held to: it says something, and a Shirt opening it
+   * at 0200 always has somebody to call.
    */
-  it('requires every crisis agency the source publishes before claiming verified', () => {
-    const crisis = CATEGORIES.data.filter((c) => c.urgency === 'crisis');
+  it('requires a verified installation to be worth having', () => {
     for (const installation of INSTALLATIONS) {
       if (installation.meta.status !== 'verified') continue;
-      expect(installation.data.example, `${installation.data.id} is verified AND an example`).toBe(false);
-      expect(installation.meta.sourceUrl).not.toBe('');
+      const id = installation.data.id;
 
-      for (const category of crisis.filter((c) => c.mosPages.length > 0)) {
-        const contact = installation.data.contacts.find((c) => c.categoryId === category.id);
-        expect(
-          contact !== undefined && isContactPopulated(contact),
-          `${installation.data.id} has no ${category.id}, which Military OneSource publishes`,
-        ).toBe(true);
+      expect(installation.data.example, `${id} is verified AND an example`).toBe(false);
+      expect(installation.meta.sourceUrl, `${id} has no source`).not.toBe('');
+
+      const populated = installation.data.contacts.filter(isContactPopulated);
+      expect(populated.length, `${id} is verified with nothing in it`).toBeGreaterThan(0);
+
+      // Every contact has to say where it came from, or it is untraceable.
+      for (const contact of populated) {
+        expect(contact.url, `${id}/${contact.categoryId} has no source URL`).toContain(
+          'militaryonesource.mil',
+        );
       }
 
-      const reachable = crisis.some((category) => {
-        const contact = installation.data.contacts.find((c) => c.categoryId === category.id);
-        return (
-          (contact !== undefined && isContactPopulated(contact)) ||
-          nationalFallbacks().some((c) => c.categoryId === category.id)
-        );
-      });
-      expect(reachable, `${installation.data.id} has no reachable crisis contact`).toBe(true);
+      const crisis = CATEGORIES.data.filter((c) => c.urgency === 'crisis');
+      const reachable = crisis.some((category) => contactFor(installation.data, category.id) !== null);
+      expect(reachable, `${id} has no reachable crisis contact`).toBe(true);
     }
+  });
+
+  /**
+   * A coverage floor, so a broken parser fails loudly.
+   *
+   * The importer reads someone else's markup. If that markup changes shape the
+   * parse degrades quietly to zero contacts and every base falls back to the
+   * worldwide number -- which still "works", which is exactly why it would go
+   * unnoticed. The floors sit well under what the source currently yields.
+   */
+  it('keeps real coverage across the imported directories', () => {
+    const imported = INSTALLATIONS.filter((i) => !i.data.example);
+    if (imported.length === 0) return;
+
+    const total = imported.reduce(
+      (sum, i) => sum + i.data.contacts.filter(isContactPopulated).length,
+      0,
+    );
+    expect(total / imported.length, 'contacts per installation collapsed').toBeGreaterThan(4);
+
+    const withMedical = imported.filter((i) =>
+      i.data.contacts.some((c) => c.categoryId === 'medical' && isContactPopulated(c)),
+    ).length;
+    expect(withMedical / imported.length, 'medical coverage collapsed').toBeGreaterThan(0.8);
   });
 
   // The agencies the source cannot give us are named here rather than left as

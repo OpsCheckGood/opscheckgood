@@ -4,6 +4,7 @@ import { HQ_APPROVED, COMMON } from '@/lib/data/abbreviationSets';
 import { mergeAbbreviations, applyAbbreviations } from '@/lib/data/abbreviations';
 import { effectiveTable, loadOverrides, type Overrides } from '@/lib/data/abbreviationStore';
 import { loadBenchPrefs, saveBenchPrefs, DEFAULT_BENCH_PREFS } from '@/lib/settings';
+import { useMediaQuery, NARROW } from '@/lib/useMediaQuery';
 import { STOPWORDS } from '@/lib/data/vocab';
 import { loadFontMetrics } from '@/lib/metrics/registry';
 import { ensureFontFace } from '@/lib/metrics/fontface';
@@ -101,6 +102,7 @@ export default function BulletBench() {
   /** Whatever the Abbreviations page has been edited to say. */
   const [overrides, setOverrides] = useState<Overrides | null>(null);
 
+  const narrow = useMediaQuery(NARROW);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const mirrorRef = useRef<HTMLTextAreaElement>(null);
@@ -450,7 +452,7 @@ export default function BulletBench() {
         : 'FITS';
 
   return (
-    <div className="mx-auto flex max-w-[1560px] flex-col gap-4 px-6 py-5">
+    <div className="mx-auto flex max-w-[1560px] flex-col gap-4 px-3 py-4 sm:px-6 sm:py-5">
       {/* ---- Configuration bar ------------------------------------------ */}
       <div className="flex flex-wrap items-end gap-x-8 gap-y-3">
         <Field label="Form / Document">
@@ -458,7 +460,7 @@ export default function BulletBench() {
             aria-label="Form or document"
             value={formId}
             onChange={(e) => setFormId(e.target.value)}
-            className="w-[330px] max-w-full border px-3 py-2 text-[12.5px]"
+            className="w-full border px-3 py-2 text-[12.5px] sm:w-[330px]"
             style={{
               background: 'var(--panel)',
               borderColor: 'var(--rule-strong)',
@@ -478,7 +480,7 @@ export default function BulletBench() {
             aria-label="Section"
             value={field.id}
             onChange={(e) => setFieldId(e.target.value)}
-            className="w-[270px] max-w-full border px-3 py-2 text-[12.5px]"
+            className="w-full border px-3 py-2 text-[12.5px] sm:w-[270px]"
             style={{
               background: 'var(--panel)',
               borderColor: 'var(--rule-strong)',
@@ -600,7 +602,14 @@ export default function BulletBench() {
             be read across: the draft wraps where the form wraps, the output
             does not, and the difference is the point.
           */}
-          <FieldBox widthMm={targetMm} type={previewType} over={false} minHeight={230} neutral>
+          <FieldBox
+            widthMm={targetMm}
+            type={previewType}
+            over={false}
+            minHeight={230}
+            neutral
+            reflow={narrow}
+          >
             <div className="relative">
               {/* Duplicate highlighting sits behind a transparent textarea;
                   identical type and padding keep the marks on the glyphs. */}
@@ -694,6 +703,7 @@ export default function BulletBench() {
             type={previewType}
             over={statusState === 'bad'}
             minHeight={230}
+            reflow={narrow}
           >
             {!measurable ? (
               <p className="util m-0">{font ? 'No target width' : 'Loading'}</p>
@@ -715,7 +725,13 @@ export default function BulletBench() {
                     style={{ color: bad ? 'var(--bad)' : 'var(--ink)' }}
                   >
                     {rows.map((row, r) => (
-                      <div key={r} style={{ whiteSpace: 'pre' }}>
+                      <div
+                        key={r}
+                        // At true width the row is already broken by our own
+                        // metrics and must not be re-wrapped. Reflowed, it has
+                        // to wrap or it runs off the phone.
+                        style={{ whiteSpace: narrow ? 'pre-wrap' : 'pre' }}
+                      >
                         {row}
                       </div>
                     ))}
@@ -729,6 +745,11 @@ export default function BulletBench() {
             className="mt-3 border-t pt-3 text-[11.5px]"
             style={{ borderColor: 'var(--rule)' }}
           >
+            {narrow && (
+              <span className="util mr-3" title="The form field is wider than this screen">
+                not to scale
+              </span>
+            )}
             <span
               style={{
                 color: halfSpaces > 0 || wideSpaces > 0 ? 'var(--ok)' : 'var(--ink-muted)',
@@ -871,6 +892,15 @@ function FieldBox({
   over,
   minHeight,
   neutral = false,
+  /**
+   * Reflow instead of drawing at the field's true width.
+   *
+   * On a phone the true width scales to roughly half, which is six-point type.
+   * Reflowing gives up the "wraps here means wraps on the form" property in
+   * exchange for text you can read; the status readout still carries the
+   * verdict, and it never depended on the drawing.
+   */
+  reflow = false,
   children,
 }: {
   widthMm: number;
@@ -879,6 +909,7 @@ function FieldBox({
   minHeight: number;
   /** Draft box: no pass/fail colour, since it is not a verdict. */
   neutral?: boolean;
+  reflow?: boolean;
   children: React.ReactNode;
 }) {
   const outer = useRef<HTMLDivElement>(null);
@@ -890,7 +921,11 @@ function FieldBox({
   useEffect(() => {
     const outerEl = outer.current;
     const innerEl = inner.current;
-    if (!outerEl || !innerEl || widthPx <= 0) return;
+    if (!outerEl || !innerEl || widthPx <= 0 || reflow) {
+      setScale(1);
+      setHeight(undefined);
+      return;
+    }
     const update = () => {
       // clientWidth includes padding, but the scaled box sits inside it. Using
       // it raw computed the scale against ~24px more room than exists, and the
@@ -919,7 +954,7 @@ function FieldBox({
     observer.observe(outerEl);
     observer.observe(innerEl);
     return () => observer.disconnect();
-  }, [widthPx]);
+  }, [widthPx, reflow]);
 
   return (
     <div
@@ -936,9 +971,13 @@ function FieldBox({
         ref={inner}
         style={{
           ...type,
-          width: widthPx > 0 ? widthPx : '100%',
-          transform: `scale(${scale})`,
+          width: reflow ? '100%' : widthPx > 0 ? widthPx : '100%',
+          transform: reflow ? undefined : `scale(${scale})`,
           transformOrigin: 'top left',
+          // Reflowed rows must be allowed to wrap; at true width they are
+          // pre-wrapped by our own metrics and must not be re-wrapped.
+          whiteSpace: reflow ? 'pre-wrap' : undefined,
+          overflowWrap: reflow ? 'break-word' : undefined,
         }}
       >
         {children}

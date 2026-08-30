@@ -173,3 +173,51 @@ input[type='text'] {
     scroll-behavior: auto !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+ * Small screens
+ *
+ * This gets used on a phone, so the rules below are about the two things that
+ * actually break there rather than a general shrink.
+ * ------------------------------------------------------------------------ */
+
+@media (max-width: 640px) {
+  /*
+   * iOS Safari zooms the whole page when a focused field's text is under 16px,
+   * and does not zoom back out. Every control here is 11-13px for density, so
+   * without this, tapping any input throws the layout sideways.
+   *
+   * !important is deliberate: these are element selectors competing with
+   * utility classes on the elements themselves, which would otherwise win.
+   */
+  input:not([type='checkbox']):not([type='radio']),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  /*
+   * Touch targets. The dense readouts stay as they are -- they are labels, not
+   * controls -- but anything tappable gets to a usable size.
+   */
+  button,
+  select,
+  a.util,
+  label:has(input[type='checkbox']) {
+    min-height: 36px;
+  }
+
+  input[type='checkbox'] {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/*
+ * Nothing should push the page sideways. Panels that legitimately exceed the
+ * viewport -- the field-width boxes, wide tables -- scroll or scale inside
+ * their own container, never by moving the document.
+ */
+body {
+  overflow-x: clip;
+}

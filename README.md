@@ -424,7 +424,18 @@ npm run test
 ## Reporting a bug
 
 Wrong number, broken layout, something that will not work offline — all worth reporting.
-Open an issue: <https://github.com/ops-check-good/opscheckgood/issues>
+
+**The repository is private for now, so there is no public issue tracker.** While that is
+true the site shows no GitHub links at all — a link to a private repo is a 404 for
+everyone who is not a collaborator, and spending a reporter's effort on a 404 is worse
+than offering them nothing. Collaborators file issues at
+<https://github.com/OpsCheckGood/opscheckgood/issues> as usual.
+
+To publish the links, set `REPO_IS_PUBLIC = true` in `src/lib/site.ts`. That one constant
+governs the footer, the bug report page, and the offline copies' footer; the tests read it
+too, so they stay correct either way. If you would rather offer a contact address while
+the repo stays private, set `CONTACT_EMAIL` in the same file and the report page grows a
+mail link. It is empty by default and deliberately not guessed.
 
 The site has a **Report a bug** page at `/report/`, linked from the footer, which
 assembles a report for you: what you write, plus
@@ -441,9 +452,10 @@ be convenient once and would leak somebody's record into a public tracker the ot
 times. If a bug depends on the input, reproduce it with invented values and describe
 those — and never paste a real record into an issue.
 
-The offline copies name the issue tracker in their own footer, written out rather than
-linked, because those files contain no links at all and the machine they are opened on
-may have no network either.
+The offline copies carry the same pointer in their own footer, written out rather than
+linked — those files contain no links at all, and the machine they are opened on may have
+no network either. While the repository is private they name no URL, for the same reason
+the site does not.
 
 ---
 

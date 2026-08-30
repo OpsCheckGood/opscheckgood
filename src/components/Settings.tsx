@@ -95,7 +95,7 @@ export default function Settings() {
   };
 
   return (
-    <div className="mx-auto flex max-w-[900px] flex-col gap-4 px-6 py-5">
+    <div className="mx-auto flex max-w-[900px] flex-col gap-4 px-3 py-4 sm:px-6 sm:py-5">
       {note && (
         <p role="status" className="m-0 text-[11.5px]" style={{ color: 'var(--ok)' }}>
           {note}

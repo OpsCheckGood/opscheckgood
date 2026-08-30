@@ -241,7 +241,7 @@ async function importInstallation(slug) {
   return {
     meta: {
       source: `MilitaryINSTALLATIONS — ${label}`,
-      version: `retrieved ${new Date().toISOString().slice(0, 10)}`,
+      version: `1 (retrieved ${new Date().toISOString().slice(0, 10)})`,
       verifiedDate: new Date().toISOString().slice(0, 10),
       sourceUrl: `${ORIGIN}/military-installation/${slug}`,
       status: 'verified',
