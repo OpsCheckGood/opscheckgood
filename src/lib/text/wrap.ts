@@ -5,11 +5,10 @@ import { effectiveTargetMm, SHAPING_KERNING } from '../shape/optimizer';
  * Greedy word wrap using our own font metrics.
  *
  * The output pane wraps with these measurements rather than leaving it to the
- * browser, for the same reason the reference inserts its own newlines: the pane
- * has to break where the optimizer says it breaks. If the browser disagreed by
- * a fraction of a millimetre, a line the optimizer just declared flush would
- * visibly fall onto a second line, and the tool would be telling the user two
- * different things at once.
+ * browser: the pane has to break where the optimizer says it breaks. If the
+ * browser disagreed by a fraction of a millimetre, a line the optimizer just
+ * declared flush would visibly fall onto a second line, and the tool would be
+ * telling the user two different things at once.
  *
  * Both the kerning setting and the target come from the optimizer rather than
  * being repeated here, because that divergence is not hypothetical -- wrapping

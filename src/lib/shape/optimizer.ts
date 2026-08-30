@@ -3,43 +3,52 @@ import { SPACE_CHARS, SPACE_LEVELS, unshape } from './spaces';
 import { splitLines } from '../text/tokenize';
 
 /**
- * Width shaping, ported to match AF-VCD/pdf-bullets exactly.
+ * Width shaping.
  *
- * This is a behavioural port, written fresh from a reading of their
- * `optimize()` and `renderBulletText()`. Matching them precisely matters more
- * than any improvement, because a bullet shaped here has to be
- * indistinguishable from one shaped there when it lands in the same form.
+ * Each inter-word gap can hold one of three space characters, so a bullet with
+ * N gaps has 3^N renderings. The job is to choose the one that makes the line
+ * fit its field, and to choose it identically every time.
  *
- * Three things about their implementation are load-bearing and easy to get
- * wrong -- I got all three wrong before reading the source:
+ * Four decisions here look arbitrary and are not:
  *
- * 1. **The gap is chosen by a hash, not at random.** `getRandomInt` looks
- *    random but seeds off `optWords.join("")`, so it is a pure function of the
- *    text. Their output is deterministic, and the choice of gap moves as words
- *    merge, which is why the substituted spaces cluster rather than spread.
+ * 1. **The gap is chosen by hashing the remaining words**, not by a counter and
+ *    not at random. Random would shape the same bullet two ways on two visits.
+ *    A counter would always chew the same end of the line. Hashing spreads the
+ *    choice while staying a pure function of the text.
  *
- * 2. **Merging consumes two words into one.** `splice(i, 2, a + space + b)`
- *    replaces a pair with a single element, so the next pass can merge that
- *    element with its neighbour and produce a run of three words joined by
- *    narrow spaces. Every gap not merged stays an ordinary space.
+ * 2. **A substitution consumes the pair it joins.** Once two words are joined
+ *    by a narrow space they behave as a single word, so a later pass can attach
+ *    a third. Narrowed gaps therefore run together rather than spreading, which
+ *    reads as one deliberately tightened phrase instead of a whole line of
+ *    subtly wrong spacing.
  *
- * 3. **It stops the moment the line fits.** There is no attempt to reach the
- *    right margin when shrinking; `overflow <= 0` ends the loop.
+ * 3. **Shrinking stops the moment the line fits.** Every further substitution
+ *    would buy another visibly narrow gap for nothing.
+ *
+ * 4. **The first gap after a leading dash is never touched.** It sits beside a
+ *    fixed mark, which is the one place a narrowed space is obvious.
  *
  * ## Measurement
  *
- * Widths here are taken WITHOUT kerning. The reference measures with canvas
- * `measureText`, and more importantly a PDF form field lays plain text out
- * from glyph advances alone. Kerning this sample line makes it 0.51mm narrower
- * -- about one and a half substitutions -- which is enough to flip a borderline
- * bullet. Measuring kerned would mean declaring lines to fit that do not fit in
- * the form, which is the one failure this tool must not have.
+ * Widths are taken WITHOUT kerning. A PDF form field lays plain text out from
+ * glyph advances alone; there is no shaping engine applying GPOS pairs inside a
+ * text field. Measuring kerned reports a line around half a millimetre narrower
+ * than it actually renders, which is enough to call a bullet flush that then
+ * overflows on the form. So the measurement matches the destination rather than
+ * matching good typography.
  *
- * We still parse the real bundled font rather than using canvas, so the numbers
- * cannot change because of a missing local font.
+ * The font is parsed from the bundled file rather than measured through a
+ * canvas, so a font missing from the user's machine cannot silently change the
+ * numbers.
  */
 
-/** Their target is `widthPx + 0.55`, at 96dpi. In millimetres that is: */
+/**
+ * Sub-pixel allowance on the target: 0.55px at 96dpi.
+ *
+ * A line computed to sit exactly on the field boundary should count as fitting.
+ * Without a small allowance, floating-point comparison rejects it and the
+ * optimizer spends a substitution buying width it already had.
+ */
 const TARGET_SLACK_MM = 0.55 / (96 / 25.4);
 
 /**
@@ -48,8 +57,7 @@ const TARGET_SLACK_MM = 0.55 / (96 / 25.4);
  * Anything that draws or wraps shaped text must use this, not the nominal
  * field width, or the display contradicts the verdict: a line the optimizer
  * just accepted would visibly fall onto a second row because it sits inside
- * the slack. The reference feeds the same adjusted width to its renderer for
- * exactly this reason.
+ * the slack.
  */
 export function effectiveTargetMm(targetMm: number): number {
   return targetMm + TARGET_SLACK_MM;
@@ -58,7 +66,11 @@ export function effectiveTargetMm(targetMm: number): number {
 /** Shaping measures without kerning; see the note above. */
 export const SHAPING_KERNING = false;
 
-/** Their `STATUS.MAX_UNDERFLOW`, -4 pixels, expressed in millimetres. */
+/**
+ * How far short of the field a line may sit before widening is worth doing.
+ * Four pixels at 96dpi: below that the gain is invisible and the wide spaces
+ * are not.
+ */
 const MAX_UNDERFLOW_MM = -4 / (96 / 25.4);
 
 export type ShapeStatus =
@@ -75,7 +87,7 @@ export type ShapeStatus =
 export interface ShapeOptions {
   targetMm: number;
   sizePt: number;
-  /** Retained for callers; the reference's own -4px bound is what binds. */
+  /** Retained for callers; the underflow bound above is what actually binds. */
   toleranceMm?: number;
 }
 
@@ -84,7 +96,7 @@ export interface ShapeResult {
   text: string;
   widthMm: number;
   targetMm: number;
-  /** Positive means over the target. Their `overflow`. */
+  /** Positive means over the target, negative means short of it. */
   deltaMm: number;
   fillRatio: number;
   charCount: number;
@@ -96,7 +108,7 @@ export interface ShapeResult {
 
 export const DEFAULT_TOLERANCE_MM = -MAX_UNDERFLOW_MM;
 
-/** Their `hashCode`: a 32-bit rolling string hash. */
+/** A 32-bit rolling string hash. */
 function hashCode(text: string): number {
   let hash = 0;
   for (let i = 0; i < text.length; i += 1) {
@@ -107,10 +119,10 @@ function hashCode(text: string): number {
 }
 
 /**
- * Their `getRandomInt`: deterministic despite the name. Reproduced exactly,
- * including the sign behaviour of `%` on a negative hash, because the gap it
- * picks is the difference between matching their output and merely resembling
- * it.
+ * Picks a gap from a hash of the text. Deterministic despite reading like a
+ * random draw: the same bullet always produces the same sequence of choices.
+ * The sign behaviour of `%` on a negative hash is load-bearing -- changing it
+ * changes which gaps get narrowed.
  */
 function hashedIndex(seed: string, max: number): number {
   return Math.floor(
@@ -129,11 +141,11 @@ export function shapeLine(
   options: ShapeOptions,
 ): ShapeResult {
   const { sizePt } = options;
-  // Their `widthPxAdjusted`. Small, but it is the difference between a line
+  // The sub-pixel allowance is small, but it is the difference between a line
   // being declared over and being declared flush.
   const target = effectiveTargetMm(options.targetMm);
 
-  /** Unkerned, matching the reference and the form field. */
+  /** Unkerned, matching how the form field lays text out. */
   const width = (text: string) => font.widthMm(text, sizePt, false);
 
   const plain = unshape(line);
@@ -179,7 +191,7 @@ export function shapeLine(
   const shrinking = initialOverflow > 0;
   const newSpace = shrinking ? SPACE_CHARS.SIX_PER_EM : SPACE_CHARS.THREE_PER_EM;
 
-  // Their worst case leaves the first space after the dash alone.
+  // Worst case still leaves the first space after the dash alone.
   const worstCase = joinAll(words, newSpace);
   const worstOverflow = width(worstCase) - target;
 
@@ -225,7 +237,7 @@ export function shapeLine(
   }
 }
 
-/** First gap stays a normal space, as in the reference. */
+/** First gap stays a normal space; see the note on the leading dash above. */
 function joinAll(words: readonly string[], space: string): string {
   if (words.length <= 1) return words.join('');
   return words[0] + SPACE_CHARS.NORMAL + words.slice(1).join(space);

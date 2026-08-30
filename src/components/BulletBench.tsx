@@ -81,9 +81,8 @@ export default function BulletBench() {
   const [cssFamily, setCssFamily] = useState<string | null>(null);
   const [fontError, setFontError] = useState<string | null>(null);
   const [autoSpace, setAutoSpace] = useState(true);
-  // The reference replaces approved abbreviations on the way to the output,
-  // before any spacing work. Same order here: shortening the words first is
-  // what gives the optimizer room to work with.
+  // Approved abbreviations are replaced on the way to the output, before any
+  // spacing work: shortening the words first is what gives the optimizer room.
   const [abbreviate, setAbbreviate] = useState(true);
   const [showDuplicates, setShowDuplicates] = useState(false);
   const [activeLine, setActiveLine] = useState(0);
@@ -172,9 +171,8 @@ export default function BulletBench() {
 
   /**
    * What the output is actually built from: the draft with approved
-   * abbreviations substituted. Replacement runs before shaping, exactly as in
-   * the reference -- abbreviating first frees width, and only then is it worth
-   * adjusting spaces.
+   * abbreviations substituted. Replacement runs before shaping: abbreviating
+   * frees real width, and only then is it worth adjusting spaces.
    */
   const sourceText = useMemo(() => {
     if (!abbreviate || suggestionTable.entries.length === 0) return text;
@@ -515,9 +513,9 @@ export default function BulletBench() {
           </div>
 
           {/*
-            Same field width and same face as the output. That is the whole
-            comparison the reference is built around: the draft wraps where the
-            form wraps, the output does not, and the difference is the point.
+            Same field width and same face as the output, so the two panes can
+            be read across: the draft wraps where the form wraps, the output
+            does not, and the difference is the point.
           */}
           <FieldBox widthMm={targetMm} type={previewType} over={false} minHeight={230} neutral>
             <div className="relative">

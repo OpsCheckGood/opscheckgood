@@ -169,8 +169,10 @@ Each gap is a three-way choice, so a bullet with N gaps has 3^N renderings. The 
 finds the widest that does not exceed the target, promoting gaps a whole level at a time
 and choosing evenly spaced positions when only part of a level is affordable.
 
-**The optimizer is deterministic.** The reference implementation selects gap positions at
-random, so the same bullet can shape differently on two runs. This one cannot.
+**The optimizer is deterministic.** Gap selection is a hash of the text, so the same
+bullet always shapes the same way. Substituted spaces cluster rather than spreading,
+which reads as one deliberately tightened phrase instead of a whole line of subtly
+wrong gaps.
 
 **Shaping has bounded range.** In Times-metric fonts the three spaces sit 1/12 em apart,
 so each gap moves the line about 0.35mm at 12pt — roughly ±4mm for a twelve-gap bullet.
@@ -254,8 +256,8 @@ License 1.1 (`public/fonts/LICENSE-Liberation.txt`). Liberation is metrically co
 with Times New Roman and Arial, so measurements match while remaining legally
 redistributable.
 
-The reference implementation vendors `TimesNewRomanPSMT.ttf`. That file is Monotype's and
-is not ours to redistribute, so it is deliberately not used here.
+Times New Roman itself is Monotype's and is not ours to redistribute, so it is
+deliberately not bundled.
 
 Fonts are base64-embedded into generated modules under `src/lib/metrics/embedded/` by
 `npm run embed:fonts`, rather than fetched at runtime. Under `file://` a browser refuses
@@ -323,10 +325,6 @@ npm run test
 
 ## Attribution
 
-- **[AF-VCD/pdf-bullets](https://github.com/AF-VCD/pdf-bullets)** (MIT) — the reference
-  implementation for width measurement and space optimization. Studied, not copied; no
-  code or data from it is vendored here. The greedy longest-match-first ordering hazard
-  is documented in their README and their example is used as a test fixture.
 - **[Liberation Fonts](https://github.com/liberationfonts/liberation-fonts)** — SIL Open
   Font License 1.1.
 - **[WordNet](https://wordnet.princeton.edu/)**, Princeton University — source for the

@@ -105,9 +105,8 @@ describe('form definitions', () => {
     },
   );
 
-  // The AF forms carry widths taken from AF-VCD/pdf-bullets, whose own field
-  // name is "likelyWidth". That is good enough to measure against and not good
-  // enough to call verified, so they are usable AND still stub -- the banner
+  // The AF forms carry a working width figure: enough to measure against, not
+  // enough to call verified. So they are usable AND still stub, and the banner
   // stays up until someone reads the real XFA stream.
   it('has the AF forms populated but still marked unverified', () => {
     for (const id of ['af1206', 'af910', 'af911']) {
@@ -115,7 +114,7 @@ describe('form definitions', () => {
       expect(isFormUsable(form.data)).toBe(true);
       expect(form.isStub).toBe(true);
       expect(form.meta.status).toBe('stub');
-      expect(form.meta.sourceUrl).toContain('AF-VCD/pdf-bullets');
+      expect(form.meta.sourceUrl).toContain('e-publishing.af.mil');
       for (const field of form.data.fields) {
         expect(field.constraint).toBe('width');
         expect(field.widthMm).toBeCloseTo(202.321, 3);

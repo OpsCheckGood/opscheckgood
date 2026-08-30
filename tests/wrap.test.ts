@@ -103,8 +103,8 @@ describe('default instruction text', () => {
     expect(lines.length).toBeGreaterThanOrEqual(4);
     for (const line of lines) {
       const result = shapeLine(line, font, { targetMm: TARGET, sizePt: SIZE_PT });
-      // 'at-target' is a pass too: a line already inside the reference's
-      // underflow bound needs no substitution at all.
+      // 'at-target' is a pass too: a line already inside the underflow bound
+      // needs no substitution at all.
       expect(
         ['shaped', 'at-target'],
         `"${line.slice(0, 50)}..." is ${result.status}`,
@@ -168,10 +168,10 @@ describe('shortening a word never costs a line', () => {
 });
 
 /**
- * The reference builds its output by replacing approved abbreviations first,
- * then shaping what is left. The order matters: abbreviating frees real width,
- * and only then is it worth adjusting spaces. Shaping first would burn the
- * whitespace budget on text that was about to get shorter anyway.
+ * The output is built by replacing approved abbreviations first, then shaping
+ * what is left. The order matters: abbreviating frees real width, and only then
+ * is it worth adjusting spaces. Shaping first would burn the whitespace budget
+ * on text that was about to get shorter anyway.
  */
 describe('abbreviate before shaping', () => {
   const table = mergeAbbreviations([HQ_APPROVED.data, COMMON.data]);

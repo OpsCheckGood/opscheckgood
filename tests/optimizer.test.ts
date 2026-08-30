@@ -108,10 +108,10 @@ describe('shapeLine', () => {
 
 
 
-  // The first gap after the bullet dash is never substituted -- the reference
-  // leaves it alone because a narrowed space right after the dash is the one
-  // place the change is obvious. So the achievable range is one gap short of
-  // the theoretical maximum, and is not symmetric about the natural width.
+  // The first gap after the bullet dash is never substituted: a narrowed space
+  // right after a fixed mark is the one place the change is obvious. So the
+  // achievable range is one gap short of the theoretical maximum, and is not
+  // symmetric about the natural width.
   it('leaves the first gap after the dash alone', () => {
     const dashed = `- ${BULLET}`;
     const result = shape(dashed, natural(dashed) - 3);
@@ -172,15 +172,15 @@ describe('shapeDocument', () => {
 });
 
 /**
- * Behaviours ported deliberately from AF-VCD/pdf-bullets. Each one is a place
- * where an "improvement" would make our output differ from theirs for the same
- * bullet, which is the thing to avoid.
+ * Deliberate behaviours of the shaper. Each is a place where a plausible
+ * "improvement" would quietly change the output for the same bullet, so each is
+ * pinned rather than left to taste.
  */
-describe('parity with the reference implementation', () => {
+describe('shaping behaviour', () => {
   const OVER =
     '- SrA Saunders was the focal point for squadron training day. He facilitated two bridge chats, and headed training on critic';
 
-  it('is deterministic: their gap choice is a hash, not a random draw', () => {
+  it('is deterministic: the gap choice is a hash, not a random draw', () => {
     const first = shape(OVER, 202.321);
     for (let i = 0; i < 25; i += 1) {
       expect(shape(OVER, 202.321).text).toBe(first.text);
@@ -217,7 +217,7 @@ describe('parity with the reference implementation', () => {
     );
   });
 
-  it('measures against the target plus their 0.55px slack', () => {
+  it('measures against the target plus a 0.55px allowance', () => {
     expect(effectiveTargetMm(202.321) - 202.321).toBeCloseTo(0.55 / (96 / 25.4), 9);
   });
 

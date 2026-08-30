@@ -3,9 +3,9 @@
     "source": "AF Form 910, Enlisted Performance Report (AB thru TSgt)",
     "version": "TBD",
     "verifiedDate": "2026-08-30",
-    "sourceUrl": "https://github.com/AF-VCD/pdf-bullets/blob/master/src/const/const.js",
+    "sourceUrl": "https://www.e-publishing.af.mil/",
     "status": "stub",
-    "notes": "Width and type size are taken from the reference implementation AF-VCD/pdf-bullets (MIT), src/const/const.js, where the field is literally named \"likelyWidth\" -- their own hedge. NOT read from this form's XFA stream, so this file stays status=stub and the UI keeps its unverified banner. To promote to verified: open the official PDF, read the XFA stream, confirm or correct widthMm and font, then set status and verifiedDate. Font: pdf-bullets vendors TimesNewRomanPSMT.ttf with a companion 12pt-times.json, indicating Times New Roman at 12pt. We ship Liberation Serif, which is metrically identical to Times New Roman and redistributable under the SIL OFL."
+    "notes": "PROVISIONAL. widthMm and the type size have NOT been read from this form's XFA stream, so this file stays status=stub and the UI keeps its unverified banner. Treat 202.321 mm as a working figure to measure against, not as an authority. To promote to verified: open the official PDF from the source URL, read the field geometry out of its XFA stream, confirm or correct widthMm and font, then set status=verified and verifiedDate. Font: the form is believed to set Times New Roman at 12pt, also unconfirmed. We ship Liberation Serif, which is metrically identical to Times New Roman and redistributable under the SIL Open Font License."
   },
   "data": {
     "id": "af910",

@@ -11,9 +11,8 @@ const build = (entries: { phrase: string; abbr: string }[]) =>
   normalizeAbbreviations(entries, META, 'test-fixture.json');
 
 /**
- * The ordering hazard, straight from the AF-VCD/pdf-bullets README: with the
- * single-word rules matching first, "United States Air Force Academy" collapses
- * to "USAF Academy" instead of "USAFA".
+ * The ordering hazard: with single-word rules matching first, "United States
+ * Air Force Academy" collapses to "USAF Academy" instead of "USAFA".
  */
 const ENTRIES = [
   { phrase: 'Air Force', abbr: 'AF' },

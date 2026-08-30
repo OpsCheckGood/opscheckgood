@@ -4,8 +4,9 @@ import type { AbbreviationTable } from '../data/abbreviations';
  * Document analysis behind the Writing Checks panel.
  *
  * Everything here reads the same text the optimizer reads, so a check can never
- * disagree with the shaped output -- the reason competing tools have to warn
- * that their shaping tool "does not work with character count".
+ * disagree with the shaped output. Tools that keep these features on separate
+ * pages end up having to warn that their shaping does not agree with their
+ * character count; one document state is what avoids that.
  */
 
 const WORD = /[A-Za-z][A-Za-z'’-]*/g;
