@@ -2,7 +2,6 @@ import { describe, it, expect, beforeAll, vi } from 'vitest';
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { REPO, REPO_IS_PUBLIC } from '@/lib/site';
 
 /**
  * Hard constraint 3: a page saved to disk and opened with no network must fully
@@ -154,69 +153,40 @@ describeBuilt('single-file offline build', () => {
   }, 90000);
 });
 
-/**
- * The offline copies are the ones most likely to be wrong in a way nobody can
- * report -- they get passed around on thumb drives, detached from the site. So
- * each one carries the issue tracker in its own footer, written out as text
- * rather than linked: the file has no links at all (see the no-subresources
- * test above) and the machine it is opened on may have no network either.
- */
-describeBuilt('every offline copy says where to report a problem', () => {
-  it.each([
-    'bullet-bench-offline.html',
-    'pt-calculator-offline.html',
-    'btz-calculator-offline.html',
-  ])('%s points somewhere real, and never links out', (file) => {
-    const path = join(dist, file);
-    if (!existsSync(path)) return;
-    const html = readFileSync(path, 'utf8');
-    // Markup only. The bundles carry github.com inside library error strings --
-    // opentype.js links its own issue tracker in a deprecation warning -- which
-    // is not a destination this page offers anybody.
-    const markup = stripCode(html);
-
-    expect(markup).toContain('Something wrong?');
-    if (REPO_IS_PUBLIC) {
-      expect(markup).toContain(`github.com/${REPO}/issues`);
-    } else {
-      // Naming a private tracker in a file that gets passed around on thumb
-      // drives would send people to a 404 with no way to ask why.
-      expect(markup).not.toContain('github.com');
-    }
-    // Written out, never linked: an anchor would break the invariant that these
-    // files reference nothing at all.
-    expect(markup).not.toContain('href="https://github.com');
-  });
-});
 
 /**
- * The same rule for the hosted pages. This is the test that actually protects
- * a visitor from a dead link, because it reads the built HTML rather than the
- * source that was supposed to produce it.
+ * Nothing published names the author or the repository.
+ *
+ * The site is run anonymously, so a stray link to the GitHub organisation
+ * would identify whoever runs it. This reads the built output rather than the
+ * source, because that is what a visitor actually receives.
  */
-describeBuilt('GitHub links appear only when the repository is public', () => {
-  const pages = ['index.html', join('report', 'index.html'), join('tools', 'btz-calculator', 'index.html')];
+describeBuilt('published output names neither the repository nor its owner', () => {
+  const builtPages = () => {
+    const found: string[] = [];
+    const walk = (dir: string) => {
+      for (const entry of readdirSync(dir)) {
+        const full = join(dir, entry);
+        if (statSync(full).isDirectory()) walk(full);
+        else if (entry.endsWith('.html')) found.push(full);
+      }
+    };
+    walk(dist);
+    return found;
+  };
 
-  it.each(pages)('%s', (page) => {
-    const path = join(dist, page);
-    if (!existsSync(path)) return;
-    const markup = stripCode(readFileSync(path, 'utf8'));
-    if (REPO_IS_PUBLIC) {
-      if (page.startsWith('report')) expect(markup).toContain(`github.com/${REPO}`);
-    } else {
-      expect(markup).not.toContain('github.com');
-    }
+  it('has no GitHub reference in any built page', () => {
+    const offenders = builtPages().filter((file) => {
+      // Bundled dependencies mention their own trackers in comments and
+      // strings; only markup a reader can see or follow counts.
+      const markup = stripCode(readFileSync(file, 'utf8'));
+      return /github\.com|OpsCheckGood/i.test(markup);
+    });
+    expect(offenders.map((f) => f.replace(dist, ''))).toEqual([]);
   });
 
-  // Whatever the visibility, the bug report page itself must still be reachable
-  // and still able to assemble a report.
-  it('keeps the report page working either way', () => {
-    const path = join(dist, 'report', 'index.html');
-    if (!existsSync(path)) return;
-    const html = readFileSync(path, 'utf8');
-    expect(html).toContain('OPS CHECK GOOD — BUG REPORT');
-    expect(html).toContain('Copy report');
-    expect(html).toContain('Keep real records out of it');
+  it('ships no bug-report page', () => {
+    expect(existsSync(join(dist, 'report', 'index.html'))).toBe(false);
   });
 });
 
@@ -226,9 +196,8 @@ describeBuilt('hosted build', () => {
     expect(existsSync(join(dist, 'tools', 'bullet-bench', 'index.html'))).toBe(true);
     expect(existsSync(join(dist, 'tools', 'pt-calculator', 'index.html'))).toBe(true);
     expect(existsSync(join(dist, 'tools', 'btz-calculator', 'index.html'))).toBe(true);
-    // The bug report page is site furniture rather than a tool, but it has to
-    // exist or every "Report a bug" link in the footer is a 404.
-    expect(existsSync(join(dist, 'report', 'index.html'))).toBe(true);
+    expect(existsSync(join(dist, 'tools', 'mfr', 'index.html'))).toBe(true);
+    expect(existsSync(join(dist, 'first-sergeant', 'index.html'))).toBe(true);
   });
 
   it('ships the font licence', () => {

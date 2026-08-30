@@ -1,28 +1,39 @@
-MIT License
+Copyright (c) 2026 Ops Check Good. All rights reserved.
 
-Copyright (c) 2026 Ops Check Good contributors
+This software is not open source. No permission is granted to use, copy,
+modify, merge, publish, distribute, sublicense, or sell copies of this
+software or its source code, in whole or in part, without the prior written
+permission of the copyright holder.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+The compiled site is made freely available to use through a web browser. That
+does not grant any right to the source code, nor any right to redistribute,
+host, or create derivative works from it.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+No warranty of any kind is given. The software is provided "as is".
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
 
----
+-------------------------------------------------------------------------------
+THIRD-PARTY COMPONENTS
+-------------------------------------------------------------------------------
 
-Bundled third-party assets:
+The terms above cover this project's own code and data. Third-party components
+are bundled under their own licences, which are unaffected by anything above
+and remain in force.
 
-Liberation Fonts (public/fonts/*.ttf) are licensed under the SIL Open Font
-License, Version 1.1. See public/fonts/LICENSE-Liberation.txt.
+Liberation Fonts
+  public/fonts/LiberationSerif-Regular.ttf
+  public/fonts/LiberationSans-Regular.ttf
+  SIL Open Font License, Version 1.1.
+  Full text: public/fonts/LICENSE-Liberation.txt
+
+WordNet 3.1
+  src/data/vocab/synonyms.json (derived)
+  vendor/wordnet-exc/*.exc
+  Copyright 2011 Princeton University. WordNet 3.0 License (BSD-style).
+  Permission is granted to use, copy, modify and distribute this database for
+  any purpose, provided the copyright notice and this paragraph appear in all
+  copies. Attribution is required.
+  https://wordnet.princeton.edu/license-and-commercial-use
+
+Runtime and build dependencies retain the licences declared in their own
+packages; see package.json and the dependency tree for details.

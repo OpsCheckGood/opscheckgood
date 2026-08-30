@@ -1,6 +1,6 @@
 # Ops Check Good
 
-Free, open-source Air Force administrative tools. Total force, enlisted and officer.
+Free Air Force administrative tools. Total force, enlisted and officer.
 No accounts, no backend, no tracking, no ads.
 
 Everything runs in your browser. Nothing you type is uploaded, logged, or persisted
@@ -8,6 +8,11 @@ anywhere but your own device.
 
 **Unofficial personal project.** Not affiliated with, endorsed by, or produced by the
 United States Air Force or the Department of Defense. Official guidance governs.
+
+**This is not open source.** The site is free to use; the source is not licensed for
+reuse, redistribution, or derivative works. See [Licence](#licence). The repository is
+private and the project is maintained anonymously — there is no public issue tracker,
+and contributions are not being accepted.
 
 ---
 
@@ -421,44 +426,6 @@ npm run test
 
 ---
 
-## Reporting a bug
-
-Wrong number, broken layout, something that will not work offline — all worth reporting.
-
-**The repository is private for now, so there is no public issue tracker.** While that is
-true the site shows no GitHub links at all — a link to a private repo is a 404 for
-everyone who is not a collaborator, and spending a reporter's effort on a 404 is worse
-than offering them nothing. Collaborators file issues at
-<https://github.com/OpsCheckGood/opscheckgood/issues> as usual.
-
-To publish the links, set `REPO_IS_PUBLIC = true` in `src/lib/site.ts`. That one constant
-governs the footer, the bug report page, and the offline copies' footer; the tests read it
-too, so they stay correct either way. If you would rather offer a contact address while
-the repo stays private, set `CONTACT_EMAIL` in the same file and the report page grows a
-mail link. It is empty by default and deliberately not guessed.
-
-The site has a **Report a bug** page at `/report/`, linked from the footer, which
-assembles a report for you: what you write, plus
-the build, browser, viewport, theme, time zone, storage availability, and the source and
-version of every data file shipped. Copy it and paste it into the issue.
-
-It assembles; it does not submit. There is no backend to submit to, and constraint 1
-forbids the request regardless. The finished report is shown in full above the copy
-button, so you read exactly what you are about to share.
-
-**Nothing you typed into a tool is ever included.** Bullet Bench holds real duty history
-and the BTZ calculator holds real service dates. A checkbox offering to attach them would
-be convenient once and would leak somebody's record into a public tracker the other
-times. If a bug depends on the input, reproduce it with invented values and describe
-those — and never paste a real record into an issue.
-
-The offline copies carry the same pointer in their own footer, written out rather than
-linked — those files contain no links at all, and the machine they are opened on may have
-no network either. While the repository is private they name no URL, for the same reason
-the site does not.
-
----
-
 ## Attribution
 
 - **[Liberation Fonts](https://github.com/liberationfonts/liberation-fonts)** — SIL Open
@@ -475,4 +442,13 @@ the site does not.
 
 ## Licence
 
-MIT. See `LICENSE`.
+**All rights reserved.** This project is not open source, and no permission is granted to
+use, copy, modify, or redistribute the source code. The compiled site being free to use
+in a browser does not grant any right to the source.
+
+Third-party components keep their own licences, which the terms above do not touch: the
+Liberation fonts under the SIL Open Font License 1.1, and WordNet under the WordNet 3.0
+licence. Both require attribution, both are attributed above and in each derived data
+file's `meta` block, and both must stay that way.
+
+Full text in [`LICENSE`](LICENSE).
