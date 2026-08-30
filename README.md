@@ -62,6 +62,43 @@ per-component points, and which chart row each one landed on. The data still car
 `status: "stub"` because the PDF is one step removed from the AFMAN itself — see
 [Populating the data](#populating-the-data).
 
+### BTZ calculator
+
+Projects when an A1C reaches the Senior Airman phase point, when the below-the-zone
+consideration window opens, which board quarter they fall in, and what date they would
+pin on if selected. Entered active duty and a date of rank go in; a timeline comes out.
+
+The rules are AFI 36-2502, 2 July 2026, and every one of them is data. Para 2.2.1 gives
+two routes to a fully qualified promotion — 36 months' time in service with 20 months'
+time in grade, or 28 months' time in grade, whichever comes first — and the promotion
+lands on the earlier of them. Para 2.3.1 puts below-the-zone six months ahead of that
+point. Table 2.7 is the board calendar. Adding a route or changing the calendar is a
+JSON edit; the loader rejects a calendar whose four quarters do not tile the year.
+
+Three things it will not do. It never says anyone is *eligible* — the strongest wording
+is "projected BTZ promotion, if selected", because eligibility carries conditions the
+page cannot see and selection is a board's decision. It will not project from AB or Amn,
+because an A1C date of rank is set by technical training, an advanced enlistment, or an
+adjustment for previous service, and a confident wrong date is worse than none. And it
+is not a black box: **Why this date?** opens both routes, both bounds on each, which one
+binds, and the subtraction.
+
+Advanced mode adds the conditions the instruction attaches, each blocking or advising as
+the AFI does and each citing its paragraph — the 3-skill level requirement (Table 2.1),
+one-time consideration (para 2.3.1), a date of rank adjusted for previous service
+(2.3.4.4.2), ROTC or Academy date-of-rank credit (2.3.4.4.2), the Technical Degree
+Scholarship academic phase (4.1.7), and the six-year enlistee date-of-rank adjustment
+(2.1.2).
+
+Note that below-the-zone is six months off the *resolved* phase point, not a separate
+"30 months TIS / 14 months TIG" pair. Several secondary sources paraphrase it the second
+way; the two agree in the ordinary case and diverge at month ends, and
+`tests/btz-project.test.ts` pins the divergent case.
+
+**Built:** quick and advanced modes, both routes with the binding bound shown, board
+cycle lookup, timeline, copyable summary, local draft persistence. Data `verified`
+against the instruction.
+
 ### MFR generator
 
 Writes an official memorandum for record, or a letter of counseling, admonishment or
@@ -102,6 +139,9 @@ Both engines are finished and tested. **Most of the reference data is not popula
 
 The PT scoring tables are populated, from the maintainer's own PDF calculator, and still
 marked `stub` until someone checks them against AFMAN 36-2905 itself.
+
+The BTZ promotion rules are `verified`, transcribed from AFI 36-2502, 2 July 2026, with
+each check and note carrying the paragraph it came from.
 
 Form field widths, fonts, point sizes, and abbreviation lists must be transcribed from
 official sources. They are deliberately left empty rather than guessed, because a
@@ -378,6 +418,32 @@ npm run test
   Tier 2 trigger, plus a differential test that scores several hundred cases through both
   this engine and the source PDF's own script and compares the answers.
 - **Offline** — the built single file has no subresources and works with no network.
+
+---
+
+## Reporting a bug
+
+Wrong number, broken layout, something that will not work offline — all worth reporting.
+Open an issue: <https://github.com/ops-check-good/opscheckgood/issues>
+
+The site has a **Report a bug** page at `/report/`, linked from the footer, which
+assembles a report for you: what you write, plus
+the build, browser, viewport, theme, time zone, storage availability, and the source and
+version of every data file shipped. Copy it and paste it into the issue.
+
+It assembles; it does not submit. There is no backend to submit to, and constraint 1
+forbids the request regardless. The finished report is shown in full above the copy
+button, so you read exactly what you are about to share.
+
+**Nothing you typed into a tool is ever included.** Bullet Bench holds real duty history
+and the BTZ calculator holds real service dates. A checkbox offering to attach them would
+be convenient once and would leak somebody's record into a public tracker the other
+times. If a bug depends on the input, reproduce it with invented values and describe
+those — and never paste a real record into an issue.
+
+The offline copies name the issue tracker in their own footer, written out rather than
+linked, because those files contain no links at all and the machine they are opened on
+may have no network either.
 
 ---
 

@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "source": "MilitaryINSTALLATIONS — Incirlik AB",
+    "version": "retrieved 2026-08-30",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "https://installations.militaryonesource.mil/military-installation/incirlik-ab",
+    "status": "verified",
+    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+  },
+  "data": {
+    "id": "incirlik-ab",
+    "label": "Incirlik AB",
+    "example": false,
+    "contacts": [
+      {
+        "categoryId": "command-post",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "mental-health",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "chaplain",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "sarc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "security-forces",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "medical",
+        "name": "Family Practice Clinic",
+        "phone": "011-90-322-316-6666",
+        "dsn": "314-676-6666",
+        "location": "39 MDG Bldg 865 Unit 7095 Box 185 Incirlik Turkey 09824",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/incirlik-ab/health/health-care",
+        "notes": "Mon - Fri 7:30 a.m. - 4:30 p.m Closed 3rd Wednesday each month Sat and Sun - Closed Holidays - Closed"
+      },
+      {
+        "categoryId": "mfrc",
+        "name": "Military and Family Readiness Center",
+        "phone": "011-90-322-316-6755",
+        "dsn": "314-676-6755",
+        "location": "Bldg 833 39 FSS/FSH Incirlik Air Base ADANA Turkey",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/incirlik-ab/military-and-family-support-center/military-and-family-support-center",
+        "notes": "Hours Mon - Fri 8:30am - 4:00pm Sat and Sun – Closed Holidays – Closed Family Days - Closed"
+      },
+      {
+        "categoryId": "finance",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "legal",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "housing",
+        "name": "Incirlik Housing Office",
+        "phone": "011-90-322-316-6232",
+        "dsn": "314-676-6232",
+        "location": "833 E Street Incirlik Air Base Incirlik Turkey 09824",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/incirlik-ab/housing/housing",
+        "notes": "Mon - Fri 7:30 a.m. - 4:00 p.m Closed from 12:00 p.m. - 1:00 p.m. for lunch Sat and Sun - Closed Holidays - Closed"
+      },
+      {
+        "categoryId": "mpf",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "family-advocacy",
+        "name": "Family Advocacy",
+        "phone": "011-90-322-316-6452",
+        "dsn": "314-676-6452",
+        "location": "865 E Street Incirlik Air Base Incirlik Turkey 09824",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/incirlik-ab/military-and-family-support-center/family-advocacy-program",
+        "notes": "Mon - Fri 7:30 a.m. - 4:30 p.m Sat and Sun - Closed Holidays - Closed"
+      },
+      {
+        "categoryId": "efmp",
+        "name": "Military and Family Readiness Center - Ankara",
+        "phone": "011-90-322-316-6755",
+        "dsn": "314-676-6755",
+        "location": "39 FSS/A&FRC ADANA Turkey",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/incirlik-ab/exceptional-family-member-program/exceptional-family-member-program",
+        "notes": "Hours Mon-Fri - 0730-1630 Closed Weekends, Holidays"
+      },
+      {
+        "categoryId": "childcare",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "emergency-relief",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "military-onesource",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "equal-opportunity",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      }
+    ]
+  }
+}

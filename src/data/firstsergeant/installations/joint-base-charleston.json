@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "source": "MilitaryINSTALLATIONS — Joint Base Lindsey Graham",
+    "version": "retrieved 2026-08-30",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "https://installations.militaryonesource.mil/military-installation/joint-base-charleston",
+    "status": "verified",
+    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+  },
+  "data": {
+    "id": "joint-base-charleston",
+    "label": "Joint Base Lindsey Graham",
+    "example": false,
+    "contacts": [
+      {
+        "categoryId": "command-post",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "mental-health",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "chaplain",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "sarc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "security-forces",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "medical",
+        "name": "Air Force - Military Treatment Facility",
+        "phone": "843-963-6880",
+        "dsn": "312-673-6880",
+        "location": "204 W. Hill Boulevard Building 364 Charleston, SC 29404",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/joint-base-charleston/health/health-care",
+        "notes": "Main Clinic (Family Health/Pediatrics): Mon – Fri, 0730 – 1630 Flight Medicine: Mon – Fri, 0730 – 1630 Sick Call: Mon – Fri, 0730 – 0830 (Active Duty Only) Pharmacy: Mon – Fri, 0730 – 1600 Appointment Line: (843) 963-6880, Mon – Fri, 0630 – 1630 Closed: Federal holidays and the 3rd Wednesday of each month from 1200-1630."
+      },
+      {
+        "categoryId": "mfrc",
+        "name": "Military & Family Readiness Center - Weapons Station",
+        "phone": "843-963-8883",
+        "dsn": "312-794-7480",
+        "location": "1005 Jefferson Avenue Bldg 755 Goose Creek, SC 29445",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/joint-base-charleston/military-and-family-support-center/military-and-family-support-center",
+        "notes": "Mon – Fri 7:30 a.m. – 4:30 p.m. Sat and Sun - closed Holidays – closed"
+      },
+      {
+        "categoryId": "finance",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "legal",
+        "name": "Legal Services - Air Base and Weapons Station",
+        "phone": "843-963-5502",
+        "dsn": "312-673-5502",
+        "location": "102 E. Hill Boulevard Building 1600, Room 135 Charleston, SC 29404",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/joint-base-charleston/legal/legal-assistance",
+        "notes": ""
+      },
+      {
+        "categoryId": "housing",
+        "name": "Housing Welcome Center - Air Base",
+        "phone": "843-963-3858",
+        "dsn": "312-673-3858",
+        "location": "101 North Davis Dr Charleston, SC 29404",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/joint-base-charleston/housing/housing",
+        "notes": "Mon - Fri 7:00 a.m. -3:30 p.m. Sat and Sun - Closed Holidays - Closed"
+      },
+      {
+        "categoryId": "mpf",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "family-advocacy",
+        "name": "Mental Health - Air Force",
+        "phone": "843-963-6852",
+        "dsn": "312-673-6972",
+        "location": "204 W. Hill Drive Charleston, SC 29404",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/joint-base-charleston/military-and-family-support-center/family-advocacy-program",
+        "notes": "Mon - Fri 7:30 a.m. - 4:30 p.m. Sat and Sun - closed Holidays - closed"
+      },
+      {
+        "categoryId": "efmp",
+        "name": "Military & Family Readiness Center",
+        "phone": "312-673-8883",
+        "dsn": "843-963-8883",
+        "location": "104 E. Simpson Street Building 500 Charleston, SC 29404",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/joint-base-charleston/exceptional-family-member-program/exceptional-family-member-program",
+        "notes": "Mon - Fri 7:30 a.m. - 4:30 p.m. Sat and Sun - closed Holidays - closed"
+      },
+      {
+        "categoryId": "childcare",
+        "name": "Family Child Care Resource and Referral",
+        "phone": "843-963-2546",
+        "dsn": "312-673-2546",
+        "location": "2373 White Circle Charleston, SC 29404",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/joint-base-charleston/child-and-youth-services/child-care",
+        "notes": "Mon - Fri 7:30 a.m.- 4:30 p.m. Sat/Sun/Holidays - closed"
+      },
+      {
+        "categoryId": "emergency-relief",
+        "name": "Military & Family Readiness Center",
+        "phone": "843-963-8883",
+        "dsn": "312-673-4406",
+        "location": "104 E. Simpson Street Building 500 Charleston, SC 29404",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/joint-base-charleston/military-and-family-support-center/financial-assistance",
+        "notes": "Mon - Fri 7:30 a.m. - 4:30 p.m. Sat and Sun - closed Holidays - closed"
+      },
+      {
+        "categoryId": "military-onesource",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "equal-opportunity",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      }
+    ]
+  }
+}

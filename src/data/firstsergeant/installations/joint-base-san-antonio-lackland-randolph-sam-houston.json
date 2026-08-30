@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "source": "MilitaryINSTALLATIONS — Joint Base San Antonio (Lackland, Randolph, Sam Houston)",
+    "version": "retrieved 2026-08-30",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "https://installations.militaryonesource.mil/military-installation/joint-base-san-antonio-lackland-randolph-sam-houston",
+    "status": "verified",
+    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+  },
+  "data": {
+    "id": "joint-base-san-antonio-lackland-randolph-sam-houston",
+    "label": "Joint Base San Antonio (Lackland, Randolph, Sam Houston)",
+    "example": false,
+    "contacts": [
+      {
+        "categoryId": "command-post",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "mental-health",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "chaplain",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "sarc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "security-forces",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "medical",
+        "name": "Information Desk - Wilford Hall Ambulatory Surgical Center - Lackland AFB",
+        "phone": "210-292-7412",
+        "dsn": "",
+        "location": "1100 Wilford Hall Loop 4554 JBSA - Wilford Hall Ambulatory Surgical Center, TX 78236",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/joint-base-san-antonio-lackland-randolph-sam-houston/health/health-care",
+        "notes": "Mon, Tue, Thu, Fri : 07:30 a.m. - 4:30 p.m. Wed 9:15 a.m. - 4:30 p.m."
+      },
+      {
+        "categoryId": "mfrc",
+        "name": "Air & Space Forces Aid Society",
+        "phone": "210-671-3722",
+        "dsn": "",
+        "location": "1550 Wurtsmith St Bldg. 5725 Room 212 Lackland AFB, TX 78236",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/joint-base-san-antonio-lackland-randolph-sam-houston/military-and-family-support-center/military-and-family-support-center",
+        "notes": "Monday, Tuesday, Wednesday, Friday 7:30 a.m. - 4:30 p.m. Thursday 7:30 a.m. - 1:00 p.m. Weekends, Federal Holidays, AETC Resiliency and Readiness Days - closed"
+      },
+      {
+        "categoryId": "finance",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "legal",
+        "name": "Legal Office - Lackland AFB",
+        "phone": "210-671-3362",
+        "dsn": "312-473-3362",
+        "location": "JBSA- Lackland 1701 Kenly Ave Bldg 2484 RM 134 Lackland AFB, TX 78236",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/joint-base-san-antonio-lackland-randolph-sam-houston/legal/legal-assistance",
+        "notes": "General legal assistance is provided during Wednesday morning walk-in legal assistance from 8:30 - 9:30 a.m. Notary/Powers of Attorney Walk-In Hours: Monday, Tuesday, Thursday 8:00 a.m. - 3:30 p.m. Wednesday 8:00 a.m. - 12:30 p.m. Friday 9:30 a.m. - 3:30 p.m. Trainees: Walk-in service anytime during open hours CLOSED - Weekends, Holidays, AETC Resiliency and Readiness Days as well as the last Monday of each month for training."
+      },
+      {
+        "categoryId": "housing",
+        "name": "Off Post Housing Referral - MHO - Fort Sam Houston",
+        "phone": "210-221-0881",
+        "dsn": "312-471-0881",
+        "location": "3171 Zinn Rd Building 1161 Fort Sam Houston, TX 78234",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/joint-base-san-antonio-lackland-randolph-sam-houston/housing/housing",
+        "notes": "Mon - Fri 8:00 a.m. - 4:00 p.m. Sat and Sun - closed"
+      },
+      {
+        "categoryId": "mpf",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "family-advocacy",
+        "name": "Family Advocacy - Lackland AFB",
+        "phone": "210-292-5967",
+        "dsn": "",
+        "location": "1100 Wilford Hall Loop Bldg 4554 3rd Floor, B Wing Lackland AFB, TX 78236",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/joint-base-san-antonio-lackland-randolph-sam-houston/military-and-family-support-center/family-advocacy-program",
+        "notes": "Mon - Fri 7:30 a.m. - 4:30 p.m. Weekends and Federal holidays - closed"
+      },
+      {
+        "categoryId": "efmp",
+        "name": "Military and Family Readiness Center – EFMP Family Support - Lackland AFB",
+        "phone": "210-671-5213",
+        "dsn": "312-473-5213",
+        "location": "1550 Wurtsmith St Building 5725, room 135 Lackland AFB, TX 78236-5113",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/joint-base-san-antonio-lackland-randolph-sam-houston/exceptional-family-member-program/exceptional-family-member-program",
+        "notes": "Monday, Tuesday, Wednesday, Friday 7:30 a.m. - 4:30 p.m. Thursday 7:30 a.m. - 1:00 p.m. Weekends, Federal Holidays, AETC Resiliency and Readiness Days - closed"
+      },
+      {
+        "categoryId": "childcare",
+        "name": "Family Child Care Office - Lackland AFB",
+        "phone": "210-671-3376",
+        "dsn": "",
+        "location": "2310 Kenly Road Building 8210 Lackland AFB, TX 78236",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/joint-base-san-antonio-lackland-randolph-sam-houston/child-and-youth-services/child-care",
+        "notes": "Mon – Fri 7:30 a.m. – 4:30 p.m. Weekends and federal holidays - closed"
+      },
+      {
+        "categoryId": "emergency-relief",
+        "name": "Military and Family Readiness Center",
+        "phone": "210-652-5321",
+        "dsn": "312-487-5321",
+        "location": "555 F Street W. Bldg. 693 Randolph AFB, TX 78150",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/joint-base-san-antonio-lackland-randolph-sam-houston/military-and-family-support-center/financial-assistance",
+        "notes": "Monday, Tuesday, Wednesday, Friday 7:30 a.m. - 4:30 p.m. Thursday 7:30 a.m. - 1:00 p.m. Weekends, Federal Holidays, AETC Resiliency and Readiness Days – closed"
+      },
+      {
+        "categoryId": "military-onesource",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "equal-opportunity",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      }
+    ]
+  }
+}

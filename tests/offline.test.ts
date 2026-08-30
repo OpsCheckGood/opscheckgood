@@ -129,12 +129,38 @@ describeBuilt('single-file offline build', () => {
   }, 90000);
 });
 
+/**
+ * The offline copies are the ones most likely to be wrong in a way nobody can
+ * report -- they get passed around on thumb drives, detached from the site. So
+ * each one carries the issue tracker in its own footer, written out as text
+ * rather than linked: the file has no links at all (see the no-subresources
+ * test above) and the machine it is opened on may have no network either.
+ */
+describeBuilt('every offline copy says where to report a problem', () => {
+  it.each([
+    'bullet-bench-offline.html',
+    'pt-calculator-offline.html',
+    'btz-calculator-offline.html',
+  ])('%s names the issue tracker without linking to it', (file) => {
+    const path = join(dist, file);
+    if (!existsSync(path)) return;
+    const html = readFileSync(path, 'utf8');
+    expect(html).toContain('github.com/ops-check-good/opscheckgood/issues');
+    // Written out, not linked: an anchor here would break the invariant that
+    // these files reference nothing at all.
+    expect(html).not.toContain('href="https://github.com');
+  });
+});
+
 describeBuilt('hosted build', () => {
   it('emits a page per tool', () => {
     expect(existsSync(join(dist, 'index.html'))).toBe(true);
     expect(existsSync(join(dist, 'tools', 'bullet-bench', 'index.html'))).toBe(true);
     expect(existsSync(join(dist, 'tools', 'pt-calculator', 'index.html'))).toBe(true);
     expect(existsSync(join(dist, 'tools', 'btz-calculator', 'index.html'))).toBe(true);
+    // The bug report page is site furniture rather than a tool, but it has to
+    // exist or every "Report a bug" link in the footer is a 404.
+    expect(existsSync(join(dist, 'report', 'index.html'))).toBe(true);
   });
 
   it('ships the font licence', () => {

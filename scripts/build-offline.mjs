@@ -26,6 +26,9 @@ import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+// Single source for the repository URL; see src/lib/site.ts.
+const ISSUES_URL = 'https://github.com/ops-check-good/opscheckgood/issues';
+
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = join(root, 'dist');
 
@@ -154,6 +157,9 @@ United States Air Force or the Department of Defense. Official guidance governs;
 instructions and your chain of command before relying on anything here.</p>
 <p class="m-0 mt-1">This file is completely self-contained. It makes no network requests and
 nothing you type leaves this device.</p>
+<p class="m-0 mt-1">Something wrong? Report it at ${ISSUES_URL.replace('https://', '')} &mdash;
+written out rather than linked, because this file has no links at all and the machine you
+open it on may have no network either.</p>
 </footer>
 <script>
 (function(){

@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "source": "MilitaryINSTALLATIONS — Joint Base Pearl Harbor - Hickam",
+    "version": "retrieved 2026-08-30",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "https://installations.militaryonesource.mil/military-installation/joint-base-pearl-harbor-hickam",
+    "status": "verified",
+    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+  },
+  "data": {
+    "id": "joint-base-pearl-harbor-hickam",
+    "label": "Joint Base Pearl Harbor - Hickam",
+    "example": false,
+    "contacts": [
+      {
+        "categoryId": "command-post",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "mental-health",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "chaplain",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "sarc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "security-forces",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "medical",
+        "name": "TriWest Healthcare Alliance – Naval Health Clinic Hawaii – Makalapa Medical Clinic - Navy",
+        "phone": "808-473-1880",
+        "dsn": "",
+        "location": "1253 Makalapa Road JBPHH, HI 96860-4908",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/joint-base-pearl-harbor-hickam/health/health-care",
+        "notes": "Mon – Fri 7:00 a.m. - 4:00 p.m. Sat, Sun, & Holidays- Closed Phone 1: 808-473-1880 Phone 2: 888-683-2778 Central Appointments Phone: 1-888-874-9378 TriWest Healthcare Alliance Nurse Advice Line: 1-800-874-2273 Health Benefits Advisor: 808-473-1880 x9-2282 Heidi Wessel: Command Health Benefits Advisor, Customer Relations Representative, Tricare Enrollment Manager, Access Maintenance Manager, and Patient Registration Identity Manager (PRIM) Update POC: christopher.r.steele.mil@health.mil Update POC: benjamin.r.bryce.mil@health.mil (Interim PAO)"
+      },
+      {
+        "categoryId": "mfrc",
+        "name": "Military & Family Readiness Center",
+        "phone": "808-789-7363",
+        "dsn": "315-447-7363",
+        "location": "655 Vickers Avenue Building 1105 Joint Base Pearl Harbor Hickam, HI 96853-5385",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/joint-base-pearl-harbor-hickam/military-and-family-support-center/military-and-family-support-center",
+        "notes": "Mon - Fri 8:30 a.m. - 3:30 p.m. Scott Palomino: 808-789-7361 Email addresses: 647 FSS/FSFR Airman & Family Readiness, 647fss.fsfr@us.af.mil 647 FSS/FSH EFMP 647FSS.FSH.EFMP@us.af.mil 647 FSS/FSH Casualty, 647FSS.FSH.Casualty@us.af.mil 647 FSS/FSH Flight Chief, scott.palomino@us.af.mil Please remove Toms email. I want to keep the org boxes for each program."
+      },
+      {
+        "categoryId": "finance",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "legal",
+        "name": "Region Legal Service Office Western Pacific Detachment Hawaii (RLSO WESTPAC Det HI) - Legal Assistance Department",
+        "phone": "808-473-0437",
+        "dsn": "",
+        "location": "850 Willamette Street Building 1746, Second Floor JBPHH, HI 96860-5109",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/joint-base-pearl-harbor-hickam/legal/legal-assistance",
+        "notes": "Thank you for contacting the Legal Assistance Department at Region Legal Service Office Western Pacific Detachment Hawai'i (RLSO WESTPAC Det HI). We have walk-in hours for notaries and Special Powers of Attorney (SPOAs) on Mondays from 9:00 a.m. to 11:00 a.m. and on Wednesdays from 10:00 a.m.to 12:00 p.m.. We have new client walk-in hours for attorney services for active duty servicemembers and their dependents on Tuesdays from 9:00 a.m. to 2:00 p.m.. To make an appointment (or for attorney services for retirees and their dependents), please email \"legalassistancehawaii@us.navy.mil\". Please no"
+      },
+      {
+        "categoryId": "housing",
+        "name": "Military Housing Office - Air Force",
+        "phone": "808-312-0199",
+        "dsn": "",
+        "location": "Military Housing Office 200 Kokomalei Street Building 6500 Honolulu, HI 96818-0000",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/joint-base-pearl-harbor-hickam/housing/housing",
+        "notes": "Mon - Fri 7:30 a.m. - 4:00 p.m. Sat, Sun and Holidays - Closed Drayage Requests should be made once members have in-processed with MHO MHO provides TLA and Housing Referrals at 808-312-0199 and 808-590-1402 or jbphh_mho@us.navy.mil If 808-448-6887 States Voice Mail is Not Setup; it Means the Line is Busy 808-448-6888 (Grace) Earhart Community Center: 808-853-3790 www.hickamcommunities.com = Privatized Housing"
+      },
+      {
+        "categoryId": "mpf",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "family-advocacy",
+        "name": "Military and Family Support Center - Family Advocacy - Navy and Air Force",
+        "phone": "808-474-1999",
+        "dsn": "315-474-1999",
+        "location": "4827 Bougainville Drive Second Floor Honolulu, HI 96818-3174",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/joint-base-pearl-harbor-hickam/military-and-family-support-center/family-advocacy-program",
+        "notes": "Mon - Fri 7:30 a.m. - 4:00 p.m. Sat, Sun, and Holidays - Closed Primary after hours FAP Victim Advocate: 808-590-7719 Alternate after hours, 24/7. Domestic Violence Hotline and Shelter: - Child and Family Service Domestic Abuse Shelter 808-841-0822 - PACT Ohia Domestic Violence Shelter 808-526-2200"
+      },
+      {
+        "categoryId": "efmp",
+        "name": "Military and Family Support Center – EFMP Family Support - Navy",
+        "phone": "808-474-1999",
+        "dsn": "315-474-1999",
+        "location": "4827 Bougainville Drive Second Floor Honolulu, HI 96818-3174",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/joint-base-pearl-harbor-hickam/exceptional-family-member-program/exceptional-family-member-program",
+        "notes": "Mon - Fri 7:30 a.m. - 4:00 p.m. Sat, Sun, and Holidays - Closed"
+      },
+      {
+        "categoryId": "childcare",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "emergency-relief",
+        "name": "Military and Family Support Center - Personal Financial Management Program - Air Force and Navy",
+        "phone": "808-474-1999",
+        "dsn": "315-474-1999",
+        "location": "4827 Bougainville Drive Second Floor Honolulu, HI 96818-3174",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/joint-base-pearl-harbor-hickam/military-and-family-support-center/financial-assistance",
+        "notes": "Mon - Fri 7:30 a.m. – 4:00 p.m. Sat, Sun and Holidays - Closed"
+      },
+      {
+        "categoryId": "military-onesource",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "equal-opportunity",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      }
+    ]
+  }
+}

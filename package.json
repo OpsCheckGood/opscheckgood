@@ -4,6 +4,14 @@
   "private": true,
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ops-check-good/opscheckgood.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ops-check-good/opscheckgood/issues"
+  },
+  "homepage": "https://github.com/ops-check-good/opscheckgood#readme",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",

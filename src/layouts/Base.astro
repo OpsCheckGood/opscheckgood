@@ -20,6 +20,8 @@ const {
   brand,
   tagline,
 } = Astro.props;
+import { ISSUES_URL, REPO_URL } from '../lib/site';
+
 const home = import.meta.env.BASE_URL;
 const base = home.replace(/\/$/, '');
 const year = new Date().getFullYear();
@@ -30,12 +32,22 @@ const footerTools = [
   { label: 'First Sergeant Toolkit', href: `${base}/first-sergeant/` },
   { label: 'Bullet Bench', href: `${base}/tools/bullet-bench/` },
   { label: 'PT Calculator', href: `${base}/tools/pt-calculator/` },
+  { label: 'BTZ Calculator', href: `${base}/tools/btz-calculator/` },
   { label: 'MFR Generator', href: `${base}/tools/mfr/` },
 ];
 
 // External references, for checking the shipped data against its source. Plain
 // links a reader chooses to follow; the page never requests them, so hard
 // constraint 1 is untouched.
+// The project itself: where the code is, and where a problem goes. The bug
+// report page is internal; the two GitHub links are plain anchors a reader
+// chooses to follow, so hard constraint 1 is untouched.
+const footerProject = [
+  { label: 'Report a bug', href: `${base}/report/`, external: false },
+  { label: 'Issues', href: ISSUES_URL, external: true },
+  { label: 'Source on GitHub', href: REPO_URL, external: true },
+];
+
 const footerReference = [
   { label: 'AFPC Acronyms', href: 'https://www.afpc.af.mil/Career-Management/Acronyms/' },
   { label: 'AF e-Publishing', href: 'https://www.e-publishing.af.mil/' },
@@ -152,7 +164,7 @@ const nav = [
     </main>
 
     <footer class="mt-10 border-t" style="border-color: var(--rule);">
-      <div class="mx-auto grid max-w-[1560px] gap-8 px-6 py-8 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="mx-auto grid max-w-[1560px] gap-8 px-6 py-8 sm:grid-cols-2 lg:grid-cols-5">
         <div class="lg:col-span-2">
           <a
             href={home}
@@ -165,7 +177,7 @@ const nav = [
             class="m-0 mt-2 max-w-[46ch] text-[11.5px] leading-relaxed"
             style="color: var(--ink-muted);"
           >
-            Free, open-source Air Force administrative tools.
+            Free Air Force administrative tools.
           </p>
         </div>
 
@@ -181,6 +193,28 @@ const nav = [
                     style="color: var(--ink-muted);"
                   >
                     {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+
+        <nav aria-label="Project">
+          <h2 class="util m-0">Project</h2>
+          <ul class="m-0 mt-3 list-none space-y-2 p-0">
+            {
+              footerProject.map((item) => (
+                <li>
+                  <a
+                    href={item.href}
+                    target={item.external ? '_blank' : undefined}
+                    rel={item.external ? 'noreferrer noopener' : undefined}
+                    class="text-[11.5px] no-underline"
+                    style="color: var(--ink-muted);"
+                  >
+                    {item.label}
+                    {item.external && <span aria-hidden style="color: var(--ink-faint);"> ↗</span>}
                   </a>
                 </li>
               ))
@@ -213,7 +247,7 @@ const nav = [
       <div class="border-t" style="border-color: var(--rule);">
         <div class="mx-auto flex max-w-[1560px] flex-wrap items-center gap-x-6 gap-y-2 px-6 py-4">
           <p class="util m-0" style="letter-spacing: 0.08em;">
-            &copy; {year} &middot; MIT Licence
+            &copy; {year}
           </p>
           <p class="m-0 ml-auto text-[12px]" style="color: var(--ink-muted);">
             Built for Airmen, by Airmen.
