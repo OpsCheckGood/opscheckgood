@@ -153,7 +153,7 @@ if (violations.length > 0) {
     console.error(`    ${v.snippet}\n`);
   }
   console.error(
-    'Everything must ship in the bundle. See hard constraint 1 in CLAUDE.md.\n' +
+    'Everything must ship in the bundle. See hard constraint 1 in the README.\n' +
       'Inline the asset, or vendor it into public/ and reference it with a relative path.',
   );
   process.exit(1);

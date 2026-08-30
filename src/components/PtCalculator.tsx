@@ -23,7 +23,7 @@ import { SourceStamp } from './SourceStamp';
  * Everything on screen is read out of the standards data: the components, the
  * events each one offers, the input captions, the chart, the pass and
  * excellent thresholds. Nothing here knows what a push-up is. Adding an event
- * or a new AFMAN edition is a data edit -- see constraint 4 in CLAUDE.md.
+ * or a new AFMAN edition is a data edit -- see constraint 4 in the README.
  *
  * Ported from the maintainer's fillable PDF, and checked against it: the
  * differential test in tests/pt-score.test.ts scores several hundred cases
@@ -35,7 +35,7 @@ import { SourceStamp } from './SourceStamp';
  * actually stares at -- the row you landed on is marked in gold, as in the
  * source PDF.
  *
- * Two DELIBERATE DEVIATIONS from CLAUDE.md, both the maintainer's explicit
+ * Two DELIBERATE DEVIATIONS from the project's constraints, both the maintainer's explicit
  * call after the constraint was raised. Neither is an oversight; do not "fix"
  * either by putting the removed text back.
  *
@@ -93,6 +93,19 @@ const RATING: Record<Rating, { word: string; detail: string }> = {
   'no-score': { word: 'NO SCORE', detail: 'PFRA hold — every component exempt' },
 };
 
+/**
+ * Colours the risk readout by which band it is, without hard-coding the band
+ * names: the first band in the data is the good one, the last is the bad one,
+ * and anything between is a warning.
+ */
+function riskTone(label: string | null): 'ok' | 'warn' | 'bad' | 'plain' {
+  const bands = standards.components.find((c) => c.kind === 'ratio')?.riskBands ?? [];
+  const index = bands.findIndex((b) => b.label === label);
+  if (index < 0) return 'plain';
+  if (index === 0) return 'ok';
+  return index === bands.length - 1 ? 'bad' : 'warn';
+}
+
 function ratingColor(rating: Rating | null): string {
   if (rating === 'excellent' || rating === 'satisfactory') return 'var(--ok)';
   if (rating === null || rating === 'no-score') return 'var(--ink-faint)';
@@ -105,7 +118,7 @@ export default function PtCalculator() {
   const [copyNote, setCopyNote] = useState<string | null>(null);
 
   // localStorage only. Read after mount so the static markup and the first
-  // client render agree; see constraint 2 in CLAUDE.md -- nothing is uploaded.
+  // client render agree; see constraint 2 in the README -- nothing is uploaded.
   useEffect(() => {
     try {
       const saved = localStorage.getItem(DRAFT_KEY);
@@ -193,29 +206,23 @@ export default function PtCalculator() {
   }
 
   return (
-    <div className="mx-auto flex max-w-[1400px] flex-col gap-3 px-6 py-5">
-      {/* The visible page title lives in the layout header, which already reads
-          "PT CALCULATOR". Repeating it here was redundant, but the page still
-          needs a top-level heading for structure, so one is kept for screen
-          readers only. */}
-      <h1 className="sr-only">PT Calculator</h1>
-
-      {/* ---- Age, sex, standards ----------------------------------------- */}
-      <section className="panel p-4">
-        <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-          <h2 className="title m-0">Age, sex, and standards</h2>
+    <div className="mx-auto flex max-w-[1400px] flex-col gap-4 px-6 py-6">
+      {/* ---- Personal information ---------------------------------------- */}
+      <section className="panel p-5">
+        <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <SectionTitle step={1} title="Personal information" />
           <button
             type="button"
             onClick={() => setDraft(initialDraft())}
-            className="util ml-auto flex items-center gap-2 border px-4 py-2"
+            className="util ml-auto flex items-center gap-2 border px-3.5 py-2"
             style={{
-              background: 'var(--panel-raised)',
-              borderColor: 'var(--rule-strong)',
-              color: 'var(--ink)',
-              letterSpacing: '0.1em',
+              background: 'var(--panel)',
+              borderColor: 'var(--accent)',
+              color: 'var(--accent)',
+              letterSpacing: '0.09em',
             }}
           >
-            <span aria-hidden>&#9003;</span> Clear all
+            <span aria-hidden>&#8635;</span> Clear all
           </button>
         </div>
         <div className="flex flex-wrap items-end gap-x-8 gap-y-4">
@@ -252,15 +259,17 @@ export default function PtCalculator() {
             <Readout
               value={track.neutral ? 'Age and sex neutral' : (result.ageGroup?.label ?? '—')}
               width="10rem"
+              tone="plain"
             />
           </Field>
         </div>
       </section>
 
       {/* ---- One panel per component ------------------------------------- */}
-      {standards.components.map((component) => (
+      {standards.components.map((component, index) => (
         <ComponentPanel
           key={component.id}
+          step={index + 2}
           component={component}
           event={eventFor(component)}
           result={byComponent.get(component.id)}
@@ -301,6 +310,28 @@ const CONTROL = {
   borderColor: 'var(--rule-strong)',
   color: 'var(--ink)',
 } as const;
+
+/**
+ * A numbered section heading.
+ *
+ * The steps are what turn five similar panels into an order of operations --
+ * you fill them top to bottom, and the number tells you where you are without
+ * reading any of the labels.
+ */
+function SectionTitle({ step, title }: { step: number; title: string }) {
+  return (
+    <h2 className="m-0 flex items-center gap-2.5">
+      <span
+        aria-hidden
+        className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full text-[11px] font-bold"
+        style={{ background: 'var(--accent)', color: '#ffffff' }}
+      >
+        {step}
+      </span>
+      <span className="title">{title}</span>
+    </h2>
+  );
+}
 
 function Field({
   label,
@@ -388,26 +419,41 @@ function Select({
   );
 }
 
-/** A computed value. Same shape as an input so a row of them stays on one line. */
+/**
+ * A computed value. Same shape as an input so a row of them stays on one line,
+ * but tinted rather than white: at a glance you can tell what you type from
+ * what the calculator worked out.
+ *
+ * `tone` colours the whole box for values that carry a state of their own --
+ * the risk band, and a component that failed its minimum.
+ */
 function Readout({
   value,
   width,
-  color,
+  tone = 'computed',
   strong,
 }: {
   value: string;
   width: string;
-  color?: string;
+  tone?: 'computed' | 'plain' | 'ok' | 'warn' | 'bad';
   strong?: boolean;
 }) {
+  const tones = {
+    computed: { background: 'var(--accent-dim)', color: 'var(--accent-strong)', border: 'var(--rule)' },
+    plain: { background: 'var(--panel-raised)', color: 'var(--ink-muted)', border: 'var(--rule)' },
+    ok: { background: 'var(--ok-dim)', color: 'var(--ok)', border: 'var(--ok-dim)' },
+    warn: { background: 'var(--warn-dim)', color: 'var(--warn)', border: 'var(--warn-dim)' },
+    bad: { background: 'var(--bad-dim)', color: 'var(--bad)', border: 'var(--bad-dim)' },
+  }[tone];
   return (
     <output
       className="tabular block truncate border px-3 py-2 text-[12.5px]"
       style={{
-        background: 'var(--panel-sunk)',
-        borderColor: 'var(--rule)',
-        color: color ?? 'var(--ink-muted)',
+        background: tones.background,
+        borderColor: tones.border,
+        color: tones.color,
         fontWeight: strong ? 600 : 400,
+        borderRadius: 6,
         width,
         maxWidth: '100%',
       }}
@@ -422,6 +468,7 @@ function Readout({
 // ---------------------------------------------------------------------------
 
 function ComponentPanel({
+  step,
   component,
   event,
   result,
@@ -436,6 +483,7 @@ function ComponentPanel({
   onExempt,
   onBox,
 }: {
+  step: number;
   component: ComponentDefinition;
   event: EventDefinition;
   result: ComponentResult | undefined;
@@ -468,11 +516,11 @@ function ComponentPanel({
         : '—';
 
   return (
-    <section className="panel p-4" style={{ opacity: exempt ? 0.72 : 1 }}>
-      <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2">
-        <h2 className="title m-0">{component.label}</h2>
+    <section className="panel p-5" style={{ opacity: exempt ? 0.72 : 1 }}>
+      <div className="mb-4 flex flex-wrap items-center gap-x-3 gap-y-2">
+        <SectionTitle step={step} title={component.label} />
         <span className="util" style={{ letterSpacing: '0.06em' }}>
-          {component.maxPoints} points
+          ({component.maxPoints} points)
         </span>
         <label className="util ml-auto flex cursor-pointer items-center gap-2 select-none">
           <input
@@ -509,7 +557,7 @@ function ComponentPanel({
                 width="5.5rem"
               />
             </Field>
-            <Field label="Waist — 3 measurements (in)">
+            <Field label="Waist (in)">
               <div className="flex gap-2">
                 {(['w1', 'w2', 'w3'] as const).map((slot, i) => (
                   <TextBox
@@ -529,7 +577,11 @@ function ComponentPanel({
               <Readout value={whtr === null ? '—' : whtr.toFixed(2)} width="5.5rem" />
             </Field>
             <Field label="Risk">
-              <Readout value={riskLabel ?? '—'} width="9rem" />
+              <Readout
+                value={riskLabel ?? '—'}
+                width="9rem"
+                tone={riskTone(riskLabel)}
+              />
             </Field>
           </>
         )}
@@ -572,14 +624,21 @@ function ComponentPanel({
             value={result?.display || '—'}
             width="6.5rem"
             strong
-            color={failed ? 'var(--bad)' : passed ? 'var(--ok)' : 'var(--ink)'}
+            tone={failed ? 'bad' : passed ? 'ok' : 'computed'}
           />
         </Field>
 
         <Field label="Minimum to pass">
-          <Readout value={minimumText} width="10rem" />
+          <Readout value={minimumText} width="10rem" tone="plain" />
         </Field>
       </div>
+
+      {!exempt && event.input === 'waist' && (
+        <p className="m-0 mt-3 text-[11.5px]" style={{ color: 'var(--accent)' }}>
+          Waist is the average of 3 measurements, rounded down to the half inch
+          (para 3.15.4.5).
+        </p>
+      )}
     </section>
   );
 }
@@ -613,15 +672,10 @@ function Composite({
     <section className="panel p-4">
       <h2 className="title m-0 mb-3">Composite result</h2>
 
-      <div className="flex flex-wrap items-start gap-x-12 gap-y-4">
-        <div className="flex flex-col gap-1.5">
-          <span className="util">Score / 100</span>
-          <output className="tabular" style={{ fontSize: 30, lineHeight: 1, fontWeight: 700, color }}>
-            {percent === null ? '—' : `${percent.toFixed(1)} / 100`}
-          </output>
-        </div>
+      <div className="flex flex-wrap items-center gap-x-8 gap-y-5">
+        <ScoreRing percent={percent} color={color} />
 
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-1">
           <span className="util">Rating</span>
           <output style={{ fontSize: 22, lineHeight: 1.15, fontWeight: 700, color }}>
             {rating ? rating.word : 'INCOMPLETE'}
@@ -631,10 +685,15 @@ function Composite({
           </span>
         </div>
 
+        {/* Only worth showing when the composite is prorated -- at the full
+            100 it just repeats the ring. */}
         {result.possible > 0 && result.possible < 100 && (
-          <div className="flex flex-col gap-1.5">
+          <div
+            className="flex flex-col gap-1.5 pl-8"
+            style={{ borderLeft: '1px solid var(--rule)' }}
+          >
             <span className="util">Scored on</span>
-            <output className="tabular text-[13px]" style={{ color: 'var(--ink)' }}>
+            <output className="tabular text-[15px] font-semibold" style={{ color: 'var(--ink)' }}>
               {result.earned.toFixed(1)} / {result.possible} pts
             </output>
           </div>
@@ -733,6 +792,47 @@ function Composite({
 // ---------------------------------------------------------------------------
 // The scoring chart
 // ---------------------------------------------------------------------------
+
+/**
+ * The composite as a ring.
+ *
+ * A number alone does not say how close you are to the next rating; a ring
+ * that is two thirds full does, before you have read the number in it. Drawn
+ * as an SVG arc so it stays crisp and needs no images -- constraint 1.
+ */
+function ScoreRing({ percent, color }: { percent: number | null; color: string }) {
+  const radius = 34;
+  const circumference = 2 * Math.PI * radius;
+  const filled = percent === null ? 0 : Math.max(0, Math.min(100, percent)) / 100;
+
+  return (
+    <div className="relative flex h-[86px] w-[86px] shrink-0 items-center justify-center">
+      <svg width="86" height="86" viewBox="0 0 86 86" aria-hidden className="-rotate-90">
+        <circle cx="43" cy="43" r={radius} fill="none" stroke="var(--rule)" strokeWidth="6" />
+        {filled > 0 && (
+          <circle
+            cx="43"
+            cy="43"
+            r={radius}
+            fill="none"
+            stroke={color}
+            strokeWidth="6"
+            strokeLinecap="round"
+            strokeDasharray={`${circumference * filled} ${circumference}`}
+          />
+        )}
+      </svg>
+      <span className="absolute flex flex-col items-center leading-none">
+        <span className="tabular text-[19px] font-bold" style={{ color }}>
+          {percent === null ? '—' : percent.toFixed(1)}
+        </span>
+        <span className="util mt-0.5" style={{ letterSpacing: '0.06em' }}>
+          / 100
+        </span>
+      </span>
+    </div>
+  );
+}
 
 /**
  * Components sharing a point ladder share a chart, which is how the source
@@ -887,12 +987,18 @@ function ChartTable({
     <div style={{ flex: `${width} 1 0`, minWidth: `${width * 5.5}rem` }}>
       {/* Reserves two lines so a caption that wraps does not push its table
           out of line with the two beside it. */}
-      <p
-        className="m-0 mb-2 text-[12px] leading-snug font-semibold"
-        style={{ color: 'var(--ok)', minHeight: '2.6em' }}
-      >
-        {caption}
-      </p>
+      <div className="mb-2.5 flex" style={{ minHeight: '2.9em' }}>
+        <span
+          className="util inline-block rounded-full px-3 py-1.5 text-left"
+          style={{
+            background: 'var(--accent-dim)',
+            color: 'var(--accent-strong)',
+            letterSpacing: '0.08em',
+          }}
+        >
+          {caption}
+        </span>
+      </div>
       <div className="overflow-x-auto">
         <table className="tabular w-full border-collapse text-[12px]">
           <thead>

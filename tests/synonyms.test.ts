@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import {
   findSynonyms,
   findDefinition,
+  findSenses,
   inflect,
   matchCase,
   wordAt,
@@ -125,19 +126,19 @@ describe('findSynonyms', () => {
 
 describe('shipped synonym data', () => {
   it('covers a practical vocabulary', () => {
-    expect(Object.keys(data.synonyms).length).toBeGreaterThan(8000);
+    expect(Object.keys(data.senses).length).toBeGreaterThan(8000);
     expect(Object.keys(data.exceptions).length).toBeGreaterThan(1000);
   });
 
   it('maps irregulars to forms that actually carry synonyms', () => {
     for (const [inflected, base] of Object.entries(data.exceptions).slice(0, 200)) {
-      expect(data.synonyms[base], `${inflected} -> ${base}`).toBeDefined();
+      expect(data.senses[base], `${inflected} -> ${base}`).toBeDefined();
     }
   });
 
   it('holds no multi-word entries, which cannot replace one selected word', () => {
-    const bad = Object.entries(data.synonyms)
-      .flatMap(([lemma, list]) => [lemma, ...list])
+    const bad = Object.entries(data.senses)
+      .flatMap(([lemma, senses]) => [lemma, ...senses.flatMap((sense) => sense.s)])
       .filter((w) => /[^a-z]/.test(w));
     expect(bad.slice(0, 5)).toEqual([]);
   });
@@ -203,15 +204,35 @@ describe('findDefinition', () => {
     expect(findDefinition('zzqxwv', data)).toBeNull();
   });
 
-  it('carries a definition for every lemma that offers synonyms', () => {
-    const lemmas = Object.keys(data.synonyms);
-    const missing = lemmas.filter((l) => !data.definitions[l]);
-    expect(missing.length).toBe(0);
+  it('carries a definition on every sense', () => {
+    const senses = Object.values(data.senses).flat();
+    expect(senses.length).toBeGreaterThan(10000);
+    expect(senses.filter((sense) => !sense.g || sense.g.length < 2)).toEqual([]);
+  });
+
+  it('never ships a sense with no replacements to offer', () => {
+    const empty = Object.entries(data.senses).filter(([, senses]) =>
+      senses.some((sense) => sense.s.length === 0),
+    );
+    expect(empty.slice(0, 3)).toEqual([]);
   });
 
   it('strips the quoted usage examples from the gloss', () => {
-    for (const [, [, text]] of Object.entries(data.definitions).slice(0, 500)) {
-      expect(text.startsWith('"')).toBe(false);
+    for (const sense of Object.values(data.senses).flat().slice(0, 800)) {
+      expect(sense.g.startsWith('"')).toBe(false);
+    }
+  });
+
+  /**
+   * WordNet contains the lemmas "constructor", "toString" and "valueOf". On a
+   * plain object those resolve to inherited Object.prototype members, so a bare
+   * property lookup returns a function instead of undefined.
+   */
+  it('does not mistake an inherited property for a word', () => {
+    for (const trap of ['toString', 'valueOf', 'hasOwnProperty']) {
+      const found = findSenses(trap, data);
+      expect(Array.isArray(found)).toBe(true);
+      for (const sense of found) expect(Array.isArray(sense.options)).toBe(true);
     }
   });
 });

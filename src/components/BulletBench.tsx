@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { FORMS, getForm, getField, isFormUsable } from '@/lib/data/forms';
 import { HQ_APPROVED, COMMON } from '@/lib/data/abbreviationSets';
 import { mergeAbbreviations, applyAbbreviations } from '@/lib/data/abbreviations';
+import { effectiveTable, loadOverrides, type Overrides } from '@/lib/data/abbreviationStore';
+import { loadBenchPrefs, saveBenchPrefs, DEFAULT_BENCH_PREFS } from '@/lib/settings';
 import { STOPWORDS } from '@/lib/data/vocab';
 import { loadFontMetrics } from '@/lib/metrics/registry';
 import { ensureFontFace } from '@/lib/metrics/fontface';
@@ -80,13 +82,15 @@ export default function BulletBench() {
   const [font, setFont] = useState<FontMetrics | null>(null);
   const [cssFamily, setCssFamily] = useState<string | null>(null);
   const [fontError, setFontError] = useState<string | null>(null);
-  const [autoSpace, setAutoSpace] = useState(true);
+  const [autoSpace, setAutoSpace] = useState(DEFAULT_BENCH_PREFS.autoSpace);
   // Approved abbreviations are replaced on the way to the output, before any
   // spacing work: shortening the words first is what gives the optimizer room.
-  const [abbreviate, setAbbreviate] = useState(true);
-  const [showDuplicates, setShowDuplicates] = useState(false);
+  const [abbreviate, setAbbreviate] = useState(DEFAULT_BENCH_PREFS.abbreviate);
+  const [showDuplicates, setShowDuplicates] = useState(DEFAULT_BENCH_PREFS.showDuplicates);
   const [activeLine, setActiveLine] = useState(0);
   const [copyNote, setCopyNote] = useState<string | null>(null);
+  /** Two-step clear: one click arms it, a second within a few seconds does it. */
+  const [clearArmed, setClearArmed] = useState(false);
   /** The word the caret or selection is on, and where it sits in the draft. */
   const [selection, setSelection] = useState<{
     word: string;
@@ -94,6 +98,8 @@ export default function BulletBench() {
     end: number;
   } | null>(null);
   const [synonymData, setSynonymData] = useState<SynonymData | null>(null);
+  /** Whatever the Abbreviations page has been edited to say. */
+  const [overrides, setOverrides] = useState<Overrides | null>(null);
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -112,7 +118,37 @@ export default function BulletBench() {
     } catch {
       /* Blocked storage: the editor still works, the draft is not remembered. */
     }
+    // The toggles used to reset on every visit; they are preferences, so they
+    // come from the same place the Settings page writes.
+    const prefs = loadBenchPrefs();
+    setAutoSpace(prefs.autoSpace);
+    setAbbreviate(prefs.abbreviate);
+    setShowDuplicates(prefs.showDuplicates);
+    if (prefs.formId && getForm(prefs.formId)) {
+      setFormId(prefs.formId);
+      if (prefs.fieldId) setFieldId(prefs.fieldId);
+    }
     setDraftLoaded(true);
+  }, []);
+
+  // Write back so a change made here survives, and matches what Settings shows.
+  useEffect(() => {
+    if (!draftLoaded) return;
+    saveBenchPrefs({
+      ...loadBenchPrefs(),
+      autoSpace,
+      abbreviate,
+      showDuplicates,
+    });
+  }, [autoSpace, abbreviate, showDuplicates, draftLoaded]);
+
+  // Read after mount, and again when the tab regains focus, so an edit made on
+  // the Abbreviations page in another tab is picked up without a reload.
+  useEffect(() => {
+    const read = () => setOverrides(loadOverrides());
+    read();
+    window.addEventListener('focus', read);
+    return () => window.removeEventListener('focus', read);
   }, []);
 
   useEffect(() => {
@@ -164,10 +200,13 @@ export default function BulletBench() {
    * Both reference lists merged: used for the abbreviation pass on the output
    * and for the suggestions on a failed line.
    */
-  const suggestionTable = useMemo(
-    () => mergeAbbreviations([HQ_APPROVED.data, COMMON.data]),
-    [],
-  );
+  const suggestionTable = useMemo(() => {
+    if (!overrides) return mergeAbbreviations([HQ_APPROVED.data, COMMON.data]);
+    return mergeAbbreviations([
+      effectiveTable('hq', overrides),
+      effectiveTable('common', overrides),
+    ]);
+  }, [overrides]);
 
   /**
    * What the output is actually built from: the draft with approved
@@ -244,6 +283,30 @@ export default function BulletBench() {
       setCopyNote('Select + Ctrl+C');
     }
     window.setTimeout(() => setCopyNote(null), 3000);
+  }
+
+  /**
+   * Wipes the draft and the stored copy.
+   *
+   * Armed on the first click rather than acting immediately: this destroys
+   * typed work that no undo can recover, because the textarea's value is being
+   * set programmatically.
+   */
+  function clearDraft() {
+    if (!clearArmed) {
+      setClearArmed(true);
+      window.setTimeout(() => setClearArmed(false), 4000);
+      return;
+    }
+    setClearArmed(false);
+    setText('');
+    setSelection(null);
+    try {
+      localStorage.removeItem(DRAFT_KEY);
+    } catch {
+      /* Nothing stored to remove. */
+    }
+    inputRef.current?.focus();
   }
 
   function syncActiveLine(el: HTMLTextAreaElement) {
@@ -471,6 +534,20 @@ export default function BulletBench() {
           {copyNote && <span className="util">{copyNote}</span>}
           <button
             type="button"
+            onClick={clearDraft}
+            className="util border px-3 py-2.5"
+            title="Removes the draft from this browser"
+            style={{
+              background: 'var(--panel)',
+              borderColor: clearArmed ? 'var(--bad)' : 'var(--rule-strong)',
+              color: clearArmed ? 'var(--bad)' : 'var(--ink-muted)',
+              letterSpacing: '0.1em',
+            }}
+          >
+            {clearArmed ? 'Clear — confirm' : 'Clear'}
+          </button>
+          <button
+            type="button"
             onClick={copyOutput}
             disabled={!measurable}
             className="util flex items-center gap-2 border px-4 py-2.5"
@@ -497,9 +574,15 @@ export default function BulletBench() {
       )}
 
       {/* ---- Workspace --------------------------------------------------- */}
-      <div className="grid items-stretch gap-3 lg:grid-cols-[1fr_auto_1fr]">
+      {/*
+        min-w-0 on the columns is load-bearing. A grid track defaults to a
+        minimum of min-content, and each pane contains a fixed 764px field box,
+        so without it the tracks refuse to shrink below that and the workspace
+        overflows past the config bar and the panel beneath it.
+      */}
+      <div className="grid items-stretch gap-3 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
         {/* Draft */}
-        <section className="panel flex flex-col p-4">
+        <section className="panel flex min-w-0 flex-col p-4">
           <div className="mb-3 flex items-start justify-between gap-4">
             <div>
               <h2 className="title m-0">Draft</h2>
@@ -563,6 +646,10 @@ export default function BulletBench() {
               label="Show Duplicates"
             />
             <span style={{ color: 'var(--rule-strong)' }}>|</span>
+            <span className="util" title="Saved in this browser only, never uploaded">
+              Saved in this browser
+            </span>
+            <span style={{ color: 'var(--rule-strong)' }}>|</span>
             <span style={{ color: 'var(--ink-muted)' }}>
               Formatting:{' '}
               <span style={{ color: needsNormalizing ? 'var(--warn)' : 'var(--ok)' }}>
@@ -578,7 +665,7 @@ export default function BulletBench() {
         </div>
 
         {/* Output */}
-        <section className="panel flex flex-col p-4">
+        <section className="panel flex min-w-0 flex-col p-4">
           <div className="mb-3 flex items-start justify-between gap-4">
             <div>
               <h2 className="title m-0">Output</h2>

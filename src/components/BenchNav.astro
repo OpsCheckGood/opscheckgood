@@ -1,0 +1,53 @@
+---
+/**
+ * Bullet Bench's own navigation.
+ *
+ * The abbreviation lists and the thesaurus are not sections of the site, they
+ * are reference pages belonging to this one tool: the lists decide what its
+ * Abbreviate pass does, and the thesaurus is the same lookup its editor runs on
+ * a selected word. Putting them in the site header implied they stood alongside
+ * the tools themselves.
+ */
+interface Props {
+  /** Which page is showing, so it can be marked rather than linked. */
+  current: 'bench' | 'abbreviations' | 'thesaurus';
+}
+
+const { current } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const root = `${base}/tools/bullet-bench`;
+
+const tabs = [
+  { id: 'bench', label: 'Bench', href: `${root}/` },
+  { id: 'abbreviations', label: 'Abbreviations', href: `${root}/abbreviations/` },
+  { id: 'thesaurus', label: 'Thesaurus', href: `${root}/thesaurus/` },
+] as const;
+---
+
+<nav
+  aria-label="Bullet Bench"
+  class="flex flex-wrap items-center gap-x-1 border-b px-6"
+  style="border-color: var(--rule);"
+>
+  {
+    tabs.map((tab) => {
+      const active = tab.id === current;
+      return (
+        <a
+          href={tab.href}
+          aria-current={active ? 'page' : undefined}
+          class="util no-underline"
+          style={`
+            padding: 8px 12px;
+            letter-spacing: 0.11em;
+            color: ${active ? 'var(--ink)' : 'var(--ink-faint)'};
+            border-bottom: 2px solid ${active ? 'var(--ok)' : 'transparent'};
+            margin-bottom: -1px;
+          `}
+        >
+          {tab.label}
+        </a>
+      );
+    })
+  }
+</nav>

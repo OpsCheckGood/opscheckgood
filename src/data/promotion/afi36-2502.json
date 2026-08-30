@@ -1,0 +1,207 @@
+{
+  "meta": {
+    "source": "AFI 36-2502, Enlisted Airman Promotion and Demotion Programs",
+    "version": "2 July 2026",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "https://static.e-publishing.af.mil/production/1/af_a1/publication/afi36-2502/afi36-2502.pdf",
+    "status": "verified",
+    "notes": "Transcribed from AFI 36-2502, 2 July 2026 (146 pages), read directly from the e-publishing PDF. Paragraph by paragraph: the two routes to a fully qualified SrA promotion are para 2.2.1 verbatim -- '36 months time-in-service and 20 months time-in-grade or 28 months time-in-grade whichever occurs first'. The six-month advance is para 2.3.1 -- 'a one-time promotion consideration to advance to SrA six months prior to the fully qualified phase point listed in paragraph 2.2.1'. Note that the advance is six months off the resolved phase point, NOT a separate 30/14 month pair as some secondary sources paraphrase it; the two differ at month ends. The cycle table is Table 2.7 verbatim. The 3-skill level requirement is Table 2.1 rule 1, referenced by paras 2.2.1 and 2.3.1. Ineligibility categories are paras 2.3.4.4.2, 4.1.7 and 4.1.8.3. The six-year enlistee date-of-rank adjustment is para 2.1.2. Each check and note carries its own paragraph in the data below. Not transcribed here, because this tool does not model them: promotion eligibility conditions (Table 1.2), quota arithmetic (para 2.3.5), and the supplemental board process (para 2.5)."
+  },
+  "data": {
+    "id": "afi36-2502",
+    "label": "AFI 36-2502 - 2 July 2026",
+    "component": "Regular Air Force",
+    "grades": [
+      { "id": "ab", "abbr": "AB", "label": "Airman Basic", "order": 1 },
+      { "id": "amn", "abbr": "Amn", "label": "Airman", "order": 2 },
+      { "id": "a1c", "abbr": "A1C", "label": "Airman First Class", "order": 3 },
+      { "id": "sra", "abbr": "SrA", "label": "Senior Airman", "order": 4 }
+    ],
+    "promotions": [
+      {
+        "id": "amn",
+        "label": "Airman",
+        "fromGrade": "ab",
+        "toGrade": "amn",
+        "paths": [
+          {
+            "id": "tig",
+            "label": "6 months TIG",
+            "shortLabel": "6 TIG",
+            "tisMonths": null,
+            "tigMonths": 6
+          }
+        ]
+      },
+      {
+        "id": "a1c",
+        "label": "Airman First Class",
+        "fromGrade": "amn",
+        "toGrade": "a1c",
+        "paths": [
+          {
+            "id": "tig",
+            "label": "10 months TIG",
+            "shortLabel": "10 TIG",
+            "tisMonths": null,
+            "tigMonths": 10
+          }
+        ]
+      },
+      {
+        "id": "sra",
+        "label": "Senior Airman",
+        "fromGrade": "a1c",
+        "toGrade": "sra",
+        "paths": [
+          {
+            "id": "tis-tig",
+            "label": "36 months TIS with 20 months TIG",
+            "shortLabel": "36 TIS / 20 TIG",
+            "tisMonths": 36,
+            "tigMonths": 20
+          },
+          {
+            "id": "tig",
+            "label": "28 months TIG",
+            "shortLabel": "28 TIG",
+            "tisMonths": null,
+            "tigMonths": 28
+          }
+        ],
+        "btz": {
+          "label": "Below-the-Zone",
+          "monthsEarly": 6,
+          "cycles": [
+            {
+              "id": "q1",
+              "processingMonths": [1, 2],
+              "selectionMonth": 3,
+              "promotionMonths": [4, 5, 6]
+            },
+            {
+              "id": "q2",
+              "processingMonths": [4, 5],
+              "selectionMonth": 6,
+              "promotionMonths": [7, 8, 9]
+            },
+            {
+              "id": "q3",
+              "processingMonths": [7, 8],
+              "selectionMonth": 9,
+              "promotionMonths": [10, 11, 12]
+            },
+            {
+              "id": "q4",
+              "processingMonths": [10, 11],
+              "selectionMonth": 12,
+              "promotionMonths": [1, 2, 3]
+            }
+          ],
+          "checks": [
+            {
+              "id": "grade",
+              "kind": "computed",
+              "check": "grade",
+              "mode": "require",
+              "label": "Grade",
+              "authority": "para 2.3.1",
+              "pass": "Holds the grade below-the-zone is considered from.",
+              "fail": "Below-the-zone advances an A1C to SrA. Enter the A1C date of rank once the member holds the grade."
+            },
+            {
+              "id": "window",
+              "kind": "computed",
+              "check": "window",
+              "mode": "require",
+              "label": "TIS / TIG window",
+              "authority": "para 2.2.1",
+              "pass": "Time in service and time in grade produce a projected date.",
+              "fail": "Needs the date entered active duty and the current date of rank."
+            },
+            {
+              "id": "skill-level",
+              "kind": "attested",
+              "mode": "require",
+              "desired": true,
+              "label": "Skill level",
+              "authority": "Table 2.1, paras 2.2.1 and 2.3.1",
+              "question": "3-skill level awarded, or awarded by the promotion date",
+              "pass": "3-skill level requirement met.",
+              "fail": "Promotion to SrA requires the 3-skill level by the effective date of promotion. If the training delay was no fault of the Airman, the commander requests a retroactive promotion once the 3-skill level is awarded (para 2.2.2).",
+              "unanswered": "Confirm the 3-skill level will be awarded by the promotion date."
+            },
+            {
+              "id": "previous-consideration",
+              "kind": "attested",
+              "mode": "require",
+              "desired": false,
+              "label": "One-time consideration",
+              "authority": "paras 2.3.1 and 2.3.4",
+              "question": "Already considered for below-the-zone",
+              "pass": "Not yet considered.",
+              "fail": "Below-the-zone is a one-time consideration. A member already considered carries grade status reason 5Q and does not appear on a future roster.",
+              "unanswered": "Confirm the member has not already been considered."
+            },
+            {
+              "id": "adjusted-dor",
+              "kind": "attested",
+              "mode": "require",
+              "desired": false,
+              "label": "Adjusted date of rank",
+              "authority": "paras 2.3.4.4.2 and 4.1.8.3",
+              "question": "Date of rank adjusted for previous service",
+              "pass": "No adjusted date of rank reported.",
+              "fail": "An A1C whose date of rank was adjusted for previous service is not eligible for below-the-zone. They reach SrA at 28 months TIG, and must also serve 12 months from the date they entered active duty before pinning on.",
+              "unanswered": "Prior service changes the answer. Confirm whether the date of rank was adjusted."
+            },
+            {
+              "id": "rotc-usafa",
+              "kind": "attested",
+              "mode": "require",
+              "desired": false,
+              "label": "ROTC or Academy credit",
+              "authority": "paras 2.3.4.4.2 and 4.1.8.3",
+              "question": "Eliminated from ROTC or the Air Force Academy with credit toward date of rank",
+              "pass": "No date-of-rank credit reported.",
+              "fail": "A member eliminated from ROTC or the Air Force Academy who was given credit toward their date of rank (date of rank earlier than the effective date) is not eligible for below-the-zone. Without that credit — date of rank and effective date the same — they are eligible.",
+              "unanswered": "Applies only to members eliminated from ROTC or the Academy."
+            },
+            {
+              "id": "tdsp",
+              "kind": "attested",
+              "mode": "require",
+              "desired": false,
+              "label": "Technical Degree Scholarship",
+              "authority": "para 4.1.7",
+              "question": "In the Technical Degree Scholarship Program academic phase",
+              "pass": "Not in the academic phase.",
+              "fail": "Airmen in the Technical Degree Scholarship Program are not entitled to promotion to SrA or to below-the-zone consideration while completing the academic phase.",
+              "unanswered": "Applies only to Technical Degree Scholarship Program participants."
+            },
+            {
+              "id": "six-year",
+              "kind": "attested",
+              "mode": "advise",
+              "desired": false,
+              "label": "Six-year enlistee",
+              "authority": "para 2.1.2",
+              "question": "Initial six-year enlistee",
+              "pass": "Standard enlistment.",
+              "fail": "An initial six-year enlistee is promoted to A1C on completing technical training, or 20 weeks of technical training, whichever occurs first, and the A1C date of rank is then adjusted to the date they completed Basic Military Training. Enter that adjusted date of rank above.",
+              "unanswered": "A six-year enlistment adjusts the A1C date of rank."
+            }
+          ],
+          "notes": [
+            "Below-the-zone is a one-time promotion consideration (para 2.3.1). A member who has been considered carries grade status reason 5Q and does not appear on a later roster (para 2.3.4).",
+            "Units consider every member meeting the time-in-service and time-in-grade requirements, even if they are TDY, on leave, have had a permanent change of assignment, or have a report-not-later-than date on or after the first day of the first processing month (para 2.4.1).",
+            "Quotas are 15 percent of the time-in-grade and time-in-service eligible population, counted regardless of normal promotion ineligibility conditions (para 2.3.5).",
+            "The host wing or installation commander establishes the nomination method, number of nominations, timetable, board composition and scoring scale, so local dates differ from the quarterly cycle (para 2.3.1).",
+            "If an Airman was not considered in the quarter they became eligible, the unit commander may request supplemental below-the-zone consideration before the next board convenes (para 2.5).",
+            "A below-the-zone selectee removed from the selection list stays ineligible until they meet the fully qualified promotion requirements (Table 1.2, rule 8)."
+          ]
+        }
+      }
+    ]
+  }
+}

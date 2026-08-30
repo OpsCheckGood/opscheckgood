@@ -21,13 +21,25 @@ line width in millimetres, not character count. Bullet Bench measures each line 
 the real font, adjusts inter-word spacing so it ends flush, and when a line cannot be
 made to fit it says what to cut and by how much.
 
-One editor, not five separate tools. Competing tools carry the disclaimer *"the shaping
-tool does not work with character count"* because their features live on separate pages
-and cannot see each other's state. Here every panel reads from one parsed document.
+One editor, not five separate tools. Tools that keep these features on separate pages
+end up having to warn that their shaping does not agree with their character count. Here
+every panel reads from one parsed document, so they cannot disagree.
 
-**Built:** width shaping, per-line width and character readouts, fill bars, actionable
-failure diagnosis, draft persistence.
-**Next:** duplicate highlighting, acronym checking, verb bank, click-a-word synonyms.
+It carries two reference pages of its own:
+
+- **Abbreviations** (`/tools/bullet-bench/abbreviations/`) — both lists, searchable, with
+  per-entry enable/disable, your own additions, and CSV import/export. Edits are deltas
+  against the shipped files, so "reset to defaults" is dropping the delta and a future
+  data update still reaches anyone who has not overridden that entry. Switching a single
+  entry off matters: the Common list maps platform names to designators, so `Eagle` would
+  otherwise be rewritten to `F-15` wherever it appears.
+- **Thesaurus** (`/tools/bullet-bench/thesaurus/`) — look a word up without a bullet
+  open. Results are grouped by meaning, and every alternative shows its width in
+  millimetres at the selected form's type size.
+
+**Built:** width shaping, width and character readouts, actionable failure diagnosis,
+abbreviation replacement, duplicate highlighting, acronym classification, click-a-word
+synonyms with definitions, draft persistence.
 
 ### PT calculator
 
@@ -49,6 +61,38 @@ and scores several hundred cases through both engines, comparing composite, rati
 per-component points, and which chart row each one landed on. The data still carries
 `status: "stub"` because the PDF is one step removed from the AFMAN itself — see
 [Populating the data](#populating-the-data).
+
+### MFR generator
+
+Writes an official memorandum for record, or a letter of counseling, admonishment or
+reprimand, to AFH 33-337 (*The Tongue and Quill*) format and exports a signable PDF and
+an editable Word document — both built in the browser, with no library and no request.
+
+The letterhead is a field, not a configuration. This is a public tool with no unit behind
+it, so the three header lines, their colour and the seal are typed by whoever is writing
+the memorandum. Nothing ships a seal: constraint 6 rules out DoD imagery, and a
+letterhead the user did not choose is not theirs to sign under. An uploaded seal stays in
+the browser like everything else.
+
+The formatting rules live in one place and every renderer reads them: quarter-inch
+sub-paragraph levels numbered `1. → a. → (1) → (a)`, indorsements numbered `1st / 2d /
+3d`, one attachment listed as "Attachment:" and two as "2 Attachments:", the signature
+block on the fifth line below the body and never stranded on a page of its own. The live
+preview measures and paginates exactly as the PDF writer does, so the page count on
+screen is the page count in the download.
+
+A LOCAR is four paragraphs and three indorsements, of which the issuer writes two
+paragraphs. The Privacy Act statement, the receipt-and-rights paragraph, the fixed
+opening sentence and the acknowledgment / decision / final-acknowledgment cycle come from
+`src/data/mfr/locar-language.json`, along with both sample libraries. That file is a
+`stub`; the tool shows "Source (stub)" in its provenance stamp rather than the
+unverified-data banner, because the banner is worded for a tool that computes numbers and
+this one lays out text you wrote — every fixed paragraph it adds is quoted in full in the
+live preview, where you can read it before you sign anything.
+
+**Built:** custom MFR and LOCAR, editable letterhead, paragraph tree, attachments /
+cc / distribution, indorsements, CUI banner and designation indicator, live preview,
+PDF, Word, print view, local draft persistence.
 
 ---
 
@@ -228,6 +272,20 @@ official source. To promote the file:
    `tests/pt-data.test.ts` pins that plateau, so changing it will fail a test that names
    exactly this.
 
+### To promote the memorandum language
+
+`src/data/mfr/locar-language.json` holds the fixed LOCAR paragraphs, the three
+indorsements and both sample libraries; `src/data/mfr/memo-format.json` holds the sample
+body of a new memorandum. Both were transcribed by the maintainer rather than generated,
+but neither carries a citable published copy of its source form, so both are `stub` and
+the MFR generator shows the unverified-data banner.
+
+To promote either one: put the official form in front of you, check the wording word for
+word, then replace the `"TBD"` in `meta.version` with its edition, put its URL in
+`meta.sourceUrl`, the date you checked in `meta.verifiedDate`, and set `meta.status` to
+`verified`. The provenance stamp at the foot of the tool stops reading "(stub)" once you
+do.
+
 ### To populate a form
 
 1. Open the official PDF and read its XFA stream for the field widths, font family, and
@@ -327,8 +385,15 @@ npm run test
 
 - **[Liberation Fonts](https://github.com/liberationfonts/liberation-fonts)** — SIL Open
   Font License 1.1.
-- **[WordNet](https://wordnet.princeton.edu/)**, Princeton University — source for the
-  synonym dataset (feature 5, not yet built). WordNet 3.0 License.
+- **[WordNet 3.1](https://wordnet.princeton.edu/)**, Princeton University — source for
+  the synonym and definition data (`src/data/vocab/synonyms.json`, generated by
+  `scripts/build-synonyms.mjs`) and for the morphology exception files vendored under
+  `vendor/wordnet-exc`. WordNet 3.0 License.
+
+- **Department of the Air Force memorandum template** and the **AFJAGS LOCAR form** —
+  US Government works. Source of the memorandum-format sample paragraphs and of the fixed
+  LOCAR language and sample libraries in `src/data/mfr`. Both data files record this in
+  their `meta` block and remain `stub` until the form editions are cited.
 
 ## Licence
 

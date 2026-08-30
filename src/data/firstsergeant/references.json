@@ -1,0 +1,91 @@
+{
+  "meta": {
+    "source": "Ops Check Good — First Sergeant reference index",
+    "version": "1",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "",
+    "status": "stub",
+    "notes": "An index of topics pointing at official publications. The topics are drafted; every publication, section and URL is DELIBERATELY EMPTY. Do not fill these in from memory — publication numbers and paragraph references are exactly the kind of value that comes out plausible and wrong. Read them off the current publication on e-Publishing, then set status=verified."
+  },
+  "data": {
+    "references": [
+      {
+        "id": "first-sergeant-duties",
+        "topic": "First Sergeant duties and responsibilities",
+        "publication": "",
+        "section": "",
+        "url": ""
+      },
+      {
+        "id": "leave",
+        "topic": "Leave",
+        "publication": "",
+        "section": "",
+        "url": ""
+      },
+      {
+        "id": "promotions",
+        "topic": "Enlisted promotions",
+        "publication": "",
+        "section": "",
+        "url": ""
+      },
+      {
+        "id": "administrative-actions",
+        "topic": "Administrative actions",
+        "publication": "",
+        "section": "",
+        "url": ""
+      },
+      {
+        "id": "evaluations",
+        "topic": "Evaluations",
+        "publication": "",
+        "section": "",
+        "url": ""
+      },
+      {
+        "id": "assignments",
+        "topic": "Assignments",
+        "publication": "",
+        "section": "",
+        "url": ""
+      },
+      {
+        "id": "family-care-plans",
+        "topic": "Family care plans",
+        "publication": "",
+        "section": "",
+        "url": ""
+      },
+      {
+        "id": "fitness",
+        "topic": "Physical fitness",
+        "publication": "",
+        "section": "",
+        "url": ""
+      },
+      {
+        "id": "financial-responsibility",
+        "topic": "Financial responsibility",
+        "publication": "",
+        "section": "",
+        "url": ""
+      },
+      {
+        "id": "unfavorable-information",
+        "topic": "Unfavorable information files",
+        "publication": "",
+        "section": "",
+        "url": ""
+      },
+      {
+        "id": "separations",
+        "topic": "Separations",
+        "publication": "",
+        "section": "",
+        "url": ""
+      }
+    ]
+  }
+}

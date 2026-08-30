@@ -51,6 +51,30 @@ const TOOLS = [
     rootId: 'pt-calculator-root',
     outFile: 'pt-calculator-offline.html',
   },
+  {
+    name: 'BTZ Calculator',
+    wordmark: 'BTZ CALCULATOR',
+    tagline: 'Know the date. Build the package.',
+    entry: 'src/offline-entry-btz.tsx',
+    rootId: 'btz-calculator-root',
+    outFile: 'btz-calculator-offline.html',
+  },
+  {
+    name: 'MFR Generator',
+    wordmark: 'MFR GENERATOR',
+    tagline: 'Format it once. Sign it.',
+    entry: 'src/offline-entry-mfr.tsx',
+    rootId: 'mfr-generator-root',
+    outFile: 'mfr-generator-offline.html',
+  },
+  {
+    name: 'First Sergeant Toolkit',
+    wordmark: 'FIRST SERGEANT',
+    tagline: 'Where do I send them?',
+    entry: 'src/offline-entry-first-sergeant.tsx',
+    rootId: 'first-sergeant-root',
+    outFile: 'first-sergeant-offline.html',
+  },
 ];
 
 if (!existsSync(dist)) {
@@ -113,8 +137,10 @@ function shell(tool, js) {
 </script>
 </head>
 <body>
-<header class="flex flex-wrap items-baseline gap-x-5 gap-y-2 border-b px-6 py-4"
+<header class="flex flex-wrap items-baseline gap-x-4 gap-y-2 border-b px-6 py-4"
         style="border-color: var(--rule);">
+  <span style="font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: var(--ink);">OPS CHECK GOOD</span>
+  <span aria-hidden style="color: var(--rule-strong);">/</span>
   <span style="font-size: 17px; font-weight: 700; letter-spacing: 0.16em; color: var(--ink);">${tool.wordmark}</span>
   <span class="util">${tool.tagline}</span>
   <span class="util ml-auto">offline copy</span>
@@ -132,8 +158,10 @@ nothing you type leaves this device.</p>
 <script>
 (function(){
   var b=document.getElementById('theme-toggle');if(!b)return;var r=document.documentElement;
-  function cur(){var e=r.getAttribute('data-theme');if(e==='light'||e==='dark')return e;
-    return window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}
+  // Light is the default, so an absent attribute means light -- the stylesheet
+  // has no prefers-color-scheme rule, so reading the OS here would disagree
+  // with what is actually painted.
+  function cur(){return r.getAttribute('data-theme')==='dark'?'dark':'light';}
   function lab(){var n=cur()==='dark'?'Light':'Dark';b.textContent=n;
     b.setAttribute('aria-label','Switch to '+n.toLowerCase()+' mode');}
   b.addEventListener('click',function(){var n=cur()==='dark'?'light':'dark';

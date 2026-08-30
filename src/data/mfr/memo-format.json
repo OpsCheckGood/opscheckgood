@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "source": "Department of the Air Force official memorandum template (AFH 33-337, The Tongue and Quill)",
+    "version": "TBD",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "",
+    "status": "stub",
+    "notes": "The sample body paragraphs are the memorandum-format guidance carried in the DAF memorandum template (a US Government work). They are prefilled placeholder wording that the user replaces, not a standard the tool computes against. Kept \"stub\" until the template edition and a citable URL are recorded."
+  },
+  "data": {
+    "sampleSubject": "Documentation for the Record",
+    "sampleParagraphs": [
+      "Place \"MEMORANDUM FOR\" on the second line below the date. Leave two spaces between \"MEMORANDUM FOR\" and the recipient's office symbol. If there are multiple recipients, two or three office symbols may be placed on each line aligned under the entries on the first line. If there are numerous recipients, type \"DISTRIBUTION\" after \"MEMORANDUM FOR\" and use a \"DISTRIBUTION\" element below the signature block.",
+      "Place \"FROM:\" on the second line below the \"MEMORANDUM FOR\" line. Leave two spaces between the colon in \"FROM:\" and the originator's office symbol. The \"FROM:\" element contains the full mailing address of the originator's office unless the mailing address is in the header or if all the recipients are located in the same installation as the originator.",
+      "Place \"SUBJECT:\" in uppercase letters on the second line below the last line of the FROM element. Leave two spaces between the colon in \"SUBJECT:\" and the subject. Capitalize the first letter of each word except articles, prepositions, and conjunctions (this is sometimes referred to as \"title case\"). Be clear and concise.",
+      "Body text begins on the second line below the last line in the subject element and is flush with the left margin. Number or letter each body text paragraph and subparagraph according to the format for subdividing paragraphs in official memorandums presented in the Tongue and Quill. When a memorandum is subdivided, the number of levels used should be relative to the length of the memorandum.",
+      "Follow the spacing guidance between the text, signature block, attachment element, courtesy copy element, and distribution lists carefully. The signature block starts on the fifth line below the body text. Never separate the text from the signature block: the signature page must include body text above the signature block. The first element below the signature block begins on the third line below the last line of the duty title."
+    ]
+  }
+}

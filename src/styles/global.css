@@ -1,16 +1,19 @@
 @import 'tailwindcss';
 
 /**
- * Bullet Bench -- visual language.
+ * Ops Check Good -- visual language.
  *
- * A serious internal utility, not a product. The reference points are developer
- * tooling and maintenance software: dense, flat, fast, slightly industrial.
- * No gradients, no glows, no floating cards, no oversized anything. Corners are
- * 2px, which reads as "squared off" without looking broken on a hairline border.
+ * A serious internal utility, not a product. Flat surfaces, hairline rules,
+ * generous whitespace, and one accent colour doing the structural work. No
+ * gradients on content, no glows, no floating cards. Colour carries meaning:
+ * blue is structure and interaction, green/amber/red are the three states a
+ * value can be in, and gold marks the row you scored on a chart. Everything
+ * else is paper and ink.
  *
- * Colour carries meaning and nothing else. Green appears only where a state is
- * genuinely good, amber only for a warning, red only for a hard failure. Every
- * other surface is charcoal and every other rule is one thin gray line.
+ * Light is the default and the intended look; dark is the toggle. Both palettes
+ * define every token -- a token missing from one silently falls back to the
+ * other's value, which is how a dark colour ends up on a light background.
+ * tests/offline.test.ts enforces that parity.
  *
  * No web fonts: hard constraint 1. The stacks resolve to system faces.
  */
@@ -24,11 +27,44 @@
     'Roboto Mono', monospace;
 }
 
-/*
- * Dark is the intended look and the default. The light palette exists because
- * the toggle does; it stays utilitarian rather than becoming a second design.
- */
 :root {
+  color-scheme: light;
+
+  --ground: #f1f4f8;
+  --panel: #ffffff;
+  --panel-sunk: #ffffff;
+  --panel-raised: #f8fafc;
+
+  --ink: #0f172a;
+  --ink-muted: #475569;
+  --ink-faint: #8a95a5;
+
+  --rule: #e3e8ef;
+  --rule-strong: #cbd5e1;
+
+  --ok: #15803d;
+  --ok-dim: #dcfce7;
+  --warn: #a16207;
+  --warn-dim: #fef3c7;
+  --bad: #b91c1c;
+  --bad-dim: #fee2e2;
+
+  /* Structure and interaction. `dim` is the tint behind a computed readout. */
+  --accent: #2563eb;
+  --accent-strong: #1d4ed8;
+  --accent-dim: #eff6ff;
+  --focus: #2563eb;
+  --control: #2563eb;
+
+  /*
+   * The row you scored, on a scoring chart. Gold, as in the source PDF.
+   * Deliberately not --warn: this marks where you landed, it does not warn.
+   */
+  --mark: #92400e;
+  --mark-dim: #fef3c7;
+}
+
+:root[data-theme='dark'] {
   color-scheme: dark;
 
   --ground: #0a0b0c;
@@ -50,106 +86,51 @@
   --bad: #cf6058;
   --bad-dim: #2a1715;
 
-  --accent: #7f95a6;
+  --accent: #6ea8f0;
+  --accent-strong: #8fbcf5;
+  --accent-dim: #111c2c;
   --focus: #4f8fc0;
   --control: #3f7fbf;
 
-  /*
-   * The row you scored, on a scoring chart. Gold, as in the source PDF.
-   * Deliberately not --warn: this marks where you landed, it does not warn.
-   */
   --mark: #e3b341;
   --mark-dim: #2b220d;
-}
-
-:root[data-theme='light'] {
-  color-scheme: light;
-
-  --ground: #e9eaec;
-  --panel: #f7f8f9;
-  --panel-sunk: #eef0f1;
-  --panel-raised: #ffffff;
-
-  --ink: #16191c;
-  --ink-muted: #565c62;
-  --ink-faint: #7c838a;
-
-  --rule: #cdd1d5;
-  --rule-strong: #adb3b9;
-
-  --ok: #3f7a2e;
-  --ok-dim: #e0edda;
-  --warn: #8a6d10;
-  --warn-dim: #f3ead0;
-  --bad: #a33b32;
-  --bad-dim: #f4dedb;
-
-  --accent: #3c5a72;
-  --focus: #2f6ea8;
-  --control: #2f6ea8;
-
-  --mark: #7a5c0c;
-  --mark-dim: #f7edd2;
 }
 
 html {
   background: var(--ground);
   color: var(--ink);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   -webkit-text-size-adjust: 100%;
 }
 
-/*
- * Sticky footer. Without the column flexbox the footer just follows the
- * content, which on a short page leaves it floating mid-screen with empty
- * space beneath. `#main` takes the slack so the footer sits on the bottom
- * edge when content is short, and after the content when it is long.
- *
- * dvh follows mobile browser chrome as it hides and shows; the vh line above
- * it is the fallback for browsers without dvh.
- */
 body {
   margin: 0;
-  display: flex;
-  flex-direction: column;
   min-height: 100vh;
-  min-height: 100dvh;
-}
-
-#main {
-  flex: 1 0 auto;
-}
-
-body > footer {
-  flex-shrink: 0;
 }
 
 /*
- * Labels, readouts and every piece of utility chrome. Mono, uppercase and
- * tracked out: it reads as instrumentation and, more usefully, it stops any of
- * it competing with the text the user is actually writing.
+ * Labels, readouts and every piece of utility chrome. Small, tracked out and
+ * uppercase: it reads as instrumentation and, more usefully, it stops any of it
+ * competing with the values it is labelling.
  */
-/* Section and field labels. Small, tracked out, always uppercase. */
 .util {
-  font-family: var(--font-mono);
   font-size: 10.5px;
-  letter-spacing: 0.11em;
+  font-weight: 600;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
   color: var(--ink-faint);
 }
 
-/* Panel titles: same treatment, one step up and brighter. */
+/* Panel titles: same treatment, one step up, and in the accent. */
 .title {
-  font-family: var(--font-mono);
   font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.13em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--ink);
+  color: var(--accent);
 }
 
 .util-value {
-  font-family: var(--font-mono);
   font-size: 11.5px;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
@@ -157,29 +138,29 @@ body > footer {
   text-transform: none;
 }
 
+/* Every measurement is a number you compare against another number. */
 .tabular {
-  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
 }
 
 .panel {
   background: var(--panel);
   border: 1px solid var(--rule);
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
-/* Focus must be obvious: the editor has to be usable by keyboard alone. */
+/* Focus must be obvious: every tool has to be usable by keyboard alone. */
 :where(a, button, input, select, textarea, [tabindex]):focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 1px;
 }
 
-/* Squared-off native controls that inherit the panel surface. */
 select,
 button,
 input[type='text'] {
-  border-radius: 4px;
-  font-family: var(--font-mono);
+  border-radius: 6px;
+  font-family: inherit;
 }
 
 @media (prefers-reduced-motion: reduce) {

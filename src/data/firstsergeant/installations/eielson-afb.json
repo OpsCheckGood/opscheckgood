@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "source": "MilitaryINSTALLATIONS — Eielson AFB",
+    "version": "retrieved 2026-08-30",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "https://installations.militaryonesource.mil/military-installation/eielson-afb",
+    "status": "verified",
+    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+  },
+  "data": {
+    "id": "eielson-afb",
+    "label": "Eielson AFB",
+    "example": false,
+    "contacts": [
+      {
+        "categoryId": "command-post",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "mental-health",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "chaplain",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "sarc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "security-forces",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "medical",
+        "name": "354th Medical Group Clinic",
+        "phone": "907-377-1847",
+        "dsn": "317-377-1847",
+        "location": "2630 Central Avenue Bld. 3349 Eielson AFB, AK 99702",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/eielson-afb/health/health-care",
+        "notes": "Mon - Thurs 7:30 a.m. - 4:30 p.m. Friday 8:30 a.m. - 4:30 p.m. 4th Wed of the month - 7:30 a.m. - 12:00 p.m. Sat - Closed Sun - Closed Holidays, Wing Down Days - Closed"
+      },
+      {
+        "categoryId": "mfrc",
+        "name": "Military and Family Readiness Center",
+        "phone": "907-377-2178",
+        "dsn": "317-377-2178",
+        "location": "4464 West Loop Bldg. 3126 354 FSS/FSFR Eielson AFB, AK 99702",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/eielson-afb/military-and-family-support-center/military-and-family-support-center",
+        "notes": "Mon - Fri 7:30 a.m. - 4:30 p.m. Closed 7:30 a.m - 9:30 a.m. 2nd Tuesday of the Month for staff training Sat - Closed Sun - Closed Holidays Closed"
+      },
+      {
+        "categoryId": "finance",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "legal",
+        "name": "Legal Office",
+        "phone": "907-377-4114",
+        "dsn": "317-377-4144",
+        "location": "354 Broadway Street Unit 2B Eielson AFB, AK 99702",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/eielson-afb/legal/legal-assistance",
+        "notes": "Legal Assistance (Walk-in): Mon - Friday 8:00 a.m. - 4:00 p.m. Notary Service (Walk-in): Mon – Fri 7:30 a.m. 4:30 p.m. Will Preparation (By Appointment) Sat - Closed Sun - Closed *Closed Thursdays 0900-1000 for Staff Meeting *Closed on Federal Holidays"
+      },
+      {
+        "categoryId": "housing",
+        "name": "Housing Office/Housing Referral Office",
+        "phone": "907-377-1840",
+        "dsn": "317-377-1840",
+        "location": "Military Housing Office 2310 Central Ave Eielson AFB, AK 99702",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/eielson-afb/housing/housing",
+        "notes": "Mon-Tues 0730-1600 Wed 1300-1600 Thurs-Fri 0730-1600 Closed all Federal Holidays, PACAF Family Days and weekends"
+      },
+      {
+        "categoryId": "mpf",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "family-advocacy",
+        "name": "Family Advocacy Program",
+        "phone": "907-377-4041",
+        "dsn": "317-377-4041",
+        "location": "2630 Central Avenue Eielson AFB, AK 99702",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/eielson-afb/military-and-family-support-center/family-advocacy-program",
+        "notes": "Mon - Fri 7:30 a.m. - 4:30 p.m. Sat - Closed Sun - Closed Holidays - Closed Services include: Domestic Abuse Victim Advocate: Crises Response for support and safety planning for all forms of domestic Violence. Please call, 907-669-2012; services are available 24 / 7 New Parent Support Program: Prevention-based parenting support for any family expecting or with a child from ages 0 to 3 years old) service; please contact FAP for additional information Family Advocacy Support Tool: Strength-based couples and individual prevention counseling for family related concerns; please contact FAP for addi"
+      },
+      {
+        "categoryId": "efmp",
+        "name": "Military and Family Readiness Center - EFMP Family Support",
+        "phone": "907-377-2178",
+        "dsn": "317-377-2178",
+        "location": "4464 West Loop Bldg. 3126 354 FSS/FSFR Eielson AFB, AK 99702",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/eielson-afb/exceptional-family-member-program/exceptional-family-member-program",
+        "notes": "Mon - Fri 7:30 a.m. - 4:30 p.m. Closed 7:30 a.m - 9:30 a.m. 2nd Tuesday of the Month for staff training Sat - Closed Sun - Closed Holidays Closed"
+      },
+      {
+        "categoryId": "childcare",
+        "name": "Family Child Care",
+        "phone": "907-377-3635",
+        "dsn": "317-377-3635",
+        "location": "BLDG 3310 2518 Central Avenue Eielson AFB, AK 99702",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/eielson-afb/child-and-youth-services/child-care",
+        "notes": "Monday – Friday | 8:00 AM – 5:00 PM By Appointment Only Closed Federal Holidays & Resiliency Days"
+      },
+      {
+        "categoryId": "emergency-relief",
+        "name": "Personal Financial Management Program (PFMP)",
+        "phone": "907-377-2178",
+        "dsn": "317-377-2178",
+        "location": "M&FRC 4464 West Loop Bldg. 3126 Eielson AFB, AK 99702",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/eielson-afb/military-and-family-support-center/financial-assistance",
+        "notes": "Mon - Fri 7:30 a.m. - 4:30 p.m. Closed 7:30 a.m - 9:30 a.m. 2nd Tuesday of the Month for staff training Sat - Closed Sun - Closed Holidays Closed"
+      },
+      {
+        "categoryId": "military-onesource",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "equal-opportunity",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      }
+    ]
+  }
+}

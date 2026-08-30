@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "source": "MilitaryINSTALLATIONS — Columbus AFB",
+    "version": "retrieved 2026-08-30",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "https://installations.militaryonesource.mil/military-installation/columbus-afb",
+    "status": "verified",
+    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+  },
+  "data": {
+    "id": "columbus-afb",
+    "label": "Columbus AFB",
+    "example": false,
+    "contacts": [
+      {
+        "categoryId": "command-post",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "mental-health",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "chaplain",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "sarc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "security-forces",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "medical",
+        "name": "Medical Clinic, Central Appointment",
+        "phone": "662-434-2273",
+        "dsn": "312-742-2273",
+        "location": "201 Independence Drive Building 1100 Columbus AFB, MS 39710",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/columbus-afb/health/health-care",
+        "notes": "Monday: 7:30 a.m. - 4:30 p.m. Tuesday: 7:30 a.m. - 3:00 p.m. Wednesday: 7:30 a.m. - 4:30 p.m. Thursday: 7:30 a.m. - 3:00 p.m. (except for 1st Thursday) 1st Thurs: 7:30 a.m. - 12:30 p.m. Closed for training. 3rd Thurs: Closed for training Sat & Sun/Holidays: Closed"
+      },
+      {
+        "categoryId": "mfrc",
+        "name": "Military and Family Readiness Center",
+        "phone": "662-434-2790",
+        "dsn": "312-742-2790",
+        "location": "166 C Circle Building 1114 14 FSS/FSH Columbus AFB, MS 39710-7901",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/columbus-afb/military-and-family-support-center/military-and-family-support-center",
+        "notes": "Mon - Wed, Fri 7:30 a.m. - 4:30 p.m. Thur - 7:30 a.m. - 12:00 p.m. Thur 12:00 - 4:30 (training), Sat & Sun/Holidays – Closed"
+      },
+      {
+        "categoryId": "finance",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "legal",
+        "name": "Legal Office",
+        "phone": "662-434-7030",
+        "dsn": "312-742-7030",
+        "location": "555 Seventh Street Building 724, Suite 231 Columbus AFB, MS 39710",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/columbus-afb/legal/legal-assistance",
+        "notes": "Mon - Fri 7:30 a.m. - 4:30 p.m. Sat & Sun/Holidays - Closed Walk-In Hours: Mon – Thurs 10:00 a.m. – 3:00 p.m."
+      },
+      {
+        "categoryId": "housing",
+        "name": "Housing Element",
+        "phone": "662-434-3446",
+        "dsn": "312-742-3446",
+        "location": "555 Simler Blvd Suite 142 Columbus AFB, MS 39710",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/columbus-afb/housing/housing",
+        "notes": "Mon - Thu 7:30 a.m. - 5:15 p.m. Fri 7:30 - 4:15 p.m. Sat & Sun/Holidays - Closed"
+      },
+      {
+        "categoryId": "mpf",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "family-advocacy",
+        "name": "Family Advocacy Program",
+        "phone": "662-434-2239",
+        "dsn": "312-742-2556",
+        "location": "201 Independence Drive Building 1100, First Floor Columbus AFB, MS 39710",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/columbus-afb/military-and-family-support-center/family-advocacy-program",
+        "notes": "Mon - Fri 7:30 a.m. - 4:30 p.m. 1st Thurs, 7:30 a.m. - 12:30 p.m. Closed for training 3d Thurs - Closed for training Sat & Sun/Holidays - Closed"
+      },
+      {
+        "categoryId": "efmp",
+        "name": "Military and Family Readiness Center - EFMP Family Support",
+        "phone": "622-434-2790",
+        "dsn": "312-742-2790",
+        "location": "166 C Circle Building 1114 14 FSS/FSH Columbus AFB, MS 39710-7901",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/columbus-afb/exceptional-family-member-program/exceptional-family-member-program",
+        "notes": "Mon - Wed, Fri 7:30 a.m. - 4:30 p.m. Thur - 7:30 a.m. - 12:00 p.m. Thur 12:00 - 4:30 (training), Sat & Sun/Holidays – Closed"
+      },
+      {
+        "categoryId": "childcare",
+        "name": "Child Development Center",
+        "phone": "662-434-2479",
+        "dsn": "312-742-2479",
+        "location": "225 State Loop Building 940 Columbus AFB, MS 39710",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/columbus-afb/child-and-youth-services/child-care",
+        "notes": "Mon - Fri 6:30 a.m. - 5:30 p.m. Sat, Sun, Federal Holidays & AETC Family Days - Closed"
+      },
+      {
+        "categoryId": "emergency-relief",
+        "name": "Personal Financial Readiness Program (PFR)",
+        "phone": "662-434-2790",
+        "dsn": "312-742-2790",
+        "location": "166 C Circle Building 1114 Columbus AFB, MS 39710-7901",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/columbus-afb/military-and-family-support-center/financial-assistance",
+        "notes": "Mon - Wed, Fri 7:30 a.m. - 4:30 p.m. Thur - 7:30 a.m. - 12:00 p.m. Thur 12:00 - 4:30 (training), Sat & Sun/Holidays – Closed"
+      },
+      {
+        "categoryId": "military-onesource",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "equal-opportunity",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      }
+    ]
+  }
+}

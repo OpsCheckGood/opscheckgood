@@ -1,0 +1,15 @@
+---
+import Base from '../../../layouts/Base.astro';
+import BenchNav from '../../../components/BenchNav.astro';
+import AbbreviationManager from '../../../components/AbbreviationManager.tsx';
+---
+
+<Base
+  title="Abbreviations — Bullet Bench"
+  description="Edit the approved and common abbreviation lists Bullet Bench uses when shaping."
+  brand="Bullet Bench"
+  tagline="What gets shortened, and what does not."
+>
+  <BenchNav current="abbreviations" />
+  <AbbreviationManager client:load />
+</Base>

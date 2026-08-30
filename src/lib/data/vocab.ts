@@ -52,15 +52,11 @@ export function loadSynonyms(): Promise<Dataset<SynonymData>> {
         if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) {
           throw new DataFileError(file, 'data must be an object');
         }
-        const { synonyms, exceptions, definitions } = raw as Partial<SynonymData>;
-        if (typeof synonyms !== 'object' || synonyms === null) {
-          throw new DataFileError(file, 'data.synonyms must be an object of lemma -> synonyms');
+        const { senses, exceptions } = raw as Partial<SynonymData>;
+        if (typeof senses !== 'object' || senses === null) {
+          throw new DataFileError(file, 'data.senses must be an object of lemma -> senses');
         }
-        return {
-          synonyms,
-          exceptions: exceptions ?? {},
-          definitions: definitions ?? {},
-        };
+        return { senses, exceptions: exceptions ?? {} };
       },
     ),
   );

@@ -17,7 +17,7 @@ import sandbox from '../../data/forms/sandbox.json';
  *
  * Adding a form is a data edit plus one line in RAW_FORMS below. If supporting
  * a new form ever needs a change to a component, the abstraction has broken --
- * see constraint 4 in CLAUDE.md.
+ * see constraint 4 in the README.
  */
 
 // Order drives the form picker, and the first usable entry is the default.

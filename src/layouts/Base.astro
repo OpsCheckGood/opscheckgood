@@ -21,31 +21,34 @@ const {
   tagline,
 } = Astro.props;
 const home = import.meta.env.BASE_URL;
-
-// Tools is the only one built. The rest are named because the brief calls for
-// them, and marked unavailable rather than linked to a page that does not
-// exist -- a dead link is worse than an honest "not yet".
 const base = home.replace(/\/$/, '');
 const year = new Date().getFullYear();
 
+// Tools listed in the footer, alongside the reference pages a reader might
+// want. Derived from routes that actually exist so nothing here 404s.
 const footerTools = [
+  { label: 'First Sergeant Toolkit', href: `${base}/first-sergeant/` },
   { label: 'Bullet Bench', href: `${base}/tools/bullet-bench/` },
   { label: 'PT Calculator', href: `${base}/tools/pt-calculator/` },
+  { label: 'MFR Generator', href: `${base}/tools/mfr/` },
 ];
 
-// External references a user might want to check the data against. Plain
-// links the reader chooses to follow -- the page never requests them, so
+// External references, for checking the shipped data against its source. Plain
+// links a reader chooses to follow; the page never requests them, so hard
 // constraint 1 is untouched.
 const footerReference = [
   { label: 'AFPC Acronyms', href: 'https://www.afpc.af.mil/Career-Management/Acronyms/' },
   { label: 'AF e-Publishing', href: 'https://www.e-publishing.af.mil/' },
 ];
 
+// Site-level navigation only. A tool's own pages -- Bullet Bench's abbreviation
+// lists and thesaurus, say -- belong to that tool and are reached from inside
+// it, not from here. Unbuilt entries are named but not linked: a dead link is
+// worse than an honest "not yet".
 const nav = [
   { label: 'Tools', href: home, ready: true },
-  { label: 'Abbreviations', href: null, ready: false },
-  { label: 'Thesaurus', href: null, ready: false },
-  { label: 'Settings', href: null, ready: false },
+  { label: 'First Sergeant', href: `${home.replace(/\/$/, '')}/first-sergeant/`, ready: true },
+  { label: 'Settings', href: `${base}/settings/`, ready: true },
 ];
 ---
 
@@ -212,6 +215,9 @@ const nav = [
           <p class="util m-0" style="letter-spacing: 0.08em;">
             &copy; {year} &middot; MIT Licence
           </p>
+          <p class="m-0 ml-auto text-[12px]" style="color: var(--ink-muted);">
+            Built for Airmen, by Airmen.
+          </p>
         </div>
       </div>
 
@@ -234,7 +240,8 @@ const nav = [
         var root = document.documentElement;
 
         function current() {
-          return root.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+          // Light is the default, so an absent attribute means light.
+          return root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
         }
         function label() {
           // Names the action, not the state: pressing it gives you the other one.

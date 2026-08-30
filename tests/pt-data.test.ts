@@ -5,7 +5,7 @@ import { bracketIndex, columnFor, standardsColumn } from '@/lib/pt/score';
 /**
  * Structural checks on the scoring standards.
  *
- * The phase-2 note in CLAUDE.md asks specifically for two of these: age
+ * The project's phase-2 notes ask specifically for two of these: age
  * brackets with no gaps or overlaps, and monotonic scores. Both are the kind
  * of error that produces a plausible wrong answer rather than a crash, which
  * is the failure mode this project cannot have.

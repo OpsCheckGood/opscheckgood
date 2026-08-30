@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/Base.astro';
+import Settings from '../components/Settings.tsx';
+---
+
+<Base
+  title="Settings — Ops Check Good"
+  description="Preferences, and what this site keeps on your device."
+  brand="Settings"
+  tagline="Preferences and stored data."
+>
+  <Settings client:load />
+</Base>

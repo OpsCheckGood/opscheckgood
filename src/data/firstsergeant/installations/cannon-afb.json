@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "source": "MilitaryINSTALLATIONS — Cannon AFB",
+    "version": "retrieved 2026-08-30",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "https://installations.militaryonesource.mil/military-installation/cannon-afb",
+    "status": "verified",
+    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+  },
+  "data": {
+    "id": "cannon-afb",
+    "label": "Cannon AFB",
+    "example": false,
+    "contacts": [
+      {
+        "categoryId": "command-post",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "mental-health",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "chaplain",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "sarc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "security-forces",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "medical",
+        "name": "Hospitals/Medical Treatment Facility(s)",
+        "phone": "575-784-2778",
+        "dsn": "",
+        "location": "Building 1408 224 W. D.L. Ingram Cannon AFB, NM 88103",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/cannon-afb/health/health-care",
+        "notes": "Medical Center 224 W. D.L. Ingram Blvd, Bldg. 1408 Mon - Fri 7:30 a.m. - 4:30 p.m. Medical In-processing 575-904-4000 Central Appointments 575-784-2778 Sat and Sun - closed Holidays - closed Nurse Advice Line 1-800-874-2273 mhsnurseadviseline.com Plains Regional Medical Center, Clovis, NM 575-769-2141 Roosevelt General Hospital, Portales, NM 575-359-1800"
+      },
+      {
+        "categoryId": "mfrc",
+        "name": "Military and Family Readiness Center",
+        "phone": "575-784-4228",
+        "dsn": "312-681-4228",
+        "location": "Building 1433 331 D.L. Ingram Ave Cannon AFB, NM 88103",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/cannon-afb/military-and-family-support-center/military-and-family-support-center",
+        "notes": "M&FRC Mon - Fri 7:30 am - 4:30 pm Closed for lunch 11:30am - 1230pm Closed Sat and Sun, Holidays and Safety days"
+      },
+      {
+        "categoryId": "finance",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "legal",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "housing",
+        "name": "Housing Office/Government Housing",
+        "phone": "575-904-5462",
+        "dsn": "312-640-5462",
+        "location": "Balfour Beatty Communities 401 James Boatwright Building 9982 Chavez Housing Area Cannon AFB, NM 88103",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/cannon-afb/housing/housing",
+        "notes": "Chavez Housing Area Military Family Housing office, Bldg. 102 (Main Base) 575-904-5465/5462 Mon - Fri 8:00 a.m. – 4:00 p.m. (Closed for lunch 12:00 p.m. - 1 p.m. Sat and Sun - closed Holidays - closed Cannon Family Homes, 401 James F. Boatwright, Bldg. 9982 (Chavez Housing Area) 575-784-7141 Mon - Fri 8:00 a.m. – 5:00 p.m. Sat and Sun - closed Holidays - closed"
+      },
+      {
+        "categoryId": "mpf",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "family-advocacy",
+        "name": "Family Advocacy Program",
+        "phone": "575-784-2474",
+        "dsn": "312-681-2474",
+        "location": "Building 1408 224 D.L. Ingram Ave Cannon AFB, NM 88103",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/cannon-afb/military-and-family-support-center/family-advocacy-program",
+        "notes": "Located in medical facility. 224 W. D.L. Ingram Ave, Bldg. 1408 575-784-2474, 575-784-7348 Mon - Fri 7:30 a.m. - 4:30 p.m. Sat and Sun - closed Holidays - closed Domestic Abuse Victim Advocate (DAVA) 24/7 Hotline: 575-904-0800"
+      },
+      {
+        "categoryId": "efmp",
+        "name": "M&FRC EFMP Family Support",
+        "phone": "575-784-4228",
+        "dsn": "312-681-4228",
+        "location": "Building 1433 331 D.L. Ingram Ave Cannon AFB, NM 88103",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/cannon-afb/exceptional-family-member-program/exceptional-family-member-program",
+        "notes": "Mon - Fri 7:30am - 4:30pm, 331 D.L. Ingram, Building 1433 Closed for lunch 11:30am - 12:30pm Sat and Sun - closed. Holidays - closed."
+      },
+      {
+        "categoryId": "childcare",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "emergency-relief",
+        "name": "Personal Financial Management Services",
+        "phone": "575-784-4228",
+        "dsn": "312-681-4228",
+        "location": "Building 1433 331 D.L Ingram Cannon AFB, NM 88103",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/cannon-afb/military-and-family-support-center/financial-assistance",
+        "notes": "331 D.L. Ingram, Building 1433 575-784-4228 Mon - Fri 7:30 a.m. - 4:30 p.m. Closed for lunch 11:30 a.m. - 12:30 p.m., Closed: Sat and Sun Closed: Holidays and Safety Days Military One Source: Money Matters Call: 800-342-9647 Click: MilitaryOneSource.mil Connect:24/7"
+      },
+      {
+        "categoryId": "military-onesource",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "equal-opportunity",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      }
+    ]
+  }
+}

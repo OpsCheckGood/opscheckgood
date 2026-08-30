@@ -3,13 +3,19 @@
  * Generates src/data/vocab/synonyms.json from the WordNet database.
  *
  * Runs at build time, never at runtime -- the shipped file is plain JSON and
- * the tool never reaches the network (hard constraint 1). WordNet is included
- * as a dev dependency purely so this script has something to read.
+ * the tool never reaches the network (hard constraint 1). WordNet is a dev
+ * dependency purely so this script has something to read.
  *
- * Filtering aims at a practical writing vocabulary rather than all of WordNet:
- * single words only (a multi-word synset member cannot substitute for one
- * selected word), and only lemmas that appear in WordNet's semantically tagged
- * corpora, which is its own signal for "actually used".
+ * ## Grouped by sense
+ *
+ * Synonyms are kept per meaning rather than flattened into one list per word.
+ * A flat list puts "guide" and "conduce" side by side under "lead", which is
+ * tolerable when you are scanning the editor for something shorter and useless
+ * on a page whose job is answering "is this the right word". Each sense carries
+ * its own definition and its own synonyms.
+ *
+ * Keys are single letters because they repeat tens of thousands of times and
+ * the file is downloaded by people on slow connections.
  *
  * Run: npm run build:synonyms
  */
@@ -22,19 +28,13 @@ const require = createRequire(import.meta.url);
 const wordnet = require('wordnet-db');
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
+/** Verbs first: a bullet is a verb-led sentence, so that sense leads. */
 const POS = ['verb', 'adj', 'noun'];
 const MIN_LENGTH = 3;
-const MAX_SYNONYMS = 20;
-/**
- * All senses, most common first.
- *
- * Restricting to the top senses read better in isolation but starved the
- * panel: a word with one narrow first sense offered two options or none. The
- * ordering already puts the common sense first, so taking everything costs
- * ranking, not correctness -- and an extra option the user ignores is cheaper
- * than an empty panel.
- */
-const MAX_SENSES = Number.POSITIVE_INFINITY;
+/** Per sense, not per word -- a single meaning rarely has more real synonyms. */
+const MAX_SYNONYMS = 12;
+const MAX_SENSES = 6;
+const MAX_DEFINITION = 110;
 
 /** WordNet files begin with a licence header on lines starting with two spaces. */
 const contentLines = (file) =>
@@ -44,13 +44,9 @@ const contentLines = (file) =>
 
 const isPlainWord = (word) => /^[a-z]+$/.test(word) && word.length >= MIN_LENGTH;
 
-/** Longest definition kept, so one runaway gloss cannot dominate the panel. */
-const MAX_DEFINITION = 110;
-
 /**
- * A WordNet gloss is `definition; "an example of use"; "another"`. The
- * examples are quoted and belong to the sense rather than defining it, so they
- * are dropped -- the panel needs to answer "is this the right word", quickly.
+ * A WordNet gloss is `definition; "an example of use"; "another"`. The examples
+ * are quoted and belong to the sense rather than defining it, so they go.
  */
 function cleanGloss(gloss) {
   const definition = gloss
@@ -59,7 +55,7 @@ function cleanGloss(gloss) {
     .join(';')
     .trim();
   return definition.length > MAX_DEFINITION
-    ? `${definition.slice(0, MAX_DEFINITION - 1).trimEnd()}\u2026`
+    ? `${definition.slice(0, MAX_DEFINITION - 1).trimEnd()}…`
     : definition;
 }
 
@@ -73,7 +69,6 @@ function readSynsets(pos) {
     const wordCount = parseInt(parts[3], 16);
     const words = [];
     for (let i = 0; i < wordCount; i += 1) {
-      // Members alternate word then lex_id from index 4.
       words.push(parts[4 + i * 2].toLowerCase().replace(/\(.*\)$/, ''));
     }
     synsets.set(offset, { words, gloss: cleanGloss(gloss) });
@@ -81,22 +76,13 @@ function readSynsets(pos) {
   return synsets;
 }
 
-/**
- * One map per part of speech, deliberately not merged.
- *
- * "build" is both a verb and a noun, and unioning them offers `physique,
- * habitus, soma` alongside `construct, make`. A lemma takes its synonyms from
- * the first part of speech that has it, in POS order -- verbs first, because
- * a bullet is a verb-led sentence and that is what people reach for the
- * thesaurus to change.
- */
+/** lemma -> senses, one map per part of speech so meanings never merge. */
 const byPos = new Map(POS.map((pos) => [pos, new Map()]));
-const defsByPos = new Map(POS.map((pos) => [pos, new Map()]));
 let considered = 0;
 
 for (const pos of POS) {
-  const map = byPos.get(pos);
   const synsets = readSynsets(pos);
+  const map = byPos.get(pos);
 
   for (const line of contentLines(`index.${pos}`)) {
     const parts = line.split(/\s+/);
@@ -108,56 +94,54 @@ for (const pos of POS) {
     const pointerCount = Number(parts[3]);
     // ... p_cnt pointer symbols ... then sense_cnt, tagsense_cnt, offsets.
     const tagSenseIndex = 4 + pointerCount + 1;
-    // Previously this dropped lemmas absent from WordNet's tagged corpora,
-    // which sounded like a quality filter and was really a coverage cut: it
-    // removed three quarters of the dictionary, so selecting an ordinary word
-    // often returned nothing at all. Coverage matters more here than trimming
-    // the rare tail, because an empty panel is the one useless outcome.
-
     const offsets = parts
       .slice(tagSenseIndex + 1, tagSenseIndex + 1 + synsetCount)
       .slice(0, MAX_SENSES);
-    const seen = map.get(lemma) ?? new Set();
+
+    const senses = [];
     for (const offset of offsets) {
       const synset = synsets.get(offset);
       if (!synset) continue;
-      for (const word of synset.words) {
-        if (word !== lemma && isPlainWord(word)) seen.add(word);
-      }
+      const words = synset.words.filter((w) => w !== lemma && isPlainWord(w));
+      // A sense with no alternative word offers nothing to swap in.
+      if (words.length === 0) continue;
+      senses.push({
+        p: pos[0],
+        g: synset.gloss,
+        s: [...new Set(words)].slice(0, MAX_SYNONYMS),
+      });
     }
-    // The first sense's gloss, from the first part of speech that has the
-    // lemma: enough to tell whether this is the word you meant.
-    const senses = defsByPos.get(pos);
-    if (!senses.has(lemma)) {
-      const first = synsets.get(offsets[0]);
-      if (first?.gloss) senses.set(lemma, first.gloss);
-    }
-    if (seen.size > 0) map.set(lemma, seen);
-  }
-}
-
-// Collapse to one entry per lemma, first part of speech that has it.
-const map = new Map();
-const definitions = new Map();
-for (const pos of POS) {
-  for (const [lemma, set] of byPos.get(pos)) {
-    if (!map.has(lemma)) map.set(lemma, set);
-  }
-  for (const [lemma, gloss] of defsByPos.get(pos)) {
-    if (!definitions.has(lemma)) definitions.set(lemma, { pos, gloss });
+    if (senses.length > 0) map.set(lemma, senses);
   }
 }
 
 /**
- * WordNet's own exception lists: inflected form -> base form, for the
- * irregulars no suffix rule reaches ("led" -> "lead", "ran" -> "run").
- * Without these, a lookup of the past tense a bullet is actually written in
- * finds nothing, which is most of them.
+ * One entry per lemma, senses ordered by part of speech.
+ *
+ * All parts of speech are kept so the thesaurus page can show a word's noun
+ * meaning as well as its verb one. Consumers that want a single flat list take
+ * only the senses matching the first entry's part of speech, which is what
+ * keeps `physique` out of the suggestions for `build`.
  */
-const exceptions = {};
-const excDir = join(root, 'vendor', 'wordnet-exc');
+// A Map, not an object literal: WordNet contains the lemmas "constructor",
+// "toString" and friends, and on a plain object those resolve to inherited
+// Object.prototype members rather than undefined.
+const senses = new Map();
 for (const pos of POS) {
-  // Vendored separately: wordnet-db ships index/data but not the .exc files.
+  for (const [lemma, list] of byPos.get(pos)) {
+    senses.set(lemma, [...(senses.get(lemma) ?? []), ...list]);
+  }
+}
+
+/**
+ * WordNet's own exception lists: inflected form -> base form, for irregulars no
+ * suffix rule reaches ("led" -> "lead"). Vendored under vendor/wordnet-exc
+ * because the npm package ships index/data but not the .exc files. Without
+ * these, a lookup of the past tense a bullet is written in finds nothing.
+ */
+const excDir = join(root, 'vendor', 'wordnet-exc');
+const exceptions = {};
+for (const pos of POS) {
   const raw = readFileSync(join(excDir, `${pos}.exc`), 'latin1');
   for (const line of raw.split('\n').filter(Boolean)) {
     const [inflected, ...bases] = line.trim().split(/\s+/);
@@ -167,15 +151,15 @@ for (const pos of POS) {
   }
 }
 
-const data = {};
-for (const [lemma, set] of [...map.entries()].sort(([a], [b]) => a.localeCompare(b))) {
-  data[lemma] = [...set].slice(0, MAX_SYNONYMS);
-}
-
-// Only worth shipping an exception if the base form has synonyms to offer.
+// Only worth shipping an exception whose base actually has something to offer.
 const usefulExceptions = {};
 for (const [inflected, base] of Object.entries(exceptions)) {
-  if (map.has(base) && !map.has(inflected)) usefulExceptions[inflected] = base;
+  if (senses.has(base) && !senses.has(inflected)) usefulExceptions[inflected] = base;
+}
+
+const ordered = Object.create(null);
+for (const lemma of [...senses.keys()].sort((a, b) => a.localeCompare(b))) {
+  ordered[lemma] = senses.get(lemma);
 }
 
 const out = {
@@ -190,42 +174,30 @@ const out = {
       'Attribution required; see README.',
     notes:
       'GENERATED by scripts/build-synonyms.mjs -- do not edit by hand. ' +
-      `Derived from WordNet ${wordnet.version} index/data files for ${POS.join(', ')}. ` +
-      'All senses are included, most common first, and a lemma takes its ' +
-      'synonyms from the first part of speech that has it so verb and noun ' +
-      'meanings do not mix. ' +
-      'Kept: single alphabetic lemmas of three or more letters that appear in ' +
-      "WordNet's semantically tagged corpora, which filters out the rare and " +
-      `archaic tail. Up to ${MAX_SYNONYMS} synonyms per lemma, taken from the ` +
-      'synsets that lemma belongs to. Loaded as its own lazy chunk so it does ' +
-      'not affect first paint. `exceptions` maps irregular inflected forms to ' +
-      "their base (led -> lead), from WordNet's own *.exc files, so a bullet " +
-      'written in the past tense still finds synonyms.',
+      `Derived from WordNet ${wordnet.version} for ${POS.join(', ')}. ` +
+      'Grouped by sense: each entry is a list of meanings, each with its part ' +
+      "of speech (p), definition (g) and synonyms (s). Flattening them would " +
+      'put unrelated meanings side by side. Senses are ordered verb, adjective, ' +
+      `noun; up to ${MAX_SENSES} senses and ${MAX_SYNONYMS} synonyms per sense. ` +
+      '`exceptions` maps irregular inflected forms to their base (led -> lead), ' +
+      "from WordNet's own *.exc files. Loaded as a lazy chunk so it does not " +
+      'affect first paint.',
   },
-  data: {
-    synonyms: data,
-    exceptions: usefulExceptions,
-    // Only for lemmas that made it into `synonyms`; a definition with nothing
-    // to offer alongside it is weight for nothing.
-    definitions: Object.fromEntries(
-      [...definitions.entries()]
-        .filter(([lemma]) => lemma in data)
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([lemma, { pos, gloss }]) => [lemma, [pos[0], gloss]]),
-    ),
-  },
+  data: { senses: ordered, exceptions: usefulExceptions },
 };
 
 const file = join(root, 'src', 'data', 'vocab', 'synonyms.json');
 writeFileSync(file, JSON.stringify(out) + '\n', 'utf8');
 
-const lemmas = Object.keys(data).length;
-const pairs = Object.values(data).reduce((n, list) => n + list.length, 0);
-const excCount = Object.keys(usefulExceptions).length;
-const defCount = [...definitions.keys()].filter((l) => l in data).length;
+const lemmaCount = Object.keys(ordered).length;
+const senseCount = Object.values(ordered).reduce((n, list) => n + list.length, 0);
+const pairs = Object.values(ordered).reduce(
+  (n, list) => n + list.reduce((m, sense) => m + sense.s.length, 0),
+  0,
+);
 const kb = Buffer.byteLength(JSON.stringify(out)) / 1024;
 console.log(
-  `synonyms.json: ${lemmas} lemmas, ${pairs} synonyms, ${excCount} irregular ` +
-    `forms, ${defCount} definitions, ${kb.toFixed(0)} KB ` +
+  `synonyms.json: ${lemmaCount} lemmas, ${senseCount} senses, ${pairs} synonyms, ` +
+    `${Object.keys(usefulExceptions).length} irregular forms, ${kb.toFixed(0)} KB ` +
     `(from ${considered} index entries)`,
 );

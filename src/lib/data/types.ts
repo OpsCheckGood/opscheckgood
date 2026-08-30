@@ -122,21 +122,30 @@ export interface VerbEntry {
   category?: string;
 }
 
-/** Lazily loaded; see constraint 1 in CLAUDE.md. */
+/** One meaning of a word: part of speech, definition, and its own synonyms. */
+export interface Sense {
+  /** First letter of the part of speech: v, a or n. */
+  p: string;
+  /** Definition (gloss), with WordNet's quoted usage examples stripped. */
+  g: string;
+  /** Synonyms belonging to this meaning only. */
+  s: string[];
+}
+
+/** Lazily loaded; see constraint 1 in the README. */
 export interface SynonymData {
-  /** Dictionary form -> synonyms, e.g. lead -> [direct, guide, ...]. */
-  synonyms: Record<string, string[]>;
+  /**
+   * Dictionary form -> its meanings, ordered verb, adjective, noun.
+   *
+   * Grouped rather than flattened: "lead" means six different things, and a
+   * single list would offer `conduce` as a replacement for `led a team`.
+   */
+  senses: Record<string, Sense[]>;
   /**
    * Irregular inflected form -> dictionary form, e.g. led -> lead. Bullets are
    * written in the past tense, so without this most lookups find nothing.
    */
   exceptions: Record<string, string>;
-  /**
-   * Dictionary form -> [part of speech initial, definition]. Shown so a writer
-   * can tell whether the word they picked means what they think, before
-   * swapping it for something shorter.
-   */
-  definitions: Record<string, [string, string]>;
 }
 
 // ---------------------------------------------------------------------------
@@ -146,7 +155,7 @@ export interface SynonymData {
 /**
  * Scoring standards are versioned per source edition and are entirely data.
  *
- * Constraint 4 and the phase-2 note in CLAUDE.md both land here: the choice
+ * Constraint 4 and the phase-2 notes both land here: the choice
  * between push-ups and hand-release push-ups, or between a run, a shuttle, and
  * a walk, is an `EventDefinition` in the JSON -- never a branch in a component.
  * Supporting a new event is a data edit plus nothing else.
@@ -272,4 +281,232 @@ export interface PtStandards {
   /** Footnotes the source prints under its chart. Rendered verbatim. */
   chartNotes: string[];
   rating: RatingRules;
+}
+
+// ---------------------------------------------------------------------------
+// Promotion (below-the-zone)
+// ---------------------------------------------------------------------------
+
+/**
+ * Enlisted promotion rules, as data.
+ *
+ * The same stance as the PT tables: the *numbers* -- how many months of time in
+ * service, how many of time in grade, how far below the zone a BTZ promotion
+ * lands, which months a board sits in -- are never written into code. A change
+ * to the instruction is a change to the JSON.
+ *
+ * What code does know is a small closed set of shapes, exactly as `EventKind`
+ * is a closed set for PT: a promotion is reached by one of several `paths`, and
+ * a check is either `computed` (the engine evaluates it) or `attested` (the
+ * user answers yes or no). Adding a fourth path or a sixth attested question is
+ * a data edit. Adding a new *kind* of computed check is not, and should not be
+ * -- there are two, and both are named in `ComputedCheck`.
+ */
+
+export interface GradeDefinition {
+  id: string;
+  /** "A1C". What the tool prints. */
+  abbr: string;
+  /** "Airman First Class". */
+  label: string;
+  /** Ascending seniority. Used to tell "not yet" from "already past". */
+  order: number;
+}
+
+/**
+ * One route to a promotion. A path is satisfied on the LATER of its months --
+ * "36 months TIS with 20 months TIG" is both conditions, not either -- and the
+ * promotion itself lands on the EARLIER of its paths' dates.
+ *
+ * A null bound is simply absent: the 28-month TIG path constrains time in
+ * grade and says nothing about time in service.
+ */
+export interface PromotionPath {
+  id: string;
+  label: string;
+  /** Short form for the fill-rail legend, where the full label will not fit. */
+  shortLabel: string;
+  /** Months of total time in service, measured from date entered active duty. */
+  tisMonths: number | null;
+  /** Months of time in grade, measured from the current date of rank. */
+  tigMonths: number | null;
+}
+
+/**
+ * One quarter of the BTZ cycle: when packages are processed, when the board
+ * sits, and which months the resulting promotions land in.
+ *
+ * Months are 1-12. The promotion months of the four cycles must tile the
+ * calendar year exactly once, which the loader enforces -- a month claimed by
+ * two cycles, or by none, would put a real Airman's board in the wrong quarter.
+ */
+export interface BtzCycle {
+  id: string;
+  processingMonths: number[];
+  selectionMonth: number;
+  promotionMonths: number[];
+  /**
+   * Derived, not authored: 0 when processing happens in the same calendar year
+   * as the promotions, -1 when the promotions fall in the following year (the
+   * Oct/Nov cycle, whose promotions land in Jan-Mar).
+   */
+  leadYearOffset: number;
+}
+
+/** The two checks the engine can evaluate on its own. */
+export type ComputedCheck = 'grade' | 'window';
+
+/** `require` blocks a projection; `advise` raises a flag beside one. */
+export type CheckMode = 'require' | 'advise';
+
+export interface BtzCheck {
+  id: string;
+  kind: 'computed' | 'attested';
+  mode: CheckMode;
+  label: string;
+  /** Which predicate the engine runs. Only set when kind is 'computed'. */
+  check?: ComputedCheck;
+  /** The yes/no the user answers. Only set when kind is 'attested'. */
+  question?: string;
+  /** Which answer satisfies the check. Only set when kind is 'attested'. */
+  desired?: boolean;
+  pass: string;
+  fail: string;
+  /** Shown while an attested question has not been answered either way. */
+  unanswered?: string;
+  /**
+   * Where in the instruction this check comes from, e.g. "para 2.3.4.4.2".
+   * Rendered beside the check: a requirement a supervisor cannot trace is a
+   * requirement they cannot argue with their MPF about.
+   */
+  authority?: string;
+}
+
+export interface BtzRules {
+  label: string;
+  /** How far ahead of the fully-qualified date a BTZ promotion lands. */
+  monthsEarly: number;
+  cycles: BtzCycle[];
+  checks: BtzCheck[];
+  /** Printed verbatim under the result, as the PT chart notes are. */
+  notes: string[];
+}
+
+export interface PromotionRule {
+  id: string;
+  label: string;
+  /** Grade the member holds while being considered. */
+  fromGrade: string;
+  /** Grade they are promoted into. */
+  toGrade: string;
+  paths: PromotionPath[];
+  btz?: BtzRules;
+}
+
+export interface PromotionStandards {
+  id: string;
+  label: string;
+  /** Which component these rules govern, e.g. "Regular Air Force". */
+  component: string;
+  grades: GradeDefinition[];
+  promotions: PromotionRule[];
+}
+
+// ---------------------------------------------------------------------------
+// First Sergeant Toolkit
+// ---------------------------------------------------------------------------
+
+/**
+ * A routing directory, not an authority.
+ *
+ * Everything here answers one question: an Airman came to me with X, where do
+ * I send them? The toolkit never diagnoses, never decides, and never restates
+ * policy in its own words -- it names the agency and cites the publication,
+ * and the official source governs.
+ *
+ * Constraint 5 binds hardest here. A phone number that is plausible and wrong
+ * is worse than an absent one in every case, and catastrophically worse for a
+ * crisis line, so no number is ever generated. Contacts ship empty and the UI
+ * says so until a maintainer fills them in from an official directory.
+ */
+
+/**
+ * `crisis` agencies are the ones a Shirt needs at 0200 with no warning. They
+ * sort first, and an installation cannot be called verified while any of them
+ * is unpopulated.
+ */
+export type Urgency = 'crisis' | 'standard';
+
+export interface AgencyCategory {
+  id: string;
+  label: string;
+  /** What this agency actually handles, in a Shirt's terms rather than a org chart's. */
+  blurb: string;
+  urgency: Urgency;
+  /**
+   * MilitaryINSTALLATIONS program pages carrying this agency, if any.
+   *
+   * Empty means Military OneSource does not publish it per installation --
+   * true of most of the crisis agencies, which is exactly why the worldwide
+   * fallback exists. Read by scripts/import-installations.mjs.
+   */
+  mosPages: string[];
+}
+
+/** One agency's details at one installation. Every string may be empty in a stub. */
+export interface Contact {
+  categoryId: string;
+  /** The local name, e.g. "Kadena Mental Health Clinic". */
+  name: string;
+  phone: string;
+  dsn: string;
+  location: string;
+  hours: string;
+  /** The official page these details were read from. */
+  url: string;
+  notes: string;
+}
+
+export interface Installation {
+  id: string;
+  label: string;
+  /**
+   * True for the shipped placeholder. An example installation is rendered with
+   * a permanent warning and can never be mistaken for a real directory.
+   */
+  example: boolean;
+  contacts: Contact[];
+}
+
+/**
+ * One entry in "I have an Airman who...".
+ *
+ * Deliberately a routing card and not a decision tree: it names where to start,
+ * what else might apply, and what to establish first. It does not tell a Shirt
+ * what the answer is.
+ */
+export interface Situation {
+  id: string;
+  /** Phrased as the Shirt would say it, e.g. "Can't pay their bills". */
+  label: string;
+  /** Category to send them to first. */
+  startHere: string;
+  /** Other categories that commonly apply. */
+  alsoSee: string[];
+  /** Things to establish before routing. Questions, never conclusions. */
+  questions: string[];
+  /** Ids into the reference library. */
+  referenceIds: string[];
+  /** Extra terms that should match this situation in search. */
+  keywords: string[];
+}
+
+/** A pointer to official guidance. The toolkit never paraphrases the content. */
+export interface ReferenceEntry {
+  id: string;
+  topic: string;
+  /** e.g. "DAFI 36-2907". Empty until read off the real publication. */
+  publication: string;
+  section: string;
+  url: string;
 }

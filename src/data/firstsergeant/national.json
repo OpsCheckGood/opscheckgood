@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "source": "Military OneSource",
+    "version": "1 (retrieved 2026-08-30)",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "https://www.militaryonesource.mil/",
+    "status": "verified",
+    "notes": "Worldwide resources, the same at every installation. The Military OneSource number was supplied by the maintainer in the brief for this tool and is published on militaryonesource.mil; it is recorded here rather than generated. Re-check it against the site when revisiting this file — it is the number the toolkit falls back to when nothing local is populated, so it is the single most important value in the project."
+  },
+  "data": {
+    "resources": [
+      {
+        "categoryId": "military-onesource",
+        "name": "Military OneSource",
+        "phone": "800-342-9647",
+        "dsn": "",
+        "location": "Worldwide, by phone and online",
+        "hours": "24 hours a day, 7 days a week",
+        "url": "https://www.militaryonesource.mil/",
+        "notes": "Non-medical counselling, financial counselling, and referral to the right local agency. OCONUS and international dialling options are listed on the site."
+      }
+    ]
+  }
+}

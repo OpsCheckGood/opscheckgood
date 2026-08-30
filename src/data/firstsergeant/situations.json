@@ -1,0 +1,321 @@
+{
+  "meta": {
+    "source": "Ops Check Good — situation routing cards",
+    "version": "1",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "",
+    "status": "stub",
+    "notes": "Routing only. Each card names where to start, what else commonly applies, and what to establish first — it never diagnoses and never states policy. Drafted from the maintainer’s brief; the routings are the obvious ones and have NOT been checked against local guidance, which is why this stays status=stub. A Shirt reviewing this file should expect to move a few of the \"start here\" choices. referenceIds are empty until references.json is filled in."
+  },
+  "data": {
+    "situations": [
+      {
+        "id": "crisis",
+        "label": "Is in crisis or talking about hurting themselves",
+        "startHere": "mental-health",
+        "alsoSee": [
+          "chaplain",
+          "command-post",
+          "medical",
+          "military-onesource"
+        ],
+        "questions": [
+          "Is the Airman safe right now, and is someone with them?",
+          "Does this need a response now rather than an appointment?",
+          "Who else in the chain of command has to be told, and when?"
+        ],
+        "referenceIds": [],
+        "keywords": [
+          "suicide",
+          "self harm",
+          "crisis",
+          "emergency",
+          "safety"
+        ]
+      },
+      {
+        "id": "cannot-pay-bills",
+        "label": "Cannot pay their bills",
+        "startHere": "mfrc",
+        "alsoSee": [
+          "emergency-relief",
+          "finance",
+          "military-onesource"
+        ],
+        "questions": [
+          "Is there an immediate basic-needs problem — food, power, somewhere to sleep?",
+          "Is this caused by a pay problem rather than a budgeting one?",
+          "Is the member mid-PCS, with entitlements not yet settled?"
+        ],
+        "referenceIds": [],
+        "keywords": [
+          "money",
+          "debt",
+          "budget",
+          "rent",
+          "bills",
+          "financial"
+        ]
+      },
+      {
+        "id": "emergency-money",
+        "label": "Needs emergency financial assistance",
+        "startHere": "emergency-relief",
+        "alsoSee": [
+          "mfrc",
+          "finance"
+        ],
+        "questions": [
+          "What is the specific expense, and by when?",
+          "Has the member already been to Finance about it?"
+        ],
+        "referenceIds": [],
+        "keywords": [
+          "loan",
+          "grant",
+          "afas",
+          "emergency",
+          "assistance"
+        ]
+      },
+      {
+        "id": "pay-problem",
+        "label": "Has a pay problem",
+        "startHere": "finance",
+        "alsoSee": [
+          "mpf",
+          "mfrc"
+        ],
+        "questions": [
+          "What exactly is wrong — amount, entitlement, or a missing payment?",
+          "Which documents does the member already have in hand?",
+          "Has anything changed recently: PCS, promotion, dependant status?"
+        ],
+        "referenceIds": [],
+        "keywords": [
+          "pay",
+          "les",
+          "entitlement",
+          "bah",
+          "allowance",
+          "travel voucher"
+        ]
+      },
+      {
+        "id": "problems-at-home",
+        "label": "Is having problems at home",
+        "startHere": "mfrc",
+        "alsoSee": [
+          "chaplain",
+          "family-advocacy",
+          "military-onesource"
+        ],
+        "questions": [
+          "Is anyone at risk of harm?",
+          "Does the member want confidential support, or a formal referral?",
+          "Are children involved?"
+        ],
+        "referenceIds": [],
+        "keywords": [
+          "marriage",
+          "relationship",
+          "domestic",
+          "family",
+          "spouse"
+        ]
+      },
+      {
+        "id": "divorce",
+        "label": "Is going through a divorce",
+        "startHere": "legal",
+        "alsoSee": [
+          "chaplain",
+          "mfrc",
+          "finance"
+        ],
+        "questions": [
+          "Are dependants enrolled who will be affected?",
+          "Does anything need changing on record — allotments, beneficiaries, records?",
+          "Is there a family care plan requirement?"
+        ],
+        "referenceIds": [],
+        "keywords": [
+          "divorce",
+          "separation",
+          "custody",
+          "legal"
+        ]
+      },
+      {
+        "id": "childcare",
+        "label": "Needs childcare",
+        "startHere": "childcare",
+        "alsoSee": [
+          "mfrc",
+          "military-onesource"
+        ],
+        "questions": [
+          "Is this routine cover, shift work, or a one-off?",
+          "Is the member on a waiting list already?"
+        ],
+        "referenceIds": [],
+        "keywords": [
+          "childcare",
+          "cdc",
+          "daycare",
+          "respite",
+          "kids"
+        ]
+      },
+      {
+        "id": "family-emergency",
+        "label": "Has a family emergency",
+        "startHere": "command-post",
+        "alsoSee": [
+          "chaplain",
+          "mfrc",
+          "emergency-relief"
+        ],
+        "questions": [
+          "Has a Red Cross message been initiated?",
+          "Is emergency leave or funded travel in play?",
+          "Who is covering the member’s duties?"
+        ],
+        "referenceIds": [],
+        "keywords": [
+          "emergency leave",
+          "red cross",
+          "death",
+          "illness",
+          "family"
+        ]
+      },
+      {
+        "id": "legal-help",
+        "label": "Needs legal assistance",
+        "startHere": "legal",
+        "alsoSee": [
+          "military-onesource"
+        ],
+        "questions": [
+          "Is this a personal civil matter or something tied to duty?",
+          "Is there a deadline or court date?"
+        ],
+        "referenceIds": [],
+        "keywords": [
+          "legal",
+          "lawyer",
+          "will",
+          "power of attorney",
+          "poa"
+        ]
+      },
+      {
+        "id": "landlord",
+        "label": "Is having trouble with their landlord",
+        "startHere": "housing",
+        "alsoSee": [
+          "legal"
+        ],
+        "questions": [
+          "Is the member in on-base housing or off-base?",
+          "Is the home currently habitable?",
+          "Has anything been put in writing to the landlord?"
+        ],
+        "referenceIds": [],
+        "keywords": [
+          "landlord",
+          "lease",
+          "rent",
+          "housing",
+          "tenant"
+        ]
+      },
+      {
+        "id": "pcs",
+        "label": "Needs PCS help",
+        "startHere": "mfrc",
+        "alsoSee": [
+          "finance",
+          "mpf",
+          "housing"
+        ],
+        "questions": [
+          "Where are they in the process — orders, household goods, travel, in-processing?",
+          "Are there dependants, pets, or EFMP considerations?"
+        ],
+        "referenceIds": [],
+        "keywords": [
+          "pcs",
+          "move",
+          "relocation",
+          "orders",
+          "hhg"
+        ]
+      },
+      {
+        "id": "efmp",
+        "label": "Has an EFMP issue",
+        "startHere": "efmp",
+        "alsoSee": [
+          "mpf",
+          "mfrc"
+        ],
+        "questions": [
+          "Is the member enrolled already?",
+          "Is an assignment or an assignment limitation involved?"
+        ],
+        "referenceIds": [],
+        "keywords": [
+          "efmp",
+          "special needs",
+          "exceptional family member"
+        ]
+      },
+      {
+        "id": "confidential",
+        "label": "Needs confidential counselling",
+        "startHere": "chaplain",
+        "alsoSee": [
+          "military-onesource",
+          "mental-health"
+        ],
+        "questions": [
+          "Does the member understand which options are confidential and which are not?",
+          "Is this something that can wait for an appointment?"
+        ],
+        "referenceIds": [],
+        "keywords": [
+          "confidential",
+          "counselling",
+          "counseling",
+          "talk",
+          "private"
+        ]
+      },
+      {
+        "id": "workplace-conflict",
+        "label": "Is dealing with workplace conflict",
+        "startHere": "equal-opportunity",
+        "alsoSee": [
+          "chaplain",
+          "mfrc"
+        ],
+        "questions": [
+          "Is a protected category alleged?",
+          "Has it been raised in the chain of command already?",
+          "Does the member want resolution or a formal complaint?"
+        ],
+        "referenceIds": [],
+        "keywords": [
+          "eo",
+          "discrimination",
+          "harassment",
+          "conflict",
+          "workplace",
+          "bullying"
+        ]
+      }
+    ]
+  }
+}

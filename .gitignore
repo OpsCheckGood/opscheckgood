@@ -6,3 +6,6 @@ dist/
 
 # Screenshots pasted into the working directory during development.
 /image*.png
+
+# Working notes for the maintainer, not part of the published project.
+CLAUDE.md

@@ -1,0 +1,417 @@
+{
+  "meta": {
+    "source": "AFJAGS letter of counseling/admonishment/reprimand (LOCAR) fillable form",
+    "version": "TBD",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "",
+    "status": "stub",
+    "notes": "Fixed paragraphs (Privacy Act, receipt and rights) and the offence / corrective sample libraries were transcribed by the maintainer from the XFA stream of the AFJAGS LOCAR form. The transcription has not been re-checked against a citable published copy, so this file stays \"stub\" and every tool that reads it shows the unverified-data banner. Flip to \"verified\" only with the official form in hand, recording its edition in meta.version and its URL in meta.sourceUrl."
+  },
+  "data": {
+    "types": [
+      "Counseling",
+      "Admonishment",
+      "Reprimand"
+    ],
+    "abbreviations": {
+      "Counseling": "LOC",
+      "Admonishment": "LOA",
+      "Reprimand": "LOR"
+    },
+    "verbs": {
+      "Counseling": "counseled",
+      "Admonishment": "admonished",
+      "Reprimand": "reprimanded"
+    },
+    "issuerRanks": [
+      "Brig Gen",
+      "Col",
+      "Lt Col",
+      "Maj",
+      "Capt",
+      "1st Lt",
+      "2d Lt",
+      "CMSgt",
+      "SMSgt",
+      "MSgt",
+      "TSgt",
+      "SSgt",
+      "SrA"
+    ],
+    "recipientRanks": {
+      "Enlisted": [
+        "CMSgt",
+        "SMSgt",
+        "MSgt",
+        "TSgt",
+        "SSgt",
+        "SrA",
+        "A1C",
+        "Amn",
+        "AB"
+      ],
+      "Officer": [
+        "Col",
+        "Lt Col",
+        "Maj",
+        "Capt",
+        "1st Lt",
+        "2d Lt"
+      ]
+    },
+    "privacyActRuns": [
+      {
+        "t": "The following information required by the "
+      },
+      {
+        "t": "Privacy Act",
+        "b": true
+      },
+      {
+        "t": " is provided for your information. "
+      },
+      {
+        "t": "AUTHORITY:",
+        "b": true
+      },
+      {
+        "t": " 10 U.S.C. 8013. "
+      },
+      {
+        "t": "PURPOSE:",
+        "b": true
+      },
+      {
+        "t": " To obtain any comments or documents you desire to submit "
+      },
+      {
+        "t": "(on a voluntary basis)",
+        "i": true
+      },
+      {
+        "t": " for consideration concerning this action. "
+      },
+      {
+        "t": "ROUTINE USES:",
+        "b": true
+      },
+      {
+        "t": " Provides you an opportunity to submit comments or documents for consideration. If provided, the comments and documents you submit become a part of the action. "
+      },
+      {
+        "t": "DISCLOSURE:",
+        "b": true
+      },
+      {
+        "t": " Your written acknowledgment of receipt and signature is mandatory. Any other comment or document you provide is voluntary."
+      }
+    ],
+    "rights": "You will acknowledge receipt and return this letter to me within three (3) workdays of your receipt of this letter. Your signature on this document is solely for receipt purposes and is not an admission of guilt. Any comments or documents you wish to be considered concerning this document must be submitted at that time. If you submit supporting documents they will become part of the record.",
+    "uifSentence": "I (will) (will not) recommend that your commander file this document in your UIF.",
+    "acknowledgement": {
+      "memberFirst": [
+        "I acknowledge receipt and understanding of this letter on ________________ (date).",
+        "I understand that I have until ________________ (date), which is no earlier than three (3) workdays of my receipt of this letter, to provide a response and that I must include in my response any comments or documents I wish to be considered concerning this letter."
+      ],
+      "issuerDecision": [
+        "Member (did) (did not) provide written matters in response to this letter.",
+        "I have considered all matters submitted for my consideration by the member. After reviewing all of the evidence, I have determined that the member (engaged) (did not engage) in the conduct noted above and have decided (that this {{noun}} is the appropriate action) (to downgrade this letter to a ________________)."
+      ],
+      "memberFinal": [
+        "I acknowledge that on ________________ (date) you advised me that you had considered the matters submitted by me in response to the above {{noun}} and informed me of your final decision regarding the same."
+      ]
+    },
+    "offenseSamples": [
+      {
+        "label": "Adultery",
+        "text": "Investigation has disclosed that on or about (date) you wrongfully engaged in sexual intercourse (while you were married with an individual who was not your spouse) (with an individual married to another person). The individual with whom you engaged in this illicit conduct was (married to another member in the squadron) (stationed at Eglin Air Force Base) and you carried out this relationship (in an open and notorious manner) (during official duty hours). Your conduct was prejudicial to good order and discipline and a violation of Article 134 of the UCMJ."
+      },
+      {
+        "label": "Dress and Appearance Standards",
+        "text": "Investigation has disclosed that you violated a lawful general (order) (regulation) at Eglin AFB, FL, on or about (date) by (wearing a dirty uniform in violation of AFI 36-2903) (not having your hair cut within the standards prescribed by AFI 36-2903)."
+      },
+      {
+        "label": "Assault",
+        "text": "Investigation has disclosed that you assaulted (name), (a fellow airman, a security policeman. your superior commissioned officer, your superior NCO, your spouse), on or about (date) at Eglin AFB, FL, by (describe assault; for example, by hitting him/her in the face with your fist)."
+      },
+      {
+        "label": "Check, Issuing Worthless",
+        "text": "Investigation has disclosed that on or about (date) at (location) you issued a check drawn on (name of financial institution) to (name) in the amount of $ and (you knowingly failed to maintain sufficient funds in your account to pay such check; you did so with the intent to defraud the named payee; or you did so with the intent to deceive (name)."
+      },
+      {
+        "label": "Civilian Conviction/Misconduct",
+        "text": "An incident report received by me has disclosed that on (date), you were convicted by the_________________Court in________ for driving while intoxicated, a violation of the (cite statute). (Attach a copy of the incident report to the letter)."
+      },
+      {
+        "label": "Communicate a Threat",
+        "text": "Investigation has disclosed that on or about (date) at (location) you communicated a threat to (name), (a fellow airman, a civilian) by (saying ________) (communicating to him/her your intention to injure his/her property), or words to that effect."
+      },
+      {
+        "label": "Conspiracy",
+        "text": "Investigation has disclosed that on or about (date) at (location), you conspired with others to commit (type of offense). Specifically, you and (name) agreed to (describe the crime that they conspired to commit.)"
+      },
+      {
+        "label": "Damage Military Property",
+        "text": "Investigation has disclosed that on or about (date) at (location) you (willfully) (negligently) damaged military property, to wit: (describe property damage)."
+      },
+      {
+        "label": "Damage Personal Property",
+        "text": "Investigation has disclosed that on or about (date) at (location) you (willfully) (negligently) damaged personal property, to wit: (describe property damage)."
+      },
+      {
+        "label": "Debts, Dishonorable Failure to Pay",
+        "text": "Investigation has disclosed that on or about (date) at (location) you dishonorably failed to pay your debts, which were then due and payable, to wit: (describe debts)."
+      },
+      {
+        "label": "Dependents, Failure to Support",
+        "text": "Investigation has disclosed that from about (date) to about (date) you failed to support your (wife, husband, child(ren), family or dependents)."
+      },
+      {
+        "label": "Dereliction of Duty",
+        "text": "Investigation has disclosed that on or about (date) at Eglin AFB, Florida, you were derelict in the performance of your duties, in that you (willfully) (negligently) failed to (describe dereliction)."
+      },
+      {
+        "label": "Disobey a Lawful Order",
+        "text": "Investigation has disclosed that on or about (date) at Eglin AFB, Florida. you failed to obey a lawful order given to you by (name), your (supervisor, superior officer, superior NCO, NCOIC, commander), to (police your work area) on (date)."
+      },
+      {
+        "label": "Disorderly",
+        "text": "Investigation has disclosed that you were, at (location), on or about (date), (disorderly) (drunk and disorderly) (in a public place) (on station), to wit: at or near (location)."
+      },
+      {
+        "label": "Disrespect",
+        "text": "Investigation has disclosed that you were disrespectful to (name), (your superior commissioned officer, your superior noncommissioned officer), by (saying or using words to that effect; turning and walking away while he/she was talking to you) on or about (date) at Eglin AFB, FL, or other (location)."
+      },
+      {
+        "label": "Driving Recklessly",
+        "text": "Investigation has disclosed that you operated a motor vehicle in a reckless manner on or about (date) at Eglin AFB, FL, or other (location)."
+      },
+      {
+        "label": "Driving While Intoxicated",
+        "text": "Investigation has disclosed that you operated a motor vehicle while intoxicated on or about (date) at Eglin AFB, FL, or other (location)."
+      },
+      {
+        "label": "Failure to Fulfill Financial Obligations",
+        "text": "On (date), it was identified that you had an outstanding debt with The Exchange in the amount of $XX.XX. When the delinquency was addressed, you claimed to be unaware of the debt. On several occasions you have been briefed about financial management and the requirements concerning indebtedness of Military Personnel. You have consistently shown a pattern of financial mismanagement."
+      },
+      {
+        "label": "Failure to Go",
+        "text": "Investigation has disclosed that on or about (date) you failed to go at the time prescribed to your appointed place of duty, building (number), Eglin AFB, FL."
+      },
+      {
+        "label": "Failure to Pass CDC or EOC",
+        "text": "You have, for the _____time, failed your Career Development Course (CDC) or End-of-Course Examination (EOC)."
+      },
+      {
+        "label": "False Official Statement",
+        "text": "Investigation has disclosed that on or about (date) at (location) you made a false official statement to wit: (accomplished a statement of witness/complainant at the security police desk and knowingly included false information)."
+      },
+      {
+        "label": "Fitness, FA Failure",
+        "text": "On (date), you failed to meet minimum fitness standards by failing to complete the 1.5 mile run in the maximum allotted time. Your overall composite score was a XX, and this constitutes your XXX failure within two years."
+      },
+      {
+        "label": "Intoxication",
+        "text": "Investigation has disclosed that you were drunk on duty at Eglin AFB, FL, on or about (date)."
+      },
+      {
+        "label": "Leaving Place of Duty",
+        "text": "Investigation has disclosed that you left your place of duty, building (number), Eglin AFB, FL, without authority on or about (date)."
+      },
+      {
+        "label": "Misuse of GTC",
+        "text": "On or about (date), at or near (location), you violated a lawful general regulation by wrongfully using your Government Travel Card (GTC) for personal use, to wit: (describe how/where used). Your conduct was in direct violation of Article 92, UCMJ."
+      },
+      {
+        "label": "Receipt of Stolen Property",
+        "text": "Investigation has disclosed that on or about (date) at (location) you knowingly (received, bought or concealed) stolen property, to wit: (describe property)."
+      },
+      {
+        "label": "Remaining in Presence of Criminal Activity by Others",
+        "text": "Investigation has disclosed that on or about (date) at (location) you voluntarily remained in the company of persons who were engaged in criminal activity, to wit: (three persons in your presence were smoking marijuana and you did not report them to the proper authorities)."
+      },
+      {
+        "label": "Sexual Harassment",
+        "text": "Investigation has disclosed that on or about (date) at (location) you engaged in inappropropriate conduct of a sexual nature toward (victim's name). Your conduct toward (victims name) falls within the realm of sexual harassment. Your (suggestive comments, unauthorized touching or indecent gestures) has/have been substantiated by corroborative witnesses. (On (date), you presented a gift to a male/female airmen subordinate assigned to the (squadron). The gift consisted of___________. The airman has stated that nothing in his/her prior relationship with you could be construed as an indication that he/she would willingly accept a sexually suggestive gift of this nature). (Your bad judgment is further underscored by the fact that you are married)."
+      },
+      {
+        "label": "Theft",
+        "text": "On (date), you were caught on surveillance camera stealing X, Y, and Z from a restaurant."
+      },
+      {
+        "label": "Underage Drinking",
+        "text": "On (date), at or near (location), you were observed (describe incident and any negative behavior of member) despite being only ( ) years of age. Your wrongful consumption of alcohol while underage was in direct violation of Article 92, UCMJ."
+      },
+      {
+        "label": "Wrongful Appropriation",
+        "text": "Investigation has disclosed that on or about (date) at (location) you wrongfully appropriated (military, personal) property for (your own use, the unauthorized use of another person)."
+      }
+    ],
+    "correctiveSamples": [
+      {
+        "label": "Dress and Appearance Standards",
+        "text": "You may not consider haircut instructions important, but I assure you that I do. If I cannot depend upon you to follow AFI 36-2903, I cannot depend upon you to follow other orders. Henceforth, I expect you to be a model of AFI 36-2903 standards. A repetition of this or any other violation will be dealt with more severely. (Modify for other AFI 36-2903 violations)."
+      },
+      {
+        "label": "Adultery",
+        "text": "As an Airman in the United States Air Force, you are expected to maintain a standard of professional and personal behavior that is above reproach. Your behavior surrounding the above offense falls far below any reasonable standard for a person in your position. This misconduct demonstrates an appalling lack of character, and has caused me to seriously question your judgment. I expect that you will refrain from engaging in illicit relationships such as this in the future. If you engage in any similar misconduct, it may be met with more serious adverse action taken against you."
+      },
+      {
+        "label": "Assault",
+        "text": "I want you to know that your conduct was criminal. Many people have received Article 15s and have been court-martialed for the crime of assault. People have the right to be secure in their person from fear of bodily harm at the hands of another. Regardless of how you feel, I will not tolerate you resorting to assault to solve your problems. The Air Force and this unit cannot tolerate the adverse consequences of your behavior, and you cannot afford the sanctions that a repeat performance will cause. Henceforth, I expect you to be an exemplary model for your subordinates and your peers."
+      },
+      {
+        "label": "Check, Issuing Worthless",
+        "text": "I want you to realize that issuing a worthless check is a crime under the Uniform Code of Military Justice. Your misconduct should have resulted in Article 15 or court-martial action. You have adversely affected you fellow airmen by blemishing the fine image which they project. I fully expect you never to resort to such behavior again. If you do, expect stronger and quicker action to be taken against you."
+      },
+      {
+        "label": "Civilian Conviction/Misconduct",
+        "text": "You are hereby reprimanded for the incident outlined above. Military custom and tradition require a high standard of conduct of all airmen. This standard of conduct relates not only to military duties, but the discharge of your civic responsibilities and your relation with the civilian community. You are well aware that as an airman you are duty-bound to hold sacred the honor and prestige of the United States Air Force in your duty and in your community. (The seriousness of this matter, together with the lack of responsibility, judgment and good sense you displayed on this occasion, compels me to caution you that any recurrence can only jeopardize your career). By your actions, you have caused discredit to fall upon this organization and the Air Force."
+      },
+      {
+        "label": "Communicate a Threat",
+        "text": "By communicating a threat to ______ you committed a crime. The Congress of the United States and I share the common belief that no one should have to be subjected to your threats. I expect you to handle any differences you have with any person in a legal and mature fashion. Do not be deceived into thinking that you have a license to misbehave by the lenient manner in which I have treated you. I will take harsher action for any further misconduct."
+      },
+      {
+        "label": "Conspiracy",
+        "text": "I want you to realize that conspiring with others to commit a crime is, in itself, a crime. As a member of the military, you must always abstain from criminal conduct. Your action has brought discredit upon this unit and yourself. Consider yourself fortunate because Article 15 and even court-martial action is warranted by your conduct. I expect you to redeem yourself by hard work and a clean record, and to never again conduct yourself in such a manner."
+      },
+      {
+        "label": "Damage Military Property",
+        "text": "I want you to understand that damaging military property is a crime. The damage you caused has resulted in needless expenses for repair, waste of manpower, and degradation of mission capabilities. Remember that you are in the Air Force to enhance mission capabilities, not to detract from them. Consider this statement a forewarning that your future conduct win be more closely scrutinized and know that any more misbehavior will result in my taking stronger action against you."
+      },
+      {
+        "label": "Damage Personal Property",
+        "text": "By damaging the personal property of another, you committed a crime. Consider yourself fortunate that you are only being reprimanded, but note that any recurrence will result in harsher sanctions. Each person has the right to believe that other-people will respect his property, but you have shown that any such beliefs in you are ill-founded. You and you alone have the opportunity to restore the faith of others in you. I believe that this should be your goal, but even if this is not important to you, you had better heed this warning and refrain from further misconduct of any type."
+      },
+      {
+        "label": "Debts, Dishonorable Failure to Pay",
+        "text": "By falling to pay your just debts, you have brought discredit upon yourself and the United States Air Force. As an Air Force member, you are expected and required to manage your financial affairs in a way which ensures that your creditors receive what is rightly owed them. Your conduct has tarnished the high regard most businessmen have for Air Force members. I hope that you have seen the error of your ways, and I expect you to become a model airman. I will not be as lenient with you if you repeat the same misconduct."
+      },
+      {
+        "label": "Dependents, Failure to Support",
+        "text": "Your monthly compensation is increased because of your obligations to your dependents and I fully expect you to meet those obligations. Failure to support ones dependents casts a particularly unpleasant shadow over both you and the Air Force."
+      },
+      {
+        "label": "Dereliction of Duty",
+        "text": "If any task is worth doing, it is worth doing well. At a minimum, it is worth doing satisfactorily. By definition, your dereliction fell below minimum standards and was the result of conscious behavior. In addition to being irresponsible, it is a crime. In the future, I expect you to take more pride in your job and in helping this unit accomplish its mission. Rest assured that I will be watching you closely, and in the event you degrade this units mission again by your dereliction, I will take swift and sure action against you."
+      },
+      {
+        "label": "Disobey a Lawful Order",
+        "text": "I want you to know that I consider disobeying a lawful order to be one of the most serious offenses an Air Force member can commit. Strict adherence to orders is the only way that any military force anywhere in the world can execute its mission, whether that mission is offensive or defensive. Our unit is no different. You have damaged its mission capability by identifying yourself as one who cannot be depended upon to perform as ordered. You are going to have to strive diligently if you ever hope to reestablish your dependability. Any repetition of this totally unacceptable behavior will result in stronger action against you."
+      },
+      {
+        "label": "Disorderly",
+        "text": "Military custom and tradition require a high standard of conduct of all airmen, particularly non-commissioned officers. This standard of conduct relates not only to performance of military duties but the discharge of your civic responsibilities and your relations with the civilian community. The seriousness of this matter, together with the lamentable lack of responsibility, judgment and common sense displayed on this occasion, compel me to caution you that any recurrence can only jeopardize your career. Your actions have caused me to question your ability to perform as an NCO. I expect you to heed these remarks and act accordingly in the future."
+      },
+      {
+        "label": "Disrespect",
+        "text": "I will not tolerate disrespect by anyone in this organization toward any of their superiors. Your disrespect has been detrimental to unit morale and discipline. I fully expect you will never repeat such conduct. If you do, expect more serious consequences."
+      },
+      {
+        "label": "Driving Recklessly",
+        "text": "Reckless driving is a dangerous, criminal act. By issuing you a drivers license, the state has permitted you to operate a useful, yet potentially dangerous instrumentality, an automobile. The Air Force has also permitted you to operate your automobile on Eglin AFB, Florida. You have abused the trust placed in you by your reckless driving. (You have also jeopardized the safety the Air Force members and Air Force property)."
+      },
+      {
+        "label": "Driving While Intoxicated",
+        "text": "Driving while intoxicated is a crime. It is also a dangerously irresponsible act. You did not care who occupied the roadway with you while you were intoxicated, nor did you consider the consequences of drinking and driving not only on yourself but innocent individuals whom you may come into contact with while driving. The Air Force cannot afford to lose people, its most valuable resource, because you choose to drink and drive. I absolutely will not tolerate this deplorable behavior. You are most fortunate that you did not harm anyone by choosing to drink and drive. If you ever drink and drive again, I will take the most severe action allowable against you. Many airmen have received Article l5s or have been court-martialed for driving while intoxicated. I hope that you do not fall victim to thinking that the lenient manner in which I am handling your offense gives you a license to continue such criminal behavior or indicates that I condone drunken driving. I am, in fact, appalled by your conduct, conduct that has discredited you and blemished the image of all airmen. If you do not take this opportunity to prove your potential, or if you involve yourself in any further misconduct, I will take much stronger action."
+      },
+      {
+        "label": "Failure to Fulfill Financial Obligations",
+        "text": "A member of the United States Air Force is expected to maintain the highest standards of personal conduct, responsibility, and integrity. As a military member it is your requirement to effectively manage your finances and live within your means. Your failure to do so adversely affects mission readiness and it compromises both your credibility and trustworthiness. You should make every effort to ensure your future conduct is above reproach."
+      },
+      {
+        "label": "Failure to Go",
+        "text": "In the Air Force, failure to go is a crime. I assure you that many airmen have been given Article 15s and have been court-martialed for similar conduct. This unit, this wing, and indeed, the entire Air Force, cannot function when members become undependable. You have proven that you cannot always be depended upon, and consequently, you have damaged this units mission capabilities. I expect you to work diligently at redeeming yourself and proving that you are dependable."
+      },
+      {
+        "label": "Failure to Pass CDC or EOC",
+        "text": "Your failure to pass your CDC/EOC shows a lack of responsibility on your behalf. You were made aware of the importance of successfully passing your CDC/EOC, yet you failed for the ________time. You are hereby advised that failure of your CDC/EOC places severe jeopardy on your Air Force career."
+      },
+      {
+        "label": "False Official Statement",
+        "text": "In the Air Force, making a false official statement is a criminal act. You can consider yourself fortunate because many airmen have received Article 15s or have been court-martialed for such deplorable conduct. I cannot and will not tolerate this type of behavior in this unit. Untruths and half-truths degrade the mission of the Air Force, a mission which can only be accomplished by trustworthy people. Having identified yourself as one requiring close supervision, you can expect to have your future actions closely scrutinized. Rest assured that I will react strongly to any further misbehavior on your part."
+      },
+      {
+        "label": "Fitness, FA Failure - Amn",
+        "text": "Your failure to meet the minimum standards outlined in AFI 36-2905 is unacceptable. Furthermore, you have failed to meet the expectations of AFI 36-2618, The Enlisted Force Structure, para. 3.1.4.2., which states that Junior Enlisted Airmen must \"be physcially ready to accomplish the mission, attain and maintain excellent physical conditioning, and always meet Air Force fitness standards.\" If you are unable to improve your physical fitness assessment score, more severe action may be taken against you that could include involuntary separation from the Air Force."
+      },
+      {
+        "label": "Fitness, FA Failure - NCO",
+        "text": "Your failure to meet the minimum standards outlined in AFI 36-2905 is unacceptable. Furthermore, you have failed to meet the expectations of AFI 36-2618, The Enlisted Force Structure, para. 4.1.4.2., which states that NCOs must \"be physcially ready to accomplish the mission, attain and maintain excellent physical conditioning, always meet Air Force fitness standards, and set a positive example for subordinates.\" It is your responsibility to develop a personal nutrition and exercise plan that will help you achieve a passing score on the retest. You have fallen far short of the NCO charge. If you are unable to improve your physical fitness assessment score, more severe action may be taken against you that could include involuntary separation from the Air Force."
+      },
+      {
+        "label": "Intoxication",
+        "text": "I absolutely will not tolerate on-duty intoxication from any person in this organization. You are paid and fully expected to be able to do your job every day. Because of your intoxication, you failed to do your job, jeopardized unit safety, and seriously damaged the morals in this unit. I expect you to never repeat such deplorable conduct or misbehave in any other way. If you do, I will take stronger action against you."
+      },
+      {
+        "label": "Leaving Place of Duty",
+        "text": "By leaving your place of duty without authority, you committed a crime. By your conduct, you proved that you are not trustworthy. Further, you injured this units missions capabilities. I will not tolerate any further conduct of this kind. Also, I will be closely monitoring your performance to see if you are up to the task of redeeming yourself."
+      },
+      {
+        "label": "Misuse of GTC",
+        "text": "Your decision to use your Government Travel Card for an unauthorized transaction clearly demonstrates a lapse in judgment and has caused me to question whether you can be trusted with matters of importance. I expect that you will demonstrate that this was an isolated incident by your strict compliance with the rules and regulations that govern the use of the GTC. Failure to do so will result in more severe actions being taken against you."
+      },
+      {
+        "label": "Receipt of Stolen Property",
+        "text": "Knowingly (receiving, buying, or concealing) stolen property is a crime. By engaging in such conduct, you aided a thief in covering his steps and profiting from his criminal conduct. You also brought disrespect upon yourself and the United States Air Force. I will not tolerate further misconduct by you of any type."
+      },
+      {
+        "label": "Remaining in Presence of Criminal Activity by Others",
+        "text": "Your presence at the scene while these crimes were being committed identifies you as a person who condones criminal activity. You should be aware that your mere presence might, in certain situations, result in your being prosecuted for offenses committed by others. You have a duty to yourself to avoid criminals, and you have a duty to the Air Force to report any crime that you observe to responsible officials. I trust that this warning will point out to you the serious implications of your conduct and that you will avoid anyone involved in any criminal activity."
+      },
+      {
+        "label": "Sexual Harassment",
+        "text": "I have reviewed your service record and it convinces me that you can still make valuable contributions to the Air Force, outside of your career field. However, you must closely examine your attitude and behavior towards females to avoid more severe penalties in the future. Counseling from the Military Equal Opportunity Office may be appropriate if you have any question in your mind on what constitutes appropriate or inappropriate behavior. (Your highly suggestive and inappropriate gift is precisely the type of conduct prohibited by AFI 36-2701). The offer of unwarranted sexual attention creates an intimidating and offensive environment for the recipient of such attention, to the prejudice of good order and discipline. Conduct of this nature will not be tolerated."
+      },
+      {
+        "label": "Theft",
+        "text": "A member of the United States Air Force is expected to maintain the highest standards of personal conduct, responsibility, and integrity. You are far from meeting those standards. Your actions were in direct violation of Article 121 of the Uniform Code of Military Justice."
+      },
+      {
+        "label": "Underage Drinking",
+        "text": "Your actions evidence a stunning lack of judgment and maturity. As Airmen, our conduct must be above reproach and demonstrate steadfast compliance with all laws and regulations. Your deliberate decision to consume alcohol while underage demonstrates that you lack interest in upholding standards and abiding by the law. I expect that you will do everything in your power to undo this negative image and will refrain from consuming alcohol until it is legal for you to do so."
+      },
+      {
+        "label": "Wrongful Appropriation",
+        "text": "Wrongfully appropriating (military, your fellow airmans or name) property is a crime. I will not tolerate theft by anyone in this organization. By your conduct, you created animosity within this unit and damaged its mission capabilities. Additionally, your misconduct has brought discredit upon yourself. I expect you to never repeat such unpardonable behavior. Should you decide to not heed this warning, harsher punishment will be forthcoming."
+      },
+      {
+        "label": "General Closure Officers - 1",
+        "text": "As a commissioned officer, you are expected to conduct yourself at all times in a manner which will set a good example and earn for you the respect of the junior officers and air-men who look to you for leadership and guidance. I expect that my action in this case will bring you to a full realization of your professional obligations and responsibilities and that you will conduct yourself in the future so as to make any further administrative or disciplinary action against you unnecessary."
+      },
+      {
+        "label": "General Closure Officers - 2",
+        "text": "As a commissioned officer you are expected to maintain a standard of professional and personal behavior that is above reproach. Your honor and behavior as an officer should serve as a model for junior officers and airmen to emulate. Your behavior regarding the above offense is entirely incompatible with the standards expected of an officer in the United States Air Force."
+      },
+      {
+        "label": "General Closure Enlisted - 1",
+        "text": "I sincerely hope you understand the wrongfulness of your conduct and appreciate the seriousness of this administrative action. The magnitude of this matter, together with the lamentable lack of responsibility, judgment and good sense you displayed compel me to caution you that your career is in jeopardy. Any recurrence of this behavior will lead to more serious consequences."
+      },
+      {
+        "label": "General Closure Enlisted - 2",
+        "text": "Be advised that if another derogatory incident concerning you is brought to my attention, I shall no longer be in doubt regarding your competence to represent the noncommissioned officer corps, or in fact, remain a member of the United States Air Force. The same forcefulness you have exhibited in attaining your present grade and performing your military duties must now be channeled to the exercise of your personal affairs."
+      },
+      {
+        "label": "Making Racial, Sexist, or Ethnic Remarks",
+        "text": "Making racial, sexist, or ethnic remarks, including telling racial, sexist, or ethnic jokes, is totally unacceptable. Your conduct has created tension and hostility within this unit and has had a detrimental effect upon morale. I will not tolerate this type of conduct I fully expect you to heed this warning to refrain from this and all other misbehavior. If you do not, expect the harshest of consequences."
+      },
+      {
+        "label": "Permitting Racial, Sexist, or Ethnic Remarks",
+        "text": "Permitting racial, sexist or ethnic jokes or comments to be made in your work area is totally unacceptable. As a supervisor in the Air Force, you have the responsibility to always remain impartial and support equal opportunity for all persons. If you cannot remain impartial, you are not fit to supervise. Your action has been detrimental to this units mission. This, too, caused me to question your supervisory capabilities. I expect that you will never again resort to this or any other type of misconduct, and I expect you to prove that you are fully capable of shouldering and bearing the supervisory responsibilities I have entrusted to you."
+      },
+      {
+        "label": "Conduct Unbecoming an Officer-off duty",
+        "text": "Military Law, custom and tradition require a high standard of conduct of all officers. These standards of conduct relate not only to performance of military duties, but to the discharge of your responsibilities and your relations with other members of the military community as well. Your behavior is entirely incompatible with that expected of an officer. (I have carefully reviewed your statement regarding the incident, and can find no justification for the irresponsible behavior exhibited on this occasion). The seriousness of the matter, together with the lamentable lack of responsibility, judgment and good sense you displayed compel me to caution you that any recurrence can only jeopardize your career. I expect that you will heed these remarks and act accordingly in the future."
+      },
+      {
+        "label": "Conduct Unbecoming an Officer-junior officers",
+        "text": "Your unprofessional behavior in the presence of junior officers falls well below the standards of personal conduct expected of commissioned officers on duty and thereby has brought discredit upon yourself, the officer corps and the United States Air Force. Moreover, your conduct demonstrates a severe lack of self discipline, character, integrity, and judgment, casting serious doubt on your ability to continue performing duties in the capacity of an officer. I find particularly reprehensible the fact that, (describe aggravating circumstances). As a senior (captain, officer), you must be a leader, not a miscreant. You must not corrupt other officers, especially those officers junior to you in grade that look up to you as an example. Further misconduct of this or any other nature will not be tolerated."
+      },
+      {
+        "label": "Appearance and Dress Standards",
+        "text": "You may not consider haircut instructions important, but I assure you that I do. If I cannot depend upon you to follow AFI 36-2903, I cannot depend upon you to follow other orders. Henceforth, I expect you to be a model of AFI 36-2903 standards. A repetition of this or any other violation will be dealt with more severely. (Modify for other AFI 36-2903 violations)."
+      }
+    ]
+  }
+}

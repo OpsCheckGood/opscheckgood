@@ -1,0 +1,149 @@
+{
+  "meta": {
+    "source": "Ops Check Good — helping-agency taxonomy",
+    "version": "1",
+    "verifiedDate": "2026-08-30",
+    "sourceUrl": "",
+    "status": "stub",
+    "notes": "The list of agencies a First Sergeant routes to, used as the spine of the toolkit: installation directories and situation cards both key off these ids. Drafted from the maintainer’s brief rather than from a published list of helping agencies, so it stays status=stub until someone checks it against official guidance and against what the installations actually field. Adding, removing, or re-wording an agency is a data edit here; no component names one. mosPages names the MilitaryINSTALLATIONS program page that carries each agency, and is what scripts/import-installations.mjs reads to build a directory. An empty list means Military OneSource does not publish that agency per installation — the crisis agencies mostly fall in that bucket, which is why the worldwide fallback matters. Adding a mapping is a data edit here; the importer names no agency itself."
+  },
+  "data": {
+    "categories": [
+      {
+        "id": "command-post",
+        "label": "Command Post",
+        "urgency": "crisis",
+        "blurb": "Round-the-clock unit notification, recalls, and emergency reporting.",
+        "mosPages": []
+      },
+      {
+        "id": "mental-health",
+        "label": "Mental Health",
+        "urgency": "crisis",
+        "blurb": "Behavioural health assessment and care, including same-day walk-in.",
+        "mosPages": []
+      },
+      {
+        "id": "chaplain",
+        "label": "Chaplain",
+        "urgency": "crisis",
+        "blurb": "Confidential counselling with no reporting requirement.",
+        "mosPages": []
+      },
+      {
+        "id": "sarc",
+        "label": "Sexual Assault Response Coordinator",
+        "urgency": "crisis",
+        "blurb": "Restricted and unrestricted reporting, advocacy, and referral.",
+        "mosPages": []
+      },
+      {
+        "id": "security-forces",
+        "label": "Security Forces",
+        "urgency": "crisis",
+        "blurb": "Law enforcement, installation entry, and on-base emergencies.",
+        "mosPages": []
+      },
+      {
+        "id": "medical",
+        "label": "Medical",
+        "urgency": "crisis",
+        "blurb": "Clinic appointments, urgent care, and emergency treatment.",
+        "mosPages": [
+          "health/health-care"
+        ]
+      },
+      {
+        "id": "mfrc",
+        "label": "Military & Family Readiness Center",
+        "urgency": "standard",
+        "blurb": "Financial counselling, relocation, deployment support, and spouse programmes.",
+        "mosPages": [
+          "military-and-family-support-center/military-and-family-support-center"
+        ]
+      },
+      {
+        "id": "finance",
+        "label": "Finance",
+        "urgency": "standard",
+        "blurb": "Pay problems, entitlements, allowances, and travel vouchers.",
+        "mosPages": []
+      },
+      {
+        "id": "legal",
+        "label": "Legal Office",
+        "urgency": "standard",
+        "blurb": "Legal assistance, wills, powers of attorney, and civil matters.",
+        "mosPages": [
+          "legal/legal-assistance"
+        ]
+      },
+      {
+        "id": "housing",
+        "label": "Housing",
+        "urgency": "standard",
+        "blurb": "On-base housing, off-base referral, and landlord disputes.",
+        "mosPages": [
+          "housing/housing"
+        ]
+      },
+      {
+        "id": "mpf",
+        "label": "Military Personnel Flight",
+        "urgency": "standard",
+        "blurb": "Assignments, promotions, separations, retirements, and records.",
+        "mosPages": []
+      },
+      {
+        "id": "family-advocacy",
+        "label": "Family Advocacy",
+        "urgency": "standard",
+        "blurb": "Prevention and response for family maltreatment.",
+        "mosPages": [
+          "military-and-family-support-center/family-advocacy-program"
+        ]
+      },
+      {
+        "id": "efmp",
+        "label": "Exceptional Family Member Program",
+        "urgency": "standard",
+        "blurb": "Enrolment, assignment coordination, and family support.",
+        "mosPages": [
+          "exceptional-family-member-program/exceptional-family-member-program"
+        ]
+      },
+      {
+        "id": "childcare",
+        "label": "Child Development",
+        "urgency": "standard",
+        "blurb": "Child development centre, family child care, and respite care.",
+        "mosPages": [
+          "child-and-youth-services/child-care"
+        ]
+      },
+      {
+        "id": "emergency-relief",
+        "label": "Emergency Relief",
+        "urgency": "standard",
+        "blurb": "Air Force Aid Society and equivalent emergency financial assistance.",
+        "mosPages": [
+          "military-and-family-support-center/financial-assistance"
+        ]
+      },
+      {
+        "id": "military-onesource",
+        "label": "Military OneSource",
+        "urgency": "crisis",
+        "blurb": "Round-the-clock non-medical counselling and referral, worldwide. Works when nothing local is open and when the member is not near an installation.",
+        "mosPages": []
+      },
+      {
+        "id": "equal-opportunity",
+        "label": "Equal Opportunity",
+        "urgency": "standard",
+        "blurb": "Discrimination and harassment complaints and mediation.",
+        "mosPages": []
+      }
+    ]
+  }
+}

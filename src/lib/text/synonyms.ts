@@ -1,4 +1,4 @@
-import type { SynonymData } from '../data/types';
+import type { Sense, SynonymData } from '../data/types';
 
 /**
  * Synonym lookup for a selected word.
@@ -113,13 +113,77 @@ export function matchCase(replacement: string, original: string): string {
   return replacement;
 }
 
+const PART_OF_SPEECH: Record<string, string> = { v: 'verb', a: 'adjective', n: 'noun' };
+
+/**
+ * Own-property lookup.
+ *
+ * The data is a JSON object keyed by dictionary words, and WordNet contains
+ * "constructor", "toString" and "valueOf". A bare `data.senses[word]` returns
+ * an inherited function for those, so every lookup goes through here.
+ */
+function sensesFor(data: SynonymData, lemma: string): Sense[] | undefined {
+  return Object.hasOwn(data.senses, lemma) ? data.senses[lemma] : undefined;
+}
+
+function exceptionFor(data: SynonymData, word: string): string | undefined {
+  return Object.hasOwn(data.exceptions, word) ? data.exceptions[word] : undefined;
+}
+
+export interface Definition {
+  /** The dictionary form the definition belongs to. */
+  lemma: string;
+  partOfSpeech: string;
+  text: string;
+  /** True when the selected word was inflected and had to be reduced. */
+  reduced: boolean;
+}
+
+/** One meaning, with its synonyms already put into the selected word's form. */
+export interface ResolvedSense {
+  partOfSpeech: string;
+  definition: string;
+  options: SynonymOption[];
+}
+
+/**
+ * Reduces a selected word to the dictionary form the data is keyed on.
+ *
+ * Shared by every lookup so they can never disagree about which word is being
+ * described.
+ */
+export function resolveLemma(
+  word: string,
+  data: SynonymData,
+): { lemma: string; form: Inflection } | null {
+  const lower = word.toLowerCase();
+  if (lower.length < 3) return null;
+  if (sensesFor(data, lower)) return { lemma: lower, form: 'none' };
+
+  const irregular = exceptionFor(data, lower);
+  if (irregular) {
+    const form: Inflection = lower.endsWith('ing')
+      ? 'ing'
+      : lower.endsWith('s')
+        ? 's'
+        : 'ed';
+    return { lemma: irregular, form };
+  }
+  for (const candidate of candidateBases(lower)) {
+    if (sensesFor(data, candidate.base)) {
+      return { lemma: candidate.base, form: candidate.form };
+    }
+  }
+  return null;
+}
+
 /**
  * Bases that inflect irregularly, taken from the exception map's own values.
  *
  * A regular -ed rule turns "take" into "taked" and "send" into "sended". We
  * cannot produce the right form without knowing which exception is the past
- * tense rather than the participle, so instead of offering something wrong we
- * drop the option. Silence beats "taked" at the top of the list.
+ * tense rather than the participle, so instead of offering something wrong the
+ * option is dropped. Silence beats "taked" at the top of the list.
  */
 const irregularCache = new WeakMap<SynonymData, Set<string>>();
 
@@ -132,107 +196,84 @@ function irregularBases(data: SynonymData): Set<string> {
   return set;
 }
 
-const PART_OF_SPEECH: Record<string, string> = { v: 'verb', a: 'adjective', n: 'noun' };
-
-export interface Definition {
-  /** The dictionary form the definition belongs to. */
-  lemma: string;
-  partOfSpeech: string;
-  text: string;
-  /** True when the selected word was inflected and had to be reduced. */
-  reduced: boolean;
+/** Puts one sense's synonyms into the form the selected word was written in. */
+function optionsFor(
+  sense: Sense,
+  word: string,
+  lemma: string,
+  form: Inflection,
+  irregulars: Set<string>,
+): SynonymOption[] {
+  return sense.s
+    // -ing and -s are regular even for irregular verbs; -ed is not.
+    .filter((syn) => form !== 'ed' || !irregulars.has(syn))
+    .map((syn) => ({
+      text: matchCase(form === 'none' ? syn : inflect(syn, form), word),
+      lemma,
+      reconstructed: form !== 'none',
+    }));
 }
 
 /**
- * Reduces a selected word to the dictionary form the data is keyed on.
+ * Every meaning of a word, each with its own definition and replacements.
  *
- * Shared by the synonym and definition lookups so they can never disagree
- * about which word is being described.
+ * This is what the thesaurus page shows. The editor uses `findSynonyms`, which
+ * flattens only the senses sharing the first one's part of speech.
  */
-export function resolveLemma(
-  word: string,
-  data: SynonymData,
-): { lemma: string; form: Inflection } | null {
-  const lower = word.toLowerCase();
-  if (lower.length < 3) return null;
-  if (data.synonyms[lower] || data.definitions[lower]) {
-    return { lemma: lower, form: 'none' };
-  }
-  const irregular = data.exceptions[lower];
-  if (irregular) {
-    const form: Inflection = lower.endsWith('ing')
-      ? 'ing'
-      : lower.endsWith('s')
-        ? 's'
-        : 'ed';
-    return { lemma: irregular, form };
-  }
-  for (const candidate of candidateBases(lower)) {
-    if (data.synonyms[candidate.base] || data.definitions[candidate.base]) {
-      return { lemma: candidate.base, form: candidate.form };
-    }
-  }
-  return null;
+export function findSenses(word: string, data: SynonymData): ResolvedSense[] {
+  const resolved = resolveLemma(word, data);
+  if (!resolved) return [];
+  const senses = sensesFor(data, resolved.lemma) ?? [];
+  const irregulars = irregularBases(data);
+
+  return senses
+    .map((sense) => ({
+      partOfSpeech: PART_OF_SPEECH[sense.p] ?? sense.p,
+      definition: sense.g,
+      options: optionsFor(sense, word, resolved.lemma, resolved.form, irregulars),
+    }))
+    .filter((sense) => sense.options.length > 0);
 }
 
 export function findDefinition(word: string, data: SynonymData): Definition | null {
   const resolved = resolveLemma(word, data);
   if (!resolved) return null;
-  const entry = data.definitions[resolved.lemma];
-  if (!entry) return null;
-  const [pos, text] = entry;
+  const first = sensesFor(data, resolved.lemma)?.[0];
+  if (!first) return null;
   return {
     lemma: resolved.lemma,
-    partOfSpeech: PART_OF_SPEECH[pos] ?? pos,
-    text,
+    partOfSpeech: PART_OF_SPEECH[first.p] ?? first.p,
+    text: first.g,
     reduced: resolved.form !== 'none',
   };
 }
 
+/**
+ * A single flat list for the editor, drawn only from the senses that share the
+ * first sense's part of speech.
+ *
+ * Mixing parts of speech is what offers `physique` as a replacement for
+ * `build`. Mixing senses within one part of speech is tolerable here, because
+ * the editor sorts by width and you are scanning for something shorter.
+ */
 export function findSynonyms(word: string, data: SynonymData): SynonymOption[] {
-  const lower = word.toLowerCase();
-  if (lower.length < 3) return [];
+  const senses = findSenses(word, data);
+  if (senses.length === 0) return [];
 
-  const direct = data.synonyms[lower];
-  if (direct) {
-    return direct.map((syn) => ({
-      text: matchCase(syn, word),
-      lemma: lower,
-      reconstructed: false,
-    }));
+  const leading = senses[0]!.partOfSpeech;
+  const seen = new Set<string>([word.toLowerCase()]);
+  const out: SynonymOption[] = [];
+
+  for (const sense of senses) {
+    if (sense.partOfSpeech !== leading) break;
+    for (const option of sense.options) {
+      const key = option.text.toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push(option);
+    }
   }
-
-  const irregulars = irregularBases(data);
-
-  /** -ing and -s are regular even for irregular verbs; -ed is not. */
-  const reconstruct = (list: readonly string[], base: string, form: Inflection) =>
-    list
-      .filter((syn) => form !== 'ed' || !irregulars.has(syn))
-      .map((syn) => ({
-        text: matchCase(inflect(syn, form), word),
-        lemma: base,
-        reconstructed: true,
-      }));
-
-  // Irregulars first: WordNet's own exception list is authoritative where the
-  // suffix rules below would only guess.
-  const irregular = data.exceptions[lower];
-  if (irregular) {
-    const form: Inflection = lower.endsWith('ing')
-      ? 'ing'
-      : lower.endsWith('s')
-        ? 's'
-        : 'ed';
-    return reconstruct(data.synonyms[irregular] ?? [], irregular, form);
-  }
-
-  for (const { base, form } of candidateBases(lower)) {
-    const list = data.synonyms[base];
-    if (!list) continue;
-    return reconstruct(list, base, form);
-  }
-
-  return [];
+  return out;
 }
 
 /** The word surrounding `index`, and where it sits, or null if not on a word. */

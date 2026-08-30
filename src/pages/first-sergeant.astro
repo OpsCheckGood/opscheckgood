@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/Base.astro';
+import FirstSergeantToolkit from '../components/FirstSergeantToolkit.tsx';
+---
+
+<Base
+  title="First Sergeant Toolkit — Ops Check Good"
+  description="Route an Airman to the agency that owns their problem. Runs entirely in your browser."
+  brand="First Sergeant"
+  tagline="Where do I send them?"
+>
+  <FirstSergeantToolkit client:load />
+</Base>

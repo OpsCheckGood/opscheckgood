@@ -2,7 +2,8 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwind from '@tailwindcss/vite';
 
-// Static output only. No SSR adapter, ever -- see CLAUDE.md.
+// Static output only. No SSR adapter, ever -- see the hard constraints in
+// the README.
 // Served at the site root by default. Set PUBLIC_BASE to mount it under a
 // path instead -- the VPS preview is proxied at /ocg because the upstream
 // firewall there admits only 80/443/22, so it has to share nginx with the

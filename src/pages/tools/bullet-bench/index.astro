@@ -1,6 +1,7 @@
 ---
-import Base from '../../layouts/Base.astro';
-import BulletBench from '../../components/BulletBench.tsx';
+import Base from '../../../layouts/Base.astro';
+import BenchNav from '../../../components/BenchNav.astro';
+import BulletBench from '../../../components/BulletBench.tsx';
 ---
 
 <Base
@@ -9,5 +10,6 @@ import BulletBench from '../../components/BulletBench.tsx';
   brand="Bullet Bench"
   tagline="Write sharp. Get recognized."
 >
+  <BenchNav current="bench" />
   <BulletBench client:load />
 </Base>

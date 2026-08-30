@@ -1,0 +1,15 @@
+---
+import Base from '../../../layouts/Base.astro';
+import BenchNav from '../../../components/BenchNav.astro';
+import Thesaurus from '../../../components/Thesaurus.tsx';
+---
+
+<Base
+  title="Thesaurus — Bullet Bench"
+  description="Look up a word, see each meaning, and how wide every alternative renders."
+  brand="Bullet Bench"
+  tagline="Same meaning. Fewer millimetres."
+>
+  <BenchNav current="thesaurus" />
+  <Thesaurus client:load />
+</Base>
