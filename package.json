@@ -47,6 +47,6 @@
     "wordnet-db": "^3.1.14"
   },
   "engines": {
-    "node": ">=20.11"
+    "node": "22.x"
   }
 }

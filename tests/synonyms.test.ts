@@ -11,9 +11,11 @@ import { loadSynonyms } from '@/lib/data/vocab';
 import type { SynonymData } from '@/lib/data/types';
 
 let data: SynonymData;
+// synonyms.json is ~6.6MB and goes through the transform pipeline, which takes well
+// over the 10s default hook timeout on a slow CI box.
 beforeAll(async () => {
   data = (await loadSynonyms()).data;
-});
+}, 120_000);
 
 describe('inflect', () => {
   it('handles regular endings', () => {
