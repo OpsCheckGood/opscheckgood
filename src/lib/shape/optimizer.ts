@@ -5,9 +5,17 @@ import { splitLines } from '../text/tokenize';
 /**
  * Width shaping.
  *
- * Each inter-word gap can hold one of three space characters, so a bullet with
- * N gaps has 3^N renderings. The job is to choose the one that makes the line
- * fit its field, and to choose it identically every time.
+ * A port of pdf-bullets' optimizer (github.com/AF-VCD/pdf-bullets, MIT), and
+ * checked against it: tests/pdf-bullets-differential.test.ts runs upstream's
+ * script verbatim beside this one over several hundred bullets and compares
+ * the output text and the verdict. Upstream is the tool people already use, so
+ * where the two disagree it is right by definition. Change the behaviour here
+ * only with that test in front of you.
+ *
+ * Each inter-word gap can hold one of three space characters. This does NOT
+ * search all 3^N of them: it substitutes one gap per pass, joining the pair it
+ * picks into a single token, and stops as soon as the line lands. That is
+ * upstream's algorithm and the reason narrowed gaps cluster rather than spread.
  *
  * Four decisions here look arbitrary and are not:
  *
@@ -20,7 +28,8 @@ import { splitLines } from '../text/tokenize';
  *    by a narrow space they behave as a single word, so a later pass can attach
  *    a third. Narrowed gaps therefore run together rather than spreading, which
  *    reads as one deliberately tightened phrase instead of a whole line of
- *    subtly wrong spacing.
+ *    subtly wrong spacing. Spreading padding evenly across every gap would be a
+ *    different tool that produced different text for the same bullet.
  *
  * 3. **Shrinking stops the moment the line fits.** Every further substitution
  *    would buy another visibly narrow gap for nothing.
@@ -195,22 +204,23 @@ export function shapeLine(
   const worstCase = joinAll(words, newSpace);
   const worstOverflow = width(worstCase) - target;
 
-  if (shrinking && worstOverflow > 0) return build('too-long', plain);
+  // Even fully narrowed it still runs over, or even fully widened it still
+  // falls short. Either way, report the closest the spacing can get rather
+  // than the text as typed -- that is what says how much has to be cut.
+  if (shrinking && worstOverflow > 0) return build('too-long', worstCase);
   if (!shrinking && worstOverflow < MAX_UNDERFLOW_MM) {
     return build('too-short', worstCase);
-  }
-
-  // A line already inside the underflow bound needs no widening.
-  if (!shrinking && initialOverflow >= MAX_UNDERFLOW_MM) {
-    return build('at-target', plain);
   }
 
   let optWords = [...words];
   let previous = plain;
 
+  // One gap per pass, best gap first, until the line lands. The loop below is
+  // pdf-bullets' control flow, in its order: substitute, measure, then decide.
+  // Deciding before substituting -- which is what this used to do when only
+  // two words were left -- accepts a line that has not been measured since it
+  // last changed, and reports a bullet as shaped that is still over the field.
   for (;;) {
-    if (optWords.length <= 2) return build('shaped', optWords.join(' '));
-
     const index = hashedIndex(optWords.join(''), optWords.length - 2) + 1;
     optWords.splice(
       index,
@@ -223,17 +233,30 @@ export function shapeLine(
 
     if (!shrinking && overflow > 0) {
       // Widening any further would push it over; keep the last good one.
-      return build('shaped', previous);
+      return settle(previous);
     }
-    if (shrinking && overflow <= 0) return build('shaped', candidate);
+    if (shrinking && overflow <= 0) return settle(candidate);
 
     if (optWords.length <= 2) {
-      const status: ShapeStatus =
-        !shrinking && overflow > MAX_UNDERFLOW_MM ? 'shaped' : 'too-long';
-      return build(status, candidate);
+      // Nothing left to join. Widening is allowed to stop short so long as it
+      // is within the underflow bound; narrowing that has not landed by now
+      // never will.
+      if (!shrinking && overflow > MAX_UNDERFLOW_MM) return settle(candidate);
+      return build(shrinking ? 'too-long' : 'too-short', candidate);
     }
 
     previous = candidate;
+  }
+
+  /**
+   * A result that upstream would call optimised.
+   *
+   * It has one status for both, and we have two: a line that came out exactly
+   * as typed was never shaped, and saying so is the difference between "this
+   * already fits" and "I moved your spaces".
+   */
+  function settle(text: string): ShapeResult {
+    return build(text === plain ? 'at-target' : 'shaped', text);
   }
 }
 

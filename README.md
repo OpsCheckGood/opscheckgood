@@ -435,6 +435,13 @@ npm run test
   `scripts/build-synonyms.mjs`) and for the morphology exception files vendored under
   `vendor/wordnet-exc`. WordNet 3.0 License.
 
+- **[pdf-bullets](https://github.com/AF-VCD/pdf-bullets)**, Copyright (c) 2020
+  Christopher Kodama — MIT License. Its width-shaping optimizer is vendored verbatim as
+  `tests/fixtures/pdf-bullets.js` and used as the oracle for
+  `tests/pdf-bullets-differential.test.ts`, which checks our shaping and line breaking
+  against it. Test-only: none of it ships in the site bundle. The full licence text sits
+  in that file's header, where the code it covers is.
+
 - **Department of the Air Force memorandum template** and the **AFJAGS LOCAR form** —
   US Government works. Source of the memorandum-format sample paragraphs and of the fixed
   LOCAR language and sample libraries in `src/data/mfr`. Both data files record this in
@@ -447,8 +454,9 @@ use, copy, modify, or redistribute the source code. The compiled site being free
 in a browser does not grant any right to the source.
 
 Third-party components keep their own licences, which the terms above do not touch: the
-Liberation fonts under the SIL Open Font License 1.1, and WordNet under the WordNet 3.0
-licence. Both require attribution, both are attributed above and in each derived data
-file's `meta` block, and both must stay that way.
+Liberation fonts under the SIL Open Font License 1.1, WordNet under the WordNet 3.0
+licence, and pdf-bullets under the MIT License. All three require attribution, all three
+are attributed above — and in each derived data file's `meta` block, and in the header of
+the vendored file — and all three must stay that way.
 
 Full text in [`LICENSE`](LICENSE).

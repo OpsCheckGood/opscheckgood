@@ -71,12 +71,17 @@ describe('shapeLine', () => {
     expect(countSpaces(result.text)[SPACE_CHARS.THREE_PER_EM]).toBe(0);
   });
 
-  it('flags a line too long to shape and returns the text untouched', () => {
+  it('flags a line too long to shape and shows the closest spacing can get', () => {
     const target = natural(BULLET) - 20;
     const result = shape(BULLET, target);
     expect(result.status).toBe('too-long');
-    // Not silently emitted: no narrow spaces slipped in to fake a fit.
-    expect(result.text).toBe(unshape(BULLET));
+    // Fully narrowed, and still over. This used to return the text untouched,
+    // which read as "nothing was tried"; pdf-bullets shows the compressed line
+    // instead and so do we. It is not faking a fit -- the status says it does
+    // not fit -- and the delta is then how far over the line is at maximum
+    // compression, which is the number the "cut N characters" advice needs.
+    expect(result.text).not.toBe(unshape(BULLET));
+    expect(result.widthMm).toBeLessThan(natural(BULLET));
     expect(result.deltaMm).toBeGreaterThan(0);
   });
 
