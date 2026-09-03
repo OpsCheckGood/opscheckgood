@@ -427,7 +427,7 @@ function TextBox({
       aria-label={ariaLabel}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="tabular border px-3 py-2 text-[12.5px]"
+      className="tabular border px-3 py-2 text-[13px]"
       style={{ ...CONTROL, width }}
     />
   );
@@ -457,7 +457,7 @@ function Select({
       value={value}
       disabled={disabled}
       onChange={(e) => onChange(e.target.value)}
-      className="border px-3 py-2 text-[12.5px]"
+      className="border px-3 py-2 text-[13px]"
       style={{ ...CONTROL, width, maxWidth: '100%', opacity: disabled ? 0.5 : 1 }}
     >
       {options.map((o) => (
@@ -497,7 +497,7 @@ function Readout({
   }[tone];
   return (
     <output
-      className="tabular block truncate border px-3 py-2 text-[12.5px]"
+      className="tabular block truncate border px-3 py-2 text-[13px]"
       style={{
         background: tones.background,
         borderColor: tones.border,
@@ -705,7 +705,7 @@ function ComponentPanel({
       </div>
 
       {!exempt && event.input === 'waist' && (
-        <p className="m-0 mt-3 text-[11.5px]" style={{ color: 'var(--accent)' }}>
+        <p className="m-0 mt-3 text-[12px]" style={{ color: 'var(--accent)' }}>
           Waist is the average of 3 measurements, rounded down to the half inch
           (para 3.15.4.5).
         </p>
@@ -714,7 +714,7 @@ function ComponentPanel({
       {/* The points above still stand -- they simply stopped counting, and
           saying which is the difference between a readout and an explanation. */}
       {result?.droppedByBfa && (
-        <p className="m-0 mt-2 text-[11.5px]" style={{ color: 'var(--ok)' }}>
+        <p className="m-0 mt-2 text-[12px]" style={{ color: 'var(--ok)' }}>
           Body fat assessment met — these points are not counted, on either side of the
           composite (para 3.7.2).
         </p>
@@ -854,7 +854,7 @@ function Composite({
           {result.notes.map((note) => (
             <li
               key={note}
-              className="flex gap-2 text-[11.5px] leading-relaxed"
+              className="flex gap-2 text-[12px] leading-relaxed"
               style={{ color: 'var(--ink-muted)' }}
             >
               <span aria-hidden style={{ color: 'var(--ink-faint)' }}>
@@ -1016,18 +1016,18 @@ function Tier2Panel({
           </p>
 
           {assessment.need && (
-            <p className="m-0 mt-2 text-[11.5px]" style={{ color: 'var(--accent)' }}>
+            <p className="m-0 mt-2 text-[12px]" style={{ color: 'var(--accent)' }}>
               {assessment.need}
             </p>
           )}
           {assessment.crossCheck && (
-            <p className="m-0 mt-2 text-[11.5px]" style={{ color: 'var(--ink-muted)' }}>
+            <p className="m-0 mt-2 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
               {assessment.crossCheck}
             </p>
           )}
 
           <p
-            className="m-0 mt-4 text-[11.5px]"
+            className="m-0 mt-4 text-[12px]"
             style={{ color: 'var(--ink-muted)' }}
           >
             Formula: {standard.formulaLabel}.
@@ -1036,7 +1036,7 @@ function Tier2Panel({
             {rules.siteNotes.map((note) => (
               <li
                 key={note}
-                className="flex gap-2 text-[11.5px] leading-relaxed"
+                className="flex gap-2 text-[12px] leading-relaxed"
                 style={{ color: 'var(--ink-muted)' }}
               >
                 <span aria-hidden style={{ color: 'var(--ink-faint)' }}>
@@ -1046,7 +1046,7 @@ function Tier2Panel({
               </li>
             ))}
           </ul>
-          <p className="m-0 mt-3 text-[11.5px]" style={{ color: 'var(--ink-faint)' }}>
+          <p className="m-0 mt-3 text-[12px]" style={{ color: 'var(--ink-faint)' }}>
             A Tier 2 assessment is administered by the FAC or MFL, and the official result is the
             one they record.
           </p>

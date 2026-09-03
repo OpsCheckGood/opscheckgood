@@ -262,7 +262,7 @@ export default function BtzCalculator() {
           </Field>
         </div>
 
-        <p className="m-0 mt-3 text-[11.5px] leading-relaxed" style={{ color: 'var(--ink-muted)' }}>
+        <p className="m-0 mt-3 text-[12px] leading-relaxed" style={{ color: 'var(--ink-muted)' }}>
           BTZ is considered from {fromGrade.abbr}, so the {fromGrade.abbr} date of rank is what
           drives it — not the enlistment alone. Dates stay on this device.
         </p>
@@ -378,7 +378,7 @@ function DateBox({
       type="date"
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="tabular border px-3 py-2 text-[12.5px]"
+      className="tabular border px-3 py-2 text-[13px]"
       style={{ ...CONTROL, width: '11rem' }}
     />
   );
@@ -405,7 +405,7 @@ function Select({
       aria-label={ariaLabel}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="border px-3 py-2 text-[12.5px]"
+      className="border px-3 py-2 text-[13px]"
       style={{ ...CONTROL, width, maxWidth: '100%' }}
     >
       {options.map((o) => (
@@ -437,7 +437,7 @@ function Readout({
   }[tone];
   return (
     <output
-      className="tabular block truncate border px-3 py-2 text-[12.5px]"
+      className="tabular block truncate border px-3 py-2 text-[13px]"
       style={{
         background: tones.background,
         borderColor: tones.border,
@@ -570,7 +570,7 @@ function ChecksPanel({
                   )}
                 </p>
                 <p
-                  className="m-0 mt-1 text-[11.5px] leading-relaxed"
+                  className="m-0 mt-1 text-[12px] leading-relaxed"
                   style={{
                     color:
                       check.state === 'fail'
@@ -725,7 +725,7 @@ function Projection({
       {show && now && <AdvanceRail result={result} now={now} />}
 
       {result.missing.length > 0 && (
-        <p className="m-0 mt-4 text-[11.5px]" style={{ color: 'var(--accent)' }}>
+        <p className="m-0 mt-4 text-[12px]" style={{ color: 'var(--accent)' }}>
           Needs: {result.missing.join(', ')}.
         </p>
       )}
@@ -737,7 +737,7 @@ function Projection({
           {result.notes.map((note) => (
             <li
               key={note}
-              className="flex gap-2 text-[11.5px] leading-relaxed"
+              className="flex gap-2 text-[12px] leading-relaxed"
               style={{ color: 'var(--ink-muted)' }}
             >
               <span aria-hidden style={{ color: 'var(--ink-faint)' }}>
@@ -862,7 +862,7 @@ function WhyThisDate({ result }: { result: BtzResult }) {
       </summary>
 
       <div className="mt-3 overflow-x-auto">
-        <table className="w-full border-collapse text-[11.5px]" style={{ minWidth: '34rem' }}>
+        <table className="w-full border-collapse text-[12px]" style={{ minWidth: '34rem' }}>
           <caption className="util pb-2 text-left">
             The promotion lands on the earliest date any route allows. Each route needs all of
             its own bounds met, so it resolves to the later of them.
@@ -889,7 +889,7 @@ function WhyThisDate({ result }: { result: BtzResult }) {
         </table>
       </div>
 
-      <dl className="m-0 mt-3 grid gap-x-4 gap-y-1.5 text-[11.5px] sm:grid-cols-[auto_1fr]">
+      <dl className="m-0 mt-3 grid gap-x-4 gap-y-1.5 text-[12px] sm:grid-cols-[auto_1fr]">
         <dt className="util pt-[2px]">Earliest route</dt>
         <dd className="tabular m-0" style={{ color: 'var(--ink)' }}>
           {formatDate(result.fullyQualifiedDate!)} — fully qualified
@@ -977,7 +977,7 @@ function Timeline({ step, timeline, now }: { step: number; timeline: Milestone[]
       <div className="mb-1 flex flex-wrap items-center gap-x-3 gap-y-2">
         <SectionTitle step={step} title="Timeline" />
       </div>
-      <p className="m-0 mb-4 text-[11.5px] leading-relaxed" style={{ color: 'var(--ink-muted)' }}>
+      <p className="m-0 mb-4 text-[12px] leading-relaxed" style={{ color: 'var(--ink-muted)' }}>
         Processing and board months come from the quarterly cycle. The unit's own nomination
         suspense sits inside the processing window and is set locally.
       </p>
@@ -1042,7 +1042,7 @@ function Timeline({ step, timeline, now }: { step: number; timeline: Milestone[]
                   </p>
                   {item.detail && (
                     <p
-                      className="m-0 mt-1 text-[11.5px] leading-relaxed"
+                      className="m-0 mt-1 text-[12px] leading-relaxed"
                       style={{ color: 'var(--ink-muted)' }}
                     >
                       {item.detail}

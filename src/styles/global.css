@@ -62,6 +62,27 @@
    */
   --mark: #92400e;
   --mark-dim: #fef3c7;
+
+  /*
+   * Type scale.
+   *
+   * The site used to live entirely between 10.5px and 15px, which is why it
+   * read as one flat grey field: nothing could lead, because nothing was
+   * bigger than anything else. These are the only sizes; a page that needs a
+   * step should take the next one rather than inventing a value.
+   *
+   * The display size is fluid so a phone gets a headline that fits its column
+   * rather than a desktop headline crammed into it.
+   */
+  --text-display: clamp(28px, 7vw, 40px);
+  --text-h1: 21px;
+  --text-h2: 15px;
+  --text-body: 13.5px;
+  --text-small: 12px;
+  --text-micro: 10.5px;
+
+  /* Height of the mobile tab bar, so content can clear it. */
+  --tabbar: 54px;
 }
 
 :root[data-theme='dark'] {
@@ -121,6 +142,43 @@ body {
   color: var(--ink-faint);
 }
 
+/*
+ * The one big thing on a page. Tight leading and a hair of negative tracking:
+ * at this size the default spacing reads loose and web-templatey.
+ */
+.display {
+  font-size: var(--text-display);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+/* The sentence under a display heading. Long-form, not chrome. */
+.lede {
+  font-size: var(--text-h2);
+  line-height: 1.55;
+  color: var(--ink-muted);
+  max-width: 54ch;
+}
+
+/* A heading inside the page: a tool name on a card, a footer column. */
+.h2 {
+  font-size: var(--text-h1);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+/* Ordinary reading text. */
+.body {
+  font-size: var(--text-body);
+  line-height: 1.6;
+  color: var(--ink-muted);
+}
+
 /* Panel titles: same treatment, one step up, and in the accent. */
 .title {
   font-size: 12px;
@@ -148,6 +206,32 @@ body {
   background: var(--panel);
   border: 1px solid var(--rule);
   border-radius: 8px;
+}
+
+/*
+ * A whole panel that behaves as one link. The anchor stays the only focusable
+ * thing and keeps its own accessible name, but the tap target is the card --
+ * which on a phone is the difference between a list you can use walking and
+ * one you have to aim at.
+ */
+.card {
+  position: relative;
+}
+
+.card a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.card:focus-within {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+
+.card a:focus-visible {
+  outline: none;
 }
 
 /* Focus must be obvious: every tool has to be usable by keyboard alone. */
@@ -220,4 +304,98 @@ input[type='text'] {
  */
 body {
   overflow-x: clip;
+  background: var(--ground);
+  color: var(--ink);
+}
+
+/* ---------------------------------------------------------------------------
+ * Phones
+ *
+ * On a phone this is used standing up, one-handed, often in a hallway. It
+ * should behave like an application rather than a page that has been squeezed:
+ * chrome pinned top and bottom, content edge to edge between them, and nothing
+ * floating on a visible ground.
+ * ------------------------------------------------------------------------ */
+
+/* The bar pinned to the bottom of a phone screen. Labels, not icons: the site
+   already speaks in small uppercase chrome, and inventing an icon set would be
+   a second visual language for no gain. */
+.tabbar {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  /*
+   * Cards floating on a grey ground is a desktop idiom. On a phone the panel
+   * IS the screen, so it runs edge to edge and is separated by a hairline
+   * instead of by a gap. This one rule does most of the work of making the
+   * thing feel native.
+   */
+  .panel {
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+    margin-left: calc(-1 * var(--gutter, 0.75rem));
+    margin-right: calc(-1 * var(--gutter, 0.75rem));
+  }
+
+  .app-shell {
+    padding-bottom: calc(var(--tabbar) + env(safe-area-inset-bottom));
+  }
+
+  .tabbar {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 30;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    background: var(--panel);
+    border-top: 1px solid var(--rule);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .tabbar a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-height: var(--tabbar);
+    text-decoration: none;
+    color: var(--ink-faint);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    /* The active tab is marked by a rule along the top edge, the same way a
+       scored row is marked on a chart. */
+    border-top: 2px solid transparent;
+  }
+
+  .tabbar a[aria-current='page'] {
+    color: var(--accent);
+    border-top-color: var(--accent);
+  }
+
+  /* The top bar stays put, so the tool you are in is always named. */
+  .app-bar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--panel);
+    padding-top: env(safe-area-inset-top);
+  }
+
+  /* Desktop-only chrome. The tab bar covers navigation on a phone, and the
+     footer's four link columns are a desktop artefact. */
+  .desktop-only {
+    display: none !important;
+  }
+}
+
+@media (min-width: 641px) {
+  .mobile-only {
+    display: none !important;
+  }
 }

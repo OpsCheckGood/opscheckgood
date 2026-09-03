@@ -175,7 +175,7 @@ function Field({
   );
 }
 
-const INPUT_CLASS = 'w-full border px-2.5 py-2 text-[12.5px]';
+const INPUT_CLASS = 'w-full border px-2.5 py-2 text-[13px]';
 
 function TextInput({
   id,
@@ -293,7 +293,7 @@ function LinkButton({ children, onClick }: { children: React.ReactNode; onClick:
     <button
       type="button"
       onClick={onClick}
-      className="cursor-pointer border-0 bg-transparent p-0 text-[11.5px] font-semibold underline"
+      className="cursor-pointer border-0 bg-transparent p-0 text-[12px] font-semibold underline"
       style={{ color: 'var(--accent)' }}
     >
       {children}
@@ -313,7 +313,7 @@ function Checkbox({
   hint?: string;
 }) {
   return (
-    <label className="flex cursor-pointer items-start gap-2 text-[12.5px]" style={{ color: 'var(--ink)' }}>
+    <label className="flex cursor-pointer items-start gap-2 text-[13px]" style={{ color: 'var(--ink)' }}>
       <input
         type="checkbox"
         checked={checked}
@@ -334,7 +334,7 @@ function Checkbox({
 
 function Note({ children }: { children: React.ReactNode }) {
   return (
-    <p className="m-0 text-[11.5px] leading-relaxed" style={{ color: 'var(--ink-muted)' }}>
+    <p className="m-0 text-[12px] leading-relaxed" style={{ color: 'var(--ink-muted)' }}>
       {children}
     </p>
   );
@@ -413,7 +413,7 @@ function ParaEditor({
           ))}
           {sub.length === 1 ? (
             <p
-              className="m-0 px-2.5 py-2 text-[11.5px]"
+              className="m-0 px-2.5 py-2 text-[12px]"
               style={{ background: 'var(--warn-dim)', color: 'var(--warn)' }}
             >
               A paragraph cannot be divided into one part. Add a{' '}
@@ -563,7 +563,7 @@ function LetterheadEditor({
               readSeal(e.target.files?.[0]);
               e.target.value = '';
             }}
-            className="text-[11.5px]"
+            className="text-[12px]"
           />
         </Field>
         <div className="flex items-center gap-3 pb-1">
@@ -898,7 +898,7 @@ function IndorsementEditor({
               </Field>
             </div>
 
-            <p className="m-0 text-[11.5px]" style={{ color: 'var(--ink-muted)' }}>
+            <p className="m-0 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
               Prints as <strong>{head.head}</strong>
               {head.headRight ? <> … <strong>{head.headRight}</strong></> : null}
               {head.line2 ? (
@@ -1160,7 +1160,7 @@ export default function MfrGenerator() {
                     {t.name.toUpperCase()}
                   </span>
                   <span
-                    className="mt-1.5 block text-[11.5px] leading-relaxed"
+                    className="mt-1.5 block text-[12px] leading-relaxed"
                     style={{ color: 'var(--ink-muted)' }}
                   >
                     {t.blurb}
@@ -1172,7 +1172,7 @@ export default function MfrGenerator() {
         </section>
 
         <p
-          className="m-0 px-1 text-[11.5px] leading-relaxed"
+          className="m-0 px-1 text-[12px] leading-relaxed"
           style={{ color: 'var(--ink-muted)' }}
         >
           Everything you type stays on this device. The draft is saved in this browser only, the PDF and
@@ -1354,7 +1354,7 @@ export default function MfrGenerator() {
                   onApply={(t, mode) => applySample('locarCorrective', t, mode)}
                 />
                 <p
-                  className="m-0 rounded px-3 py-2.5 text-[11.5px] leading-relaxed"
+                  className="m-0 rounded px-3 py-2.5 text-[12px] leading-relaxed"
                   style={{ background: 'var(--panel-raised)', color: 'var(--ink-muted)' }}
                 >
                   <strong>Added for you:</strong> paragraph 3 (Privacy Act statement) and paragraph 4
@@ -1446,7 +1446,7 @@ export default function MfrGenerator() {
             {blocked || status ? (
               <p
                 role="status"
-                className="m-0 rounded px-3 py-2.5 text-[11.5px] leading-relaxed"
+                className="m-0 rounded px-3 py-2.5 text-[12px] leading-relaxed"
                 style={
                   blocked
                     ? { background: 'var(--warn-dim)', color: 'var(--warn)' }

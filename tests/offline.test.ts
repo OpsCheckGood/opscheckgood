@@ -240,12 +240,23 @@ describeBuilt('theme', () => {
 
   it('defines every colour token in both palettes', () => {
     const css = readFileSync(join(root, 'src', 'styles', 'global.css'), 'utf8');
+    // Colour tokens only. The type scale and the tab bar height live on :root
+    // too, and are deliberately shared rather than themed -- a heading is the
+    // same size in the dark.
+    const isColour = (value: string) => /^\s*(#|rgb|hsl|oklch|color-mix)/.test(value);
+    // Comments first: prose in here mentions token names ("deliberately not
+    // --warn:") and would otherwise be read as a declaration.
+    const source = css.replace(/\/\*[\s\S]*?\*\//g, '');
     const names = (start: number) => {
-      const block = css.slice(start, css.indexOf('}', start));
-      return new Set([...block.matchAll(/(--[a-z-]+):/g)].map((m) => m[1]!));
+      const block = source.slice(start, source.indexOf('}', start));
+      return new Set(
+        [...block.matchAll(/(--[a-z-]+):([^;]+);/g)]
+          .filter((m) => isColour(m[2]!))
+          .map((m) => m[1]!),
+      );
     };
-    const light = names(css.indexOf(':root {'));
-    const dark = names(css.indexOf(":root[data-theme='dark']"));
+    const light = names(source.indexOf(':root {'));
+    const dark = names(source.indexOf(":root[data-theme='dark']"));
     expect(light.size).toBeGreaterThan(12);
     // A token missing from one palette silently falls back to the other's
     // value, which is how a dark colour ends up on a light background.

@@ -13,6 +13,7 @@ const tools = [
     blurb:
       'Fits a statement onto the single line a form allows by substituting half spaces, ' +
       'measured against the real rendered width rather than a character count.',
+    proof: 'Measured in millimetres against the bundled font, not guessed from character count.',
   },
   {
     name: 'PT Calculator',
@@ -23,6 +24,7 @@ const tools = [
       'Scores a Physical Fitness Assessment from the published tables, with component ' +
       'options handled as table entries rather than special cases. Includes the Tier 2 ' +
       'body fat worksheet, which opens only when the score actually calls for one.',
+    proof: 'Every scoring cell checked against the published charts and AFMAN 36-2905.',
   },
   {
     name: 'BTZ Calculator',
@@ -32,6 +34,7 @@ const tools = [
     blurb:
       'Projects a below-the-zone consideration window, board quarter and promotion date ' +
       'from a date entered active duty and a date of rank, and shows the arithmetic.',
+    proof: 'Shows the arithmetic, so you can check it rather than trust it.',
   },
   {
     name: 'MFR Generator',
@@ -42,40 +45,54 @@ const tools = [
       'Writes an official memorandum for record or a letter of counseling, admonishment or ' +
       'reprimand to Tongue-and-Quill format, with an editable letterhead, and exports a PDF or ' +
       'an editable Word document.',
+    proof: 'Exports a real PDF or an editable Word document, built in the page.',
   },
 ];
 ---
 
 <Base title="Ops Check Good">
-  <div class="mx-auto max-w-[1000px] px-3 sm:px-6 py-10">
-    <h1 class="m-0 text-[15px]" style="letter-spacing: 0.06em; color: var(--ink);">
-      Air Force administrative tools
+  <div class="mx-auto max-w-[1000px] px-3 sm:px-6 pt-10 pb-4 sm:pb-10">
+    <h1 class="display m-0">
+      Air Force paperwork,<br />done precisely.
     </h1>
-    <p class="m-0 mt-3 max-w-[70ch] text-[12.5px] leading-relaxed" style="color: var(--ink-muted);">
-      Free to use.
+
+    <p class="lede m-0 mt-5">
+      {tools.length} tools for the admin that eats your week. No account, no tracking, and every
+      one of them keeps working with the network off.
     </p>
 
-    <ul class="m-0 mt-8 grid list-none gap-3 p-0 sm:grid-cols-2">
-      {
-        tools.map((tool) => (
-          <li class="panel p-4">
-            <a
-              href={tool.href}
-              class="no-underline"
-              style="font-size: 13px; font-weight: 700; letter-spacing: 0.13em; color: var(--ink);"
-            >
-              {tool.name.toUpperCase()}
-            </a>
-            <p class="util m-0 mt-1.5">{tool.tagline}</p>
-            <p
-              class="m-0 mt-3 text-[11.5px] leading-relaxed"
-              style="color: var(--ink-muted);"
-            >
-              {tool.blurb}
-            </p>
-          </li>
-        ))
-      }
+    {/* The three constraints the whole project is built around, stated plainly
+        rather than left for somebody to infer from the absence of a login. */}
+    <ul class="util m-0 mt-6 flex list-none flex-wrap gap-x-5 gap-y-2 p-0">
+      {['Free', 'Nothing leaves your device', 'Works offline'].map((claim) => (
+        <li class="flex items-center gap-2">
+          <span aria-hidden style="color: var(--accent);">&#9679;</span>
+          {claim}
+        </li>
+      ))}
     </ul>
   </div>
+
+  <ul class="mx-auto m-0 grid max-w-[1000px] list-none gap-3 px-3 sm:px-6 pb-12 p-0 sm:grid-cols-2">
+    {
+      tools.map((tool) => (
+        <li class="panel card p-5 sm:p-6">
+          <a href={tool.href} class="h2 no-underline block">
+            {tool.name}
+          </a>
+          <p class="util m-0 mt-1.5" style="color: var(--accent);">{tool.tagline}</p>
+          <p class="body m-0 mt-4">{tool.blurb}</p>
+          <p
+            class="m-0 mt-4 pt-3 text-[12px] leading-relaxed"
+            style="color: var(--ink); border-top: 1px solid var(--rule);"
+          >
+            {tool.proof}
+          </p>
+          <p class="util m-0 mt-4" style="color: var(--accent);">
+            Open {tool.name} <span aria-hidden>&rarr;</span>
+          </p>
+        </li>
+      ))
+    }
+  </ul>
 </Base>

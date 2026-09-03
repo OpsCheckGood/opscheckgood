@@ -97,7 +97,7 @@ export default function Settings() {
   return (
     <div className="mx-auto flex max-w-[900px] flex-col gap-4 px-3 py-4 sm:px-6 sm:py-5">
       {note && (
-        <p role="status" className="m-0 text-[11.5px]" style={{ color: 'var(--ok)' }}>
+        <p role="status" className="m-0 text-[12px]" style={{ color: 'var(--ok)' }}>
           {note}
         </p>
       )}
@@ -130,7 +130,7 @@ export default function Settings() {
       {/* ---- Bullet Bench -------------------------------------------------- */}
       <section className="panel p-4">
         <h2 className="title m-0">Bullet Bench</h2>
-        <p className="m-0 mt-1 text-[11.5px]" style={{ color: 'var(--ink-muted)' }}>
+        <p className="m-0 mt-1 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
           How the editor opens. These used to reset every visit.
         </p>
 
@@ -164,7 +164,7 @@ export default function Settings() {
                 update('formId', e.target.value);
                 update('fieldId', '');
               }}
-              className="border px-2.5 py-1.5 text-[12.5px]"
+              className="border px-2.5 py-1.5 text-[13px]"
               style={control}
             >
               <option value="">First available</option>
@@ -182,7 +182,7 @@ export default function Settings() {
               <select
                 value={prefs.fieldId}
                 onChange={(e) => update('fieldId', e.target.value)}
-                className="border px-2.5 py-1.5 text-[12.5px]"
+                className="border px-2.5 py-1.5 text-[13px]"
                 style={control}
               >
                 <option value="">First section</option>
@@ -205,7 +205,7 @@ export default function Settings() {
             {items.length} item{items.length === 1 ? '' : 's'} · {formatBytes(totalBytes)}
           </span>
         </div>
-        <p className="m-0 mt-1 max-w-[70ch] text-[11.5px]" style={{ color: 'var(--ink-muted)' }}>
+        <p className="m-0 mt-1 max-w-[70ch] text-[12px]" style={{ color: 'var(--ink-muted)' }}>
           Everything this site keeps, kept in this browser alone. None of it is uploaded,
           and clearing it here removes it for good.
         </p>

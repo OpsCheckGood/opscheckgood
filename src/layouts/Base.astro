@@ -47,6 +47,25 @@ const footerReference = [
 // lists and thesaurus, say -- belong to that tool and are reached from inside
 // it, not from here. Unbuilt entries are named but not linked: a dead link is
 // worse than an honest "not yet".
+// The phone tab bar. Five is the most a tab bar can hold before the labels
+// stop being readable, so these are the tools people actually open; the rest
+// stay reachable from the Tools screen.
+const tabs = [
+  { label: 'Tools', href: home },
+  { label: 'Bullet', href: `${base}/tools/bullet-bench/` },
+  { label: 'PT', href: `${base}/tools/pt-calculator/` },
+  { label: 'BTZ', href: `${base}/tools/btz-calculator/` },
+  { label: 'MFR', href: `${base}/tools/mfr/` },
+];
+
+// Which tab is the page we are on, matched longest-first so /tools/mfr/ does
+// not also light up Tools.
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const activeTab =
+  [...tabs]
+    .sort((a, b) => b.href.length - a.href.length)
+    .find((t) => path === t.href.replace(/\/+$/, ''))?.href ?? null;
+
 const nav = [
   { label: 'Tools', href: home, ready: true },
   { label: 'First Sergeant', href: `${home.replace(/\/$/, '')}/first-sergeant/`, ready: true },
@@ -58,7 +77,17 @@ const nav = [
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <!--
+      Colours the phone's own chrome to match the page, which is most of what
+      separates "a website in a browser" from "an app". Two values so the bar
+      follows the theme.
+    -->
+    <meta name="theme-color" content="#f1f4f8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0a0b0c" media="(prefers-color-scheme: dark)" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Ops Check Good" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <!-- No favicon link, no web fonts, no analytics: hard constraint 1. -->
@@ -90,33 +119,42 @@ const nav = [
     </a>
 
     <header
-      class="flex flex-wrap items-center gap-x-6 gap-y-2 border-b px-3 sm:px-6 py-4"
+      class="app-bar flex flex-wrap items-center gap-x-6 gap-y-2 border-b px-3 sm:px-6 py-3 sm:py-4"
       style="border-color: var(--rule);"
     >
-      <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+      {/*
+        On a tool page the tool is the heading and the site is the label above
+        it, rather than both competing on one line at the same size. That is
+        the whole hierarchy fix in miniature: one thing leads.
+      */}
+      <div class="min-w-0">
         <a
           href={home}
-          class="no-underline"
-          style={`font-weight: 700; letter-spacing: 0.16em; color: var(--ink); font-size: ${brand ? '13px' : '17px'};`}
+          class="no-underline block"
+          style={
+            brand
+              ? 'font-size: 10.5px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-faint);'
+              : 'font-size: 17px; font-weight: 700; letter-spacing: 0.16em; color: var(--ink);'
+          }
         >
           OPS CHECK GOOD
         </a>
         {
           brand && (
-            <>
-              <span aria-hidden style="color: var(--rule-strong);">/</span>
+            <div class="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
               <span
-                style="font-size: 17px; font-weight: 700; letter-spacing: 0.16em; color: var(--ink);"
+                style="font-size: var(--text-h1); font-weight: 700; letter-spacing: -0.01em; color: var(--ink); line-height: 1.15;"
               >
-                {brand.toUpperCase()}
+                {brand}
               </span>
-            </>
+              {tagline && <span class="util desktop-only">{tagline}</span>}
+            </div>
           )
         }
-        {tagline && <span class="util">{tagline}</span>}
       </div>
 
       <nav class="ml-auto flex flex-wrap items-center gap-x-7 gap-y-2">
+        <span class="desktop-only contents">
         {
           nav.map((item) =>
             item.ready ? (
@@ -138,6 +176,7 @@ const nav = [
             ),
           )
         }
+        </span>
         <button
           id="theme-toggle"
           type="button"
@@ -149,12 +188,22 @@ const nav = [
       </nav>
     </header>
 
-    <main id="main">
+    <main id="main" class="app-shell">
       <slot />
     </main>
 
+    <nav class="tabbar" aria-label="Tools">
+      {
+        tabs.map((tab) => (
+          <a href={tab.href} aria-current={activeTab === tab.href ? 'page' : undefined}>
+            {tab.label}
+          </a>
+        ))
+      }
+    </nav>
+
     <footer class="mt-10 border-t" style="border-color: var(--rule);">
-      <div class="mx-auto grid max-w-[1560px] gap-8 px-3 sm:px-6 py-8 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="desktop-only mx-auto grid max-w-[1560px] gap-8 px-3 sm:px-6 py-8 sm:grid-cols-2 lg:grid-cols-4">
         <div class="lg:col-span-2">
           <a
             href={home}
@@ -163,11 +212,9 @@ const nav = [
           >
             OPS CHECK GOOD
           </a>
-          <p
-            class="m-0 mt-2 max-w-[46ch] text-[11.5px] leading-relaxed"
-            style="color: var(--ink-muted);"
-          >
-            Free Air Force administrative tools.
+          <p class="body m-0 mt-2 max-w-[46ch]">
+            Free Air Force administrative tools. Nothing you type leaves your device, and every
+            tool keeps working with the network off.
           </p>
         </div>
 
@@ -179,8 +226,8 @@ const nav = [
                 <li>
                   <a
                     href={item.href}
-                    class="text-[11.5px] no-underline"
-                    style="color: var(--ink-muted);"
+                    class="no-underline"
+                    style="font-size: var(--text-small); color: var(--ink-muted);"
                   >
                     {item.label}
                   </a>
@@ -201,8 +248,8 @@ const nav = [
                     href={item.href}
                     target="_blank"
                     rel="noreferrer noopener"
-                    class="text-[11.5px] no-underline"
-                    style="color: var(--ink-muted);"
+                    class="no-underline"
+                    style="font-size: var(--text-small); color: var(--ink-muted);"
                   >
                     {item.label} <span aria-hidden style="color: var(--ink-faint);">↗</span>
                   </a>
@@ -218,7 +265,7 @@ const nav = [
           <p class="util m-0" style="letter-spacing: 0.08em;">
             &copy; {year} Ops Check Good
           </p>
-          <p class="m-0 ml-auto text-[12px]" style="color: var(--ink-muted);">
+          <p class="m-0 ml-auto" style="font-size: var(--text-small); color: var(--ink-muted);">
             Built for Airmen, by Airmen.
           </p>
         </div>
@@ -226,8 +273,8 @@ const nav = [
 
       <div class="border-t" style="border-color: var(--rule);">
         <p
-          class="mx-auto m-0 max-w-[1560px] px-3 sm:px-6 py-3 text-[10.5px] leading-relaxed"
-          style="color: var(--ink-faint);"
+          class="mx-auto m-0 max-w-[70ch] px-3 sm:px-6 py-4 leading-relaxed"
+          style="font-size: var(--text-micro); color: var(--ink-faint);"
         >
           Unofficial personal project. Not affiliated with, endorsed by, or produced by the
           United States Air Force or the Department of Defense. Official guidance governs;

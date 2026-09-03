@@ -237,7 +237,7 @@ export default function AbbreviationManager() {
       </div>
 
       {list === 'common' && (
-        <p className="m-0 text-[11.5px]" style={{ color: 'var(--warn)' }}>
+        <p className="m-0 text-[12px]" style={{ color: 'var(--warn)' }}>
           {COMMON_NOTE}
         </p>
       )}
@@ -315,7 +315,7 @@ export default function AbbreviationManager() {
         </div>
 
         {note && (
-          <p role="status" className="m-0 w-full text-[11.5px]" style={{ color: 'var(--ok)' }}>
+          <p role="status" className="m-0 w-full text-[12px]" style={{ color: 'var(--ok)' }}>
             {note}
           </p>
         )}

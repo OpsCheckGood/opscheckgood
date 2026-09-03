@@ -41,7 +41,7 @@ export function StubBanner({ what }: { what: string }) {
   return (
     <div
       role="status"
-      className="panel px-3 py-2.5 text-[11.5px] leading-relaxed"
+      className="panel px-3 py-2.5 text-[12px] leading-relaxed"
       style={{
         background: 'var(--warn-dim)',
         color: 'var(--warn)',

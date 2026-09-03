@@ -460,7 +460,7 @@ export default function BulletBench() {
             aria-label="Form or document"
             value={formId}
             onChange={(e) => setFormId(e.target.value)}
-            className="w-full border px-3 py-2 text-[12.5px] sm:w-[330px]"
+            className="w-full border px-3 py-2 text-[13px] sm:w-[330px]"
             style={{
               background: 'var(--panel)',
               borderColor: 'var(--rule-strong)',
@@ -480,7 +480,7 @@ export default function BulletBench() {
             aria-label="Section"
             value={field.id}
             onChange={(e) => setFieldId(e.target.value)}
-            className="w-full border px-3 py-2 text-[12.5px] sm:w-[270px]"
+            className="w-full border px-3 py-2 text-[13px] sm:w-[270px]"
             style={{
               background: 'var(--panel)',
               borderColor: 'var(--rule-strong)',
@@ -497,7 +497,7 @@ export default function BulletBench() {
 
         <Field label="Requirements">
           <span
-            className="flex items-center gap-2 py-2 text-[12.5px]"
+            className="flex items-center gap-2 py-2 text-[13px]"
             style={{ color: 'var(--ink)' }}
             title={
               bindsOnWidth
@@ -517,7 +517,7 @@ export default function BulletBench() {
         </Field>
 
         <Field label="Status">
-          <span className="flex items-center gap-3 py-2 text-[12.5px]">
+          <span className="flex items-center gap-3 py-2 text-[13px]">
             <span style={{ color: STATE_COLOR[statusState] }}>{statusText}</span>
             {measurable && activeResult && activeResult.status !== 'empty' && (
               <>
@@ -588,11 +588,11 @@ export default function BulletBench() {
           <div className="mb-3 flex items-start justify-between gap-4">
             <div>
               <h2 className="title m-0">Draft</h2>
-              <p className="m-0 mt-1 text-[11.5px]" style={{ color: 'var(--ink-muted)' }}>
+              <p className="m-0 mt-1 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
                 Enter your bullet below.
               </p>
             </div>
-            <span className="text-[12.5px]" style={{ color: 'var(--ink-muted)' }}>
+            <span className="text-[13px]" style={{ color: 'var(--ink-muted)' }}>
               {counterText}
             </span>
           </div>
@@ -644,7 +644,7 @@ export default function BulletBench() {
           </FieldBox>
 
           <div
-            className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 border-t pt-3 text-[11.5px]"
+            className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 border-t pt-3 text-[12px]"
             style={{ borderColor: 'var(--rule)' }}
           >
             <Toggle checked={autoSpace} onChange={setAutoSpace} label="Auto-Space" />
@@ -678,12 +678,12 @@ export default function BulletBench() {
           <div className="mb-3 flex items-start justify-between gap-4">
             <div>
               <h2 className="title m-0">Output</h2>
-              <p className="m-0 mt-1 text-[11.5px]" style={{ color: 'var(--ink-muted)' }}>
+              <p className="m-0 mt-1 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
                 Optimized to fit on one line using half-spaces.
               </p>
             </div>
             <span
-              className="text-[12.5px]"
+              className="text-[13px]"
               style={{ color: statusState === 'bad' ? 'var(--bad)' : 'var(--ok)' }}
             >
               {counterText}
@@ -742,7 +742,7 @@ export default function BulletBench() {
           </FieldBox>
 
           <div
-            className="mt-3 border-t pt-3 text-[11.5px]"
+            className="mt-3 border-t pt-3 text-[12px]"
             style={{ borderColor: 'var(--rule)' }}
           >
             {narrow && (
@@ -784,7 +784,7 @@ export default function BulletBench() {
             style={{ background: 'var(--panel-sunk)', borderColor: 'var(--rule)' }}
           >
             <div className="flex flex-wrap items-baseline gap-x-2.5">
-              <span className="text-[12.5px]" style={{ color: 'var(--ink)' }}>
+              <span className="text-[13px]" style={{ color: 'var(--ink)' }}>
                 {definition?.lemma ?? selection.word}
               </span>
               {definition && (
@@ -798,7 +798,7 @@ export default function BulletBench() {
                 </span>
               )}
             </div>
-            <p className="m-0 mt-1.5 text-[11.5px]" style={{ color: 'var(--ink-muted)' }}>
+            <p className="m-0 mt-1.5 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
               {definition
                 ? definition.text
                 : synonymData
@@ -809,18 +809,18 @@ export default function BulletBench() {
         )}
 
         {selectionRepeats > 1 && (
-          <p className="m-0 mt-2 text-[11.5px]" style={{ color: 'var(--warn)' }}>
+          <p className="m-0 mt-2 text-[12px]" style={{ color: 'var(--warn)' }}>
             "{selection?.word}" appears {selectionRepeats} times in this draft.
           </p>
         )}
 
         {!selection ? (
-          <p className="m-0 mt-3 text-[11.5px]" style={{ color: 'var(--ink-muted)' }}>
+          <p className="m-0 mt-3 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
             Highlight or click a word on the left. Replacements are listed shortest first,
             with the width each one adds or saves.
           </p>
         ) : options.length === 0 ? (
-          <p className="m-0 mt-3 text-[11.5px]" style={{ color: 'var(--ink-muted)' }}>
+          <p className="m-0 mt-3 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
             {synonymData
               ? `No synonyms for "${selection.word}".`
               : 'Loading word list\u2026'}

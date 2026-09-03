@@ -127,7 +127,7 @@ export default function Thesaurus() {
           <select
             value={formId}
             onChange={(e) => setFormId(e.target.value)}
-            className="border px-2.5 py-2 text-[12.5px]"
+            className="border px-2.5 py-2 text-[13px]"
             style={control}
           >
             {FORMS.map((f) => (
@@ -205,7 +205,7 @@ export default function Thesaurus() {
                 >
                   {sense.partOfSpeech}
                 </span>
-                <span className="text-[12.5px]" style={{ color: 'var(--ink)' }}>
+                <span className="text-[13px]" style={{ color: 'var(--ink)' }}>
                   {sense.definition}
                 </span>
               </div>

@@ -196,14 +196,14 @@ function IntroPanel({ installationCount }: { installationCount: number }) {
   return (
     <section className="panel p-4">
       <h2 className="title m-0">Routing, not policy</h2>
-      <p className="m-0 mt-2 max-w-[80ch] text-[12.5px] leading-relaxed" style={{ color: 'var(--ink-muted)' }}>
+      <p className="m-0 mt-2 max-w-[80ch] text-[13px] leading-relaxed" style={{ color: 'var(--ink-muted)' }}>
         This points you at the agency that owns a problem and shows where its details came
         from. It does not decide anything, and it is not a substitute for current guidance
         or your chain of command. In an emergency, use your installation's emergency
         number.
       </p>
       {installationCount === 0 && (
-        <p className="m-0 mt-2 max-w-[80ch] text-[12.5px] leading-relaxed" style={{ color: 'var(--ink-muted)' }}>
+        <p className="m-0 mt-2 max-w-[80ch] text-[13px] leading-relaxed" style={{ color: 'var(--ink-muted)' }}>
           No installation directories are populated yet, so every card falls back to
           Military OneSource — which is worldwide, answers around the clock, and can route
           to the right local agency itself.
@@ -234,7 +234,7 @@ function InstallationBar({
           id="fs-installation"
           value={installation?.id ?? ''}
           onChange={(e) => onChange(e.target.value)}
-          className="border px-3 py-2 text-[12.5px]"
+          className="border px-3 py-2 text-[13px]"
           style={{
             background: 'var(--panel-sunk)',
             borderColor: 'var(--rule-strong)',
@@ -252,7 +252,7 @@ function InstallationBar({
         </select>
       </div>
 
-      <p className="m-0 max-w-[40ch] text-[11.5px] leading-relaxed" style={{ color: 'var(--ink-faint)' }}>
+      <p className="m-0 max-w-[40ch] text-[12px] leading-relaxed" style={{ color: 'var(--ink-faint)' }}>
         Your choice is remembered in this browser. Nothing is uploaded.
       </p>
 
@@ -337,7 +337,7 @@ function FindHelp({
         {query.trim() !== '' && (
           <div className="mt-3">
             {results.length === 0 ? (
-              <p className="m-0 text-[12.5px]" style={{ color: 'var(--ink-muted)' }}>
+              <p className="m-0 text-[13px]" style={{ color: 'var(--ink-muted)' }}>
                 Nothing matched. Military OneSource takes any question and routes it — see
                 Quick contacts.
               </p>
@@ -358,7 +358,7 @@ function FindHelp({
                       <span className="block text-[13px] font-semibold" style={{ color: 'var(--ink)' }}>
                         {result.label}
                       </span>
-                      <span className="block text-[11.5px]" style={{ color: 'var(--ink-muted)' }}>
+                      <span className="block text-[12px]" style={{ color: 'var(--ink-muted)' }}>
                         {result.detail}
                       </span>
                     </button>
@@ -494,7 +494,7 @@ function SituationCard({
             {situation.questions.map((q) => (
               <li
                 key={q}
-                className="flex gap-2 text-[12.5px] leading-relaxed"
+                className="flex gap-2 text-[13px] leading-relaxed"
                 style={{ color: 'var(--ink-muted)' }}
               >
                 <span aria-hidden style={{ color: 'var(--ink-faint)' }}>
@@ -512,7 +512,7 @@ function SituationCard({
           <h3 className="util m-0 mt-5 mb-2">Official references</h3>
           <ul className="m-0 flex list-none flex-col gap-1 p-0">
             {refs.map((r) => (
-              <li key={r.id} className="text-[12.5px]" style={{ color: 'var(--ink-muted)' }}>
+              <li key={r.id} className="text-[13px]" style={{ color: 'var(--ink-muted)' }}>
                 {r.topic}
                 {isReferencePopulated(r) ? ` — ${r.publication}${r.section ? ` ${r.section}` : ''}` : ''}
               </li>
@@ -577,7 +577,7 @@ function ContactCard({
             {!compact && <Row label="Hours" value={found.contact.hours} />}
           </dl>
           {found.contact.url && (
-            <p className="m-0 mt-2 text-[11.5px]">
+            <p className="m-0 mt-2 text-[12px]">
               <a
                 href={found.contact.url}
                 target="_blank"
@@ -589,7 +589,7 @@ function ContactCard({
             </p>
           )}
           {!compact && found.contact.notes && (
-            <p className="m-0 mt-2 text-[11.5px] leading-relaxed" style={{ color: 'var(--ink-muted)' }}>
+            <p className="m-0 mt-2 text-[12px] leading-relaxed" style={{ color: 'var(--ink-muted)' }}>
               {found.contact.notes}
             </p>
           )}
@@ -700,7 +700,7 @@ function UnitContacts({
               list="fs-roles"
               value={contact.role}
               onChange={(e) => update(index, { role: e.target.value })}
-              className="border px-3 py-2 text-[12.5px]"
+              className="border px-3 py-2 text-[13px]"
               style={{ background: 'var(--panel-sunk)', borderColor: 'var(--rule-strong)', color: 'var(--ink)', width: '13rem' }}
             />
             <input
@@ -709,7 +709,7 @@ function UnitContacts({
               placeholder="Name"
               value={contact.name}
               onChange={(e) => update(index, { name: e.target.value })}
-              className="border px-3 py-2 text-[12.5px]"
+              className="border px-3 py-2 text-[13px]"
               style={{ background: 'var(--panel-sunk)', borderColor: 'var(--rule-strong)', color: 'var(--ink)', width: '15rem' }}
             />
             <input
@@ -718,7 +718,7 @@ function UnitContacts({
               placeholder="Phone"
               value={contact.phone}
               onChange={(e) => update(index, { phone: e.target.value })}
-              className="tabular border px-3 py-2 text-[12.5px]"
+              className="tabular border px-3 py-2 text-[13px]"
               style={{ background: 'var(--panel-sunk)', borderColor: 'var(--rule-strong)', color: 'var(--ink)', width: '12rem' }}
             />
           </div>
@@ -799,7 +799,7 @@ function ReferenceList() {
                 href={entry.url}
                 target="_blank"
                 rel="noreferrer noopener"
-                className="text-[11.5px]"
+                className="text-[12px]"
                 style={{ color: 'var(--accent)' }}
               >
                 Open ↗
