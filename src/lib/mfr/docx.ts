@@ -235,7 +235,12 @@ export function buildDocx(doc: MemoDoc, spec: MemoSpec): Blob {
     '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' +
     `<w:document xmlns:w="${WNS}" ` +
     'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" ' +
-    'xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessing" ' +
+    // wordprocessingDrawing, not wordprocessing. The short form is a namespace
+    // Word does not know, so the seal's <wp:anchor> is unrecognised and the
+    // whole document fails to open -- with a generic "error trying to open the
+    // file" that names nothing. Pinned by a test, because a wrong URI is
+    // invisible to well-formedness checks, to unzip, and to reading it.
+    'xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" ' +
     'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" ' +
     'xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><w:body>' +
     memoBodyXml(doc, spec) +

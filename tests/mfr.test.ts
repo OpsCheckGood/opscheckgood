@@ -537,6 +537,33 @@ describe('Word output', () => {
       .map((seq) => seq.join(' '));
   }
 
+  /**
+   * The namespace URIs, exactly.
+   *
+   * A wrong URI is invisible: the XML is still well-formed, the package still
+   * unzips, every string you would grep for is still present, and Word answers
+   * with "Word experienced an error trying to open the file" -- which names
+   * nothing and reads like a disk problem. `wp` was bound to
+   * .../drawingml/2006/wordprocessing rather than .../wordprocessingDrawing,
+   * so any memorandum carrying the seal would not open at all.
+   */
+  it('binds every namespace prefix to the right URI', async () => {
+    const d = doc({ from: 'A/B', subject: 'S', paras: ['One.'], prepName: 'John D. Smith' });
+    const xml = new TextDecoder('latin1').decode(
+      await bytesOf(buildDocx(d, customSpec(d, FIXED))),
+    );
+    const NS: Record<string, string> = {
+      w: 'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
+      r: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships',
+      wp: 'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing',
+      a: 'http://schemas.openxmlformats.org/drawingml/2006/main',
+      pic: 'http://schemas.openxmlformats.org/drawingml/2006/picture',
+    };
+    for (const [prefix, uri] of Object.entries(NS)) {
+      expect(`${prefix} -> ${xml.includes(`xmlns:${prefix}="${uri}"`)}`).toBe(`${prefix} -> true`);
+    }
+  });
+
   it('orders the children of w:pPr and w:rPr the way the schema demands', async () => {
     // Every paragraph shape the generator emits: centred letterhead,
     // right-aligned date, the hanging-indent subject, body and sub-paragraphs,
