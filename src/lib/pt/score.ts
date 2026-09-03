@@ -1,6 +1,7 @@
 import type {
   AgeGroup,
   BodyFatSite,
+  BodyFatTable,
   BodyFatStandard,
   ComponentDefinition,
   EventDefinition,
@@ -154,9 +155,13 @@ export interface WaistResult {
 /**
  * Averages the waist measurements and floors to the half inch.
  *
- * Three measurements are required and they are expected to agree within an
- * inch; both shortfalls produce a note rather than a refusal to score, because
- * the number is still the best available and the user needs to see it.
+ * Para 3.15.4.5: three measurements, and if any two differ by more than an
+ * inch an additional one is taken -- then "the three closest measurements will
+ * be added together, divided by three". So with a fourth entered, the outlier
+ * drops out rather than being averaged in.
+ *
+ * Shortfalls produce a note rather than a refusal to score: the number is still
+ * the best available and the user needs to see it.
  */
 export function averageWaist(raw: ReadonlyArray<number | null>): WaistResult {
   const values = raw.filter((v): v is number => v !== null && v > 0);
@@ -165,14 +170,28 @@ export function averageWaist(raw: ReadonlyArray<number | null>): WaistResult {
 
   const lo = Math.min(...values);
   const hi = Math.max(...values);
-  if (hi - lo > 1) {
+  const spread = hi - lo > 1;
+
+  // With more than three, keep the three that sit closest together: sort, then
+  // take the window of three with the smallest range.
+  let used = values;
+  if (values.length > 3) {
+    const sorted = [...values].sort((a, b) => a - b);
+    let best = 0;
+    for (let i = 1; i + 2 < sorted.length; i += 1) {
+      if (sorted[i + 2]! - sorted[i]! < sorted[best + 2]! - sorted[best]!) best = i;
+    }
+    used = sorted.slice(best, best + 3);
+  }
+
+  if (spread && values.length < 4) {
     notes.push('Waist measurements differ by more than 1 in — take another (para 3.15.4.5).');
   }
   if (values.length < 3) {
     notes.push('Enter three waist measurements (para 3.15.4.5).');
   }
-  const sum = values.reduce((a, b) => a + b, 0);
-  return { waist: floorHalf(sum / values.length), notes };
+  const sum = used.reduce((a, b) => a + b, 0);
+  return { waist: floorHalf(sum / used.length), notes };
 }
 
 /**
@@ -215,6 +234,7 @@ function riskLabel(component: ComponentDefinition, ratio: number): string | null
  */
 export function roundMeasurement(value: number, mode: MeasurementRounding): number {
   if (mode === 'upQuarter') return Math.ceil(value * 4 - 1e-9) / 4;
+  if (mode === 'downQuarter') return Math.floor(value * 4 + 1e-9) / 4;
   if (mode === 'downHalf') return Math.floor(value * 2 + 1e-9) / 2;
   return Math.round(value * 2) / 2;
 }
@@ -242,6 +262,8 @@ export interface BodyFatAssessment {
   measurements: BodyFatMeasurement[];
   circumference: number | null;
   percent: number | null;
+  /** True when the percent came from the published table, not the equation. */
+  fromTable: boolean;
   result: 'pass' | 'fail' | null;
   /** What is still missing or wrong. Null once a percent came out. */
   need: string | null;
@@ -270,6 +292,7 @@ export function assessBodyFat(
     measurements: [],
     circumference: null,
     percent: null,
+    fromTable: false,
     result: null,
     need: null,
     crossCheck: null,
@@ -313,11 +336,22 @@ export function assessBodyFat(
     return { ...empty, heightIn, measurements, circumference, need };
   }
 
-  const { circumference: a, height: b, constant: c } = standard.equation;
-  const percent = Math.max(
-    0,
-    Math.round(a * Math.log10(circumference) + b * Math.log10(heightIn) + c),
-  );
+  // The manual points at the published table, not at the equation. Read the
+  // table where it covers the measurement; the equation is only the fallback
+  // off the end of it, and is what the table was generated from anyway.
+  const table = rules.tables?.[sex];
+  const looked = table ? lookupBodyFat(table, circumference, heightIn) : null;
+
+  let percent: number;
+  if (looked !== null) {
+    percent = looked;
+  } else {
+    const { circumference: a, height: b, constant: c } = standard.equation;
+    percent = Math.max(
+      0,
+      Math.round(a * Math.log10(circumference) + b * Math.log10(heightIn) + c),
+    );
+  }
 
   return {
     standard,
@@ -325,10 +359,39 @@ export function assessBodyFat(
     measurements,
     circumference,
     percent,
-    result: percent <= standard.maxPercent ? 'pass' : 'fail',
+    fromTable: looked !== null,
+    // Table 3.2 is "< 26%" / "< 36%": equal to the standard does not pass.
+    result: percent < standard.maxPercent ? 'pass' : 'fail',
     need: null,
-    crossCheck: `Cross-check ${percent}% against ${formatInches(circumference)} and ${formatInches(heightIn)} in ${standard.tableRef}.`,
+    crossCheck:
+      looked !== null
+        ? `${percent}% is ${standard.tableRef}: circumference ${formatInches(circumference)} against height ${formatInches(heightIn)}.`
+        : `${formatInches(circumference)} at ${formatInches(heightIn)} falls outside ${standard.tableRef}. This figure is the DoD circumference equation the table is built from, not a published one — have it checked.`,
   };
+}
+
+/**
+ * A cell of a published table, or null when the measurement falls outside it.
+ *
+ * Both axes are evenly spaced, so the index is arithmetic rather than a search.
+ * The tolerance covers a measurement a hair off a step through floating point;
+ * anything genuinely between steps is rejected rather than snapped, because a
+ * silently shifted row is the failure this tool cannot have.
+ */
+export function lookupBodyFat(
+  table: BodyFatTable,
+  circumferenceIn: number,
+  heightIn: number,
+): number | null {
+  const ci = Math.round((circumferenceIn - table.circumference.start) / table.circumference.step);
+  const hi = Math.round((heightIn - table.height.start) / table.height.step);
+  if (ci < 0 || ci >= table.circumference.count) return null;
+  if (hi < 0 || hi >= table.height.count) return null;
+  if (Math.abs(table.circumference.start + ci * table.circumference.step - circumferenceIn) > 1e-6) {
+    return null;
+  }
+  if (Math.abs(table.height.start + hi * table.height.step - heightIn) > 1e-6) return null;
+  return table.rows[ci]?.[hi] ?? null;
 }
 
 /** The worksheet as it reads before anything is entered into it. */
@@ -340,6 +403,7 @@ export function blankAssessment(standards: PtStandards, sex: Sex): BodyFatAssess
     measurements: (standard?.sites ?? []).map((site) => ({ site, raw: null, rounded: null })),
     circumference: null,
     percent: null,
+    fromTable: false,
     result: null,
     need: null,
     crossCheck: null,
@@ -440,7 +504,21 @@ export interface PtResult {
 
 /** Whether a Tier 2 assessment is required here, and what it did to the score. */
 export interface BfaOutcome {
+  /**
+   * The AFMAN condition: ratio over the threshold AND the assessment not met.
+   * This is what makes the tape count towards the composite.
+   */
   required: boolean;
+  /**
+   * Whether the worksheet is open for use.
+   *
+   * Wider than `required` on purpose. Anyone who has not met the assessment can
+   * be taped, and the number is worth having in front of you at that point even
+   * when the ratio is under the threshold and the result cannot change the
+   * score. The source PDF locks the worksheet in that case; we open it and say
+   * plainly that it does not count. See `effect`.
+   */
+  available: boolean;
   /** Why it is or is not required, in the source's own terms. */
   requirement: string;
   assessment: BodyFatAssessment;
@@ -651,6 +729,7 @@ export function score(standards: PtStandards, input: PtInput): PtResult {
       riskLabel: null,
       bfa: {
         required: false,
+        available: false,
         requirement: 'Complete the assessment above first',
         // The worksheet still reads back what has been typed into it; only
         // whether it is required has to wait for an age.
@@ -767,19 +846,34 @@ export function score(standards: PtStandards, input: PtInput): PtResult {
   const bfaRequired =
     !bodyExempt && whtr !== null && whtr > threshold && provisionalUnsat && !incomplete;
 
-  // Nothing is read back from the worksheet unless it is actually required.
-  // The source locks it and blanks it, and that is the right behaviour to
-  // keep: a body fat number nobody has to produce is one more thing to worry
-  // about, and it is not the figure the assessment turns on.
-  const reported = bfaRequired ? assessment : blankAssessment(standards, input.sex);
+  /**
+   * The worksheet is open to anyone who has not met the assessment.
+   *
+   * The source PDF opens it only when it is required, which means a member who
+   * failed with a ratio under the threshold cannot be taped at all. Being taped
+   * is the useful thing to do at that point even when the result cannot move
+   * the score, so the gate here is "not met" and the narrower AFMAN condition
+   * governs whether it counts.
+   */
+  const bfaAvailable = !bodyExempt && !incomplete && provisionalUnsat;
+  const reported = bfaAvailable ? assessment : blankAssessment(standards, input.sex);
 
   let effect = 'No Tier 2 body fat assessment is required by the entries above.';
+  if (bfaAvailable && !bfaRequired) {
+    effect =
+      assessment.result === null
+        ? `The assessment was not met, so the tape measurements are available here. They do not change the score: a Tier 2 assessment only counts when the waist-to-height ratio is over ${threshold.toFixed(2)}.`
+        : `Recorded for reference only. The ratio is not over ${threshold.toFixed(2)}, so this result does not change the score (para 3.7.2).`;
+  }
   if (bfaRequired && assessment.result === 'pass') {
     // Para 3.7.2: a passed assessment scores body composition as an exempt
     // component, which drops it from both sides of the division.
     bodyPoints = 0;
     bodyPossible = 0;
-    exemptCount++;
+    // Scored as an exempt component (para 3.7.2), but NOT an exemption: a
+    // PFRA hold follows an AF Form 469 (para 3.9), and a met body fat
+    // assessment is not one. The source PDF counts it and so warns about a
+    // hold that does not apply.
     if (bodyResult) bodyResult.droppedByBfa = true;
     effect =
       'Body fat assessment met — body composition is scored as an exempt component and the composite is recalculated (para 3.7.2).';
@@ -853,7 +947,13 @@ export function score(standards: PtStandards, input: PtInput): PtResult {
     waist,
     whtr,
     riskLabel: risk,
-    bfa: { required: bfaRequired, requirement, assessment: reported, effect },
+    bfa: {
+      required: bfaRequired,
+      available: bfaAvailable,
+      requirement,
+      assessment: reported,
+      effect,
+    },
     notes,
   };
 }

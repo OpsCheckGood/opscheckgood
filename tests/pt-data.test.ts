@@ -19,11 +19,15 @@ describe('standards load', () => {
     expect(standards.id).toBe('afman36-2905');
   });
 
-  // Transcribed from the maintainer's PDF rather than from the AFMAN itself,
-  // so the banner stays up until someone checks it against the real source.
-  it('is still marked unverified', () => {
-    expect(CURRENT_STANDARDS.isStub).toBe(true);
+  // Checked against the sources rather than against the maintainer's PDF: the
+  // tables cell by cell against the published scoring charts (see
+  // tests/pt-charts.test.ts) and the body composition rules against AFMAN
+  // 36-2905 itself (see the conformance block in tests/pt-score.test.ts).
+  it('is marked verified, with a real source and date', () => {
+    expect(CURRENT_STANDARDS.isStub).toBe(false);
     expect(CURRENT_STANDARDS.meta.source).toContain('36-2905');
+    expect(CURRENT_STANDARDS.meta.sourceUrl).toMatch(/^https:\/\//);
+    expect(Number.isNaN(Date.parse(CURRENT_STANDARDS.meta.verifiedDate))).toBe(false);
   });
 
   it('offers a standard and a neutral track', () => {
@@ -276,8 +280,11 @@ describe('the Tier 2 body fat block', () => {
       const subtracted = standard.sites.filter((site) => site.sign === -1);
       expect(subtracted).toHaveLength(1);
       expect(subtracted[0]!.rounding).toBe('upQuarter');
+      // Attachment 8: every site the manual rounds down goes to the QUARTER
+      // inch, not the half. Half-inch rounding understates the circumference
+      // value by up to a quarter inch and so understates the body fat percent.
       for (const site of standard.sites.filter((s) => s.sign === 1)) {
-        expect(site.rounding).toBe('downHalf');
+        expect(site.rounding).toBe('downQuarter');
       }
     }
   });

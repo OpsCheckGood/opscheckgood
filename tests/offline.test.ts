@@ -354,12 +354,12 @@ describeBuilt('single-file offline PT calculator', () => {
     const text = mount.textContent ?? '';
     // The same case the unit tests score to 94.0 / Excellent.
     expect(text).toContain('EXCELLENT');
-    // The provenance stamp and the unverified banner are both non-negotiable.
-    // The unverified-data banner is deliberately not rendered here (see the
-    // header comment in PtCalculator.tsx). The source stamp still has to carry
-    // the provenance, so that is what is asserted.
+    // The provenance stamp is non-negotiable. The standards are now verified
+    // against the published charts and the manual, so there is no unverified
+    // banner to render and the stamp says so.
     expect(text).not.toContain('Unverified data');
-    expect(text).toContain('Source (stub)');
+    expect(text).toContain('Source');
+    expect(text).not.toContain('Source (stub)');
     expect(text).toContain('AFMAN 36-2905');
     // ...and the chart appears once there is a column to draw.
     expect(text).toContain('HR Push-up');
@@ -440,7 +440,10 @@ describeBuilt('single-file offline PT calculator', () => {
       { timeout: 10000, interval: 50 },
     );
     const passed = mount.textContent ?? '';
-    expect(passed).toContain('18 %');
+    // Quarter-inch rounding per Attachment 8: abdomen 34.25 stays 34.25, so the
+    // circumference value is 18.75 and the result is 19%, not the 18% the
+    // half-inch rounding used to give.
+    expect(passed).toContain('19 %');
     expect(passed).toContain('PASS');
     expect(passed).toContain('Scored on 80 of 100 possible points');
 

@@ -1,11 +1,11 @@
 {
   "meta": {
     "source": "AFMAN 36-2905, Air Force Physical Fitness Program",
-    "version": "24 Mar 2026 (standards effective 1 Mar 2026)",
-    "verifiedDate": "2026-08-30",
-    "sourceUrl": "",
-    "status": "stub",
-    "notes": "Transcribed mechanically from the maintainer’s own fillable calculator, USAF_PFRA_Scoring.pdf, whose embedded document-level JavaScript carries these tables. Values were extracted by script rather than retyped, so they match that PDF exactly. This file stays status=stub because the PDF is one step removed from the official source: the numbers have not been checked back against AFMAN 36-2905 itself, and meta.sourceUrl is not yet known. The Tier 2 body fat block carries the DoDI 1308.3 circumference equations the same way; the PDF records that they were checked against 58 published Attachment 9 and 10 cells with no differences, but that check is the maintainer\u2019s, not one this repository can reproduce. To promote to verified: open the AFMAN, confirm the tables, set sourceUrl to the e-publishing URL, and set status=verified."
+    "version": "AFMAN 36-2905, 24 Mar 2026; PFRA Scoring Charts effective 1 Mar 2026",
+    "verifiedDate": "2026-09-03",
+    "sourceUrl": "https://static.e-publishing.af.mil/production/1/af_a1/publication/afman36-2905/dafman36-2905.pdf",
+    "status": "verified",
+    "notes": "Every number in this file has been compared against an official source by script, not by reading. THE SCORING TABLES \u2014 push-ups, hand-release push-ups, sit-ups, cross-leg reverse crunches, forearm plank, 2-mile run and 20-metre HAMR \u2014 were checked cell by cell against the USAF PFRA Scoring Charts (Final, effective 1 Mar 2026): 3,096 cells across nine age groups and both sexes, plus 172 cells of the AFSPECWAR/EOD neutral column and the twelve-row waist-to-height ladder. Zero differences. The charts are pinned in tests/fixtures/pfra-scoring-charts.json and compared by tests/pt-charts.test.ts, so an edit to any number here fails the build. BODY COMPOSITION AND THE TIER 2 ASSESSMENT come from AFMAN 36-2905, 24 March 2026, at meta.sourceUrl: the walk maxima (Table 3.1), the 50/20/15/15 split (para 3.7.1), ratio truncation and its worked example (para 3.15.4.2), the waist procedure (para 3.15.4.5), the Tier 2 trigger (para 3.1.2.1.1), the effect of a met or unmet assessment (para 3.7.2), the walk rules (para 3.7.3), and the taping sites and rounding directions (Attachment 8). Each is pinned by a citing test in tests/pt-score.test.ts. Reading the manual found three errors in the maintainer\u2019s fillable PDF, from which this file was first transcribed, all corrected here: it rounded abdomen, waist and buttocks to the half inch where Attachment 8 says quarter; it passed a body fat result equal to the standard where Table 3.2 says \"< 26%\" and \"< 36%\"; and it counted a met assessment as an exemption, warning of a PFRA hold that para 3.9 does not impose. The body fat percentage is read from the published tables at Attachments 9 and 10, which ship as src/data/pt/body-fat-tables.json and carry their own meta block. The DoDI 1308.3 equation is kept only for a measurement off the end of those tables, where the tool says plainly that the figure is not a published one."
   },
   "data": {
     "id": "afman36-2905",
@@ -4072,24 +4072,24 @@
       "bySex": {
         "male": {
           "formulaLabel": "abdomen \u2212 neck",
-          "standardLabel": "26% or less",
+          "standardLabel": "Less than 26%",
           "maxPercent": 26,
           "tableRef": "Attachment 9",
           "sites": [
             { "id": "neck", "label": "Neck", "sign": -1, "rounding": "upQuarter" },
-            { "id": "abdomen", "label": "Abdomen", "sign": 1, "rounding": "downHalf" }
+            { "id": "abdomen", "label": "Abdomen", "sign": 1, "rounding": "downQuarter" }
           ],
           "equation": { "circumference": 86.010, "height": -70.041, "constant": 36.76 }
         },
         "female": {
           "formulaLabel": "natural waist + buttocks \u2212 neck",
-          "standardLabel": "36% or less",
+          "standardLabel": "Less than 36%",
           "maxPercent": 36,
           "tableRef": "Attachment 10",
           "sites": [
             { "id": "neck", "label": "Neck", "sign": -1, "rounding": "upQuarter" },
-            { "id": "waist", "label": "Natural waist", "sign": 1, "rounding": "downHalf" },
-            { "id": "buttocks", "label": "Buttocks", "sign": 1, "rounding": "downHalf" }
+            { "id": "waist", "label": "Natural waist", "sign": 1, "rounding": "downQuarter" },
+            { "id": "buttocks", "label": "Buttocks", "sign": 1, "rounding": "downQuarter" }
           ],
           "equation": { "circumference": 163.205, "height": -97.684, "constant": -78.387 }
         }
@@ -4098,7 +4098,7 @@
         "Neck: just below the larynx. Abdomen (male): at the navel, parallel to the floor.",
         "Natural waist (female): narrowest point of the torso. Buttocks (female): widest point of the glutes.",
         "The natural waist is NOT the same site as the waist on the ratio above \u2014 measure it separately.",
-        "Average three measurements at each site. Neck rounds UP to the nearest 1/4 in, every other site rounds DOWN to the nearest 1/2 in."
+        "Neck rounds UP to the nearest 1/4 in; abdomen, natural waist and buttocks round DOWN to the nearest 1/4 in (Attachment 8)."
       ]
     },
     "rating": {

@@ -2,7 +2,9 @@ import { loadDataset } from './loader';
 import {
   DataFileError,
   type AgeGroup,
+  type BodyFatAxis,
   type BodyFatRules,
+  type BodyFatTable,
   type BodyFatSite,
   type BodyFatStandard,
   type ComponentDefinition,
@@ -16,6 +18,7 @@ import {
 } from './types';
 
 import afman362905 from '../../data/pt/afman36-2905.json';
+import bodyFatTables from '../../data/pt/body-fat-tables.json';
 
 /**
  * PT scoring standards.
@@ -229,7 +232,12 @@ function normalizeLimitTable(file: string, raw: unknown, key: string): LimitTabl
   return { label: str(file, o, 'label', what), ageGroups, bySex };
 }
 
-const ROUNDINGS: ReadonlyArray<MeasurementRounding> = ['upQuarter', 'downHalf', 'nearestHalf'];
+const ROUNDINGS: ReadonlyArray<MeasurementRounding> = [
+  'upQuarter',
+  'downQuarter',
+  'downHalf',
+  'nearestHalf',
+];
 
 function rounding(
   file: string,
@@ -291,6 +299,87 @@ function normalizeBodyFatStandard(file: string, raw: unknown, what: string): Bod
   };
 }
 
+function normalizeAxis(file: string, raw: unknown, what: string): BodyFatAxis {
+  const o = obj(file, raw, what);
+  const axis = {
+    start: num(file, o, 'start', what),
+    step: num(file, o, 'step', what),
+    count: num(file, o, 'count', what),
+  };
+  if (axis.step <= 0 || axis.count < 2) {
+    throw new DataFileError(file, `${what} must step upwards over at least two entries`);
+  }
+  return axis;
+}
+
+/**
+ * A published body fat table.
+ *
+ * The invariants are checked rather than assumed: more circumference at the
+ * same height is never less body fat, and more height at the same
+ * circumference is never more. A transcription slip that broke either would
+ * otherwise sit there scoring people wrongly, and that is exactly the failure
+ * this project cannot have.
+ */
+function normalizeBodyFatTable(file: string, raw: unknown, what: string): BodyFatTable {
+  const o = obj(file, raw, what);
+  const circumference = normalizeAxis(file, o.circumference, `${what}.circumference`);
+  const height = normalizeAxis(file, o.height, `${what}.height`);
+  if (!Array.isArray(o.rows) || o.rows.length !== circumference.count) {
+    throw new DataFileError(
+      file,
+      `${what}.rows must hold ${circumference.count} rows, one per circumference step`,
+    );
+  }
+  const rows = o.rows.map((r, i) => {
+    const row = numberArray(file, r, `${what}.rows[${i}]`);
+    if (row.length !== height.count) {
+      throw new DataFileError(
+        file,
+        `${what}.rows[${i}] has ${row.length} cells, expected ${height.count}`,
+      );
+    }
+    if (row.some((v) => !Number.isInteger(v) || v < 0)) {
+      throw new DataFileError(file, `${what}.rows[${i}] must hold whole percentages`);
+    }
+    for (let j = 1; j < row.length; j += 1) {
+      if (row[j]! > row[j - 1]!) {
+        throw new DataFileError(
+          file,
+          `${what}.rows[${i}]: body fat rises with height at cell ${j}`,
+        );
+      }
+    }
+    return row;
+  });
+  for (let j = 0; j < height.count; j += 1) {
+    for (let i = 1; i < rows.length; i += 1) {
+      if (rows[i]![j]! < rows[i - 1]![j]!) {
+        throw new DataFileError(
+          file,
+          `${what}: body fat falls with circumference at row ${i}, column ${j}`,
+        );
+      }
+    }
+  }
+  return { circumference, height, rows };
+}
+
+function normalizeBodyFatTables(file: string, raw: unknown): Record<Sex, BodyFatTable> {
+  const o = obj(file, raw, 'data');
+  const out = {} as Record<Sex, BodyFatTable>;
+  for (const sex of ['male', 'female'] as const) {
+    out[sex] = normalizeBodyFatTable(file, o[sex], `data.${sex}`);
+  }
+  return out;
+}
+
+export const BODY_FAT_TABLES: Dataset<Record<Sex, BodyFatTable>> = loadDataset(
+  'src/data/pt/body-fat-tables.json',
+  bodyFatTables,
+  (raw, _meta, file) => normalizeBodyFatTables(file, raw),
+);
+
 function normalizeBodyFat(file: string, raw: unknown): BodyFatRules {
   const what = 'data.bodyFat';
   const o = obj(file, raw, what);
@@ -307,6 +396,7 @@ function normalizeBodyFat(file: string, raw: unknown): BodyFatRules {
     heightRounding: rounding(file, o, 'heightRounding', what),
     percentRounding: 'nearestWhole',
     bySex,
+    tables: BODY_FAT_TABLES.data,
     siteNotes: Array.isArray(o.siteNotes)
       ? o.siteNotes.filter((n): n is string => typeof n === 'string')
       : [],

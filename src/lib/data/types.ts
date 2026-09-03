@@ -254,7 +254,11 @@ export interface LimitTable {
 }
 
 /** How a taped measurement is rounded before it is used. */
-export type MeasurementRounding = 'upQuarter' | 'downHalf' | 'nearestHalf';
+export type MeasurementRounding =
+  | 'upQuarter'
+  | 'downQuarter'
+  | 'downHalf'
+  | 'nearestHalf';
 
 /**
  * One site on the tape, and how it enters the circumference value.
@@ -284,13 +288,41 @@ export interface BodyFatEquation {
 export interface BodyFatStandard {
   /** How the circumference value is described, e.g. "abdomen - neck". */
   formulaLabel: string;
-  /** How the maximum is printed, e.g. "26% or less". */
+  /** How the standard is printed, e.g. "Less than 26%". */
   standardLabel: string;
+  /**
+   * The standard, which a result must come in UNDER to pass.
+   *
+   * AFMAN 36-2905 Table 3.2 states it as "< 26%" and "< 36%", not "or less",
+   * and the manual uses "<" and "\u2264" deliberately elsewhere (para 3.10.3 is
+   * "\u2264 74.9"). So a whole-percent result equal to this number does not pass.
+   */
   maxPercent: number;
   /** The published table this result should be cross-checked against. */
   tableRef: string;
   sites: BodyFatSite[];
   equation: BodyFatEquation;
+}
+
+/** An evenly-spaced axis of a lookup table. */
+export interface BodyFatAxis {
+  start: number;
+  step: number;
+  count: number;
+}
+
+/**
+ * A published body fat percent table: AFMAN 36-2905 Attachment 9 (male) or 10
+ * (female). `rows[circumferenceIndex][heightIndex]` is a whole percent.
+ *
+ * This is the authority the manual actually points at. The circumference
+ * equation reproduces it to within a point, but a point is the difference
+ * between meeting the standard and not.
+ */
+export interface BodyFatTable {
+  circumference: BodyFatAxis;
+  height: BodyFatAxis;
+  rows: number[][];
 }
 
 /**
@@ -306,6 +338,8 @@ export interface BodyFatRules {
   heightRounding: MeasurementRounding;
   percentRounding: 'nearestWhole';
   bySex: Record<Sex, BodyFatStandard>;
+  /** Attachments 9 and 10. Absent only if the tables file is not shipped. */
+  tables?: Record<Sex, BodyFatTable>;
   /** Tape instructions, rendered verbatim under the inputs. */
   siteNotes: string[];
 }

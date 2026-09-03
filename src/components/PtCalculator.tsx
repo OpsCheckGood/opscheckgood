@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { CURRENT_STANDARDS } from '@/lib/data/pt';
+import { BODY_FAT_TABLES, CURRENT_STANDARDS } from '@/lib/data/pt';
 import type { ComponentDefinition, EventDefinition, Sex } from '@/lib/data/types';
 import {
   chartFor,
@@ -47,11 +47,11 @@ import { SourceStamp } from './SourceStamp';
  * so in its own footer -- but on the hosted page the closest thing left is the
  * layout footer's "Everything runs in your browser".
  *
- * Constraint 5 asks for a persistent unverified-data banner while any source
- * is a stub. The standards data is still `status: "stub"` and this tool does
- * not render one. Provenance is still on the page: the source stamp at the
- * foot reads "Source (stub)". Marking the data `verified`, once the tables
- * have been checked against AFMAN 36-2905 itself, makes the two agree again.
+ * Constraint 5's unverified-data banner no longer applies: the standards data
+ * is `status: "verified"`. The tables were compared cell by cell against the
+ * published PFRA Scoring Charts and the body composition rules against AFMAN
+ * 36-2905 itself, so there is no stub left to warn about. Provenance is on the
+ * page either way, in the source stamp at the foot.
  */
 
 const DRAFT_KEY = 'ocg.pt.draft';
@@ -168,7 +168,12 @@ export default function PtCalculator() {
         heightIn: event.input === 'waist' ? parseNumber(box('height')) : undefined,
         waists:
           event.input === 'waist'
-            ? [parseNumber(box('w1')), parseNumber(box('w2')), parseNumber(box('w3'))]
+            ? [
+                parseNumber(box('w1')),
+                parseNumber(box('w2')),
+                parseNumber(box('w3')),
+                parseNumber(box('w4')),
+              ]
             : undefined,
       };
     }
@@ -211,7 +216,7 @@ export default function PtCalculator() {
       '',
       `Composite: ${result.percent === null ? '—' : result.percent.toFixed(1)} / 100`,
       `Rating: ${rating ? `${rating.word} — ${rating.detail}` : '—'}`,
-      ...(result.bfa.required
+      ...(result.bfa.available
         ? [
             '',
             `${standards.bodyFat?.label ?? 'Tier 2 body fat assessment'}: ${result.bfa.requirement}`,
@@ -340,7 +345,7 @@ export default function PtCalculator() {
       <Charts result={result} selected={draft.events} sex={draft.sex} />
 
       <section className="panel p-4">
-        <SourceStamp sources={[dataset.meta]} />
+        <SourceStamp sources={[dataset.meta, BODY_FAT_TABLES.meta]} />
       </section>
     </div>
   );
@@ -545,6 +550,15 @@ function ComponentPanel({
 }) {
   const box = (suffix: string) => boxes[`${component.id}.${suffix}`] ?? '';
   const key = (suffix: string) => `${component.id}.${suffix}`;
+
+  // The fourth waist box appears once the first three disagree by more than an
+  // inch, and stays while it holds anything.
+  const firstThree = (['w1', 'w2', 'w3'] as const)
+    .map((slot) => parseNumber(box(slot)))
+    .filter((v): v is number => v !== null && v > 0);
+  const needsFourth =
+    box('w4') !== '' ||
+    (firstThree.length === 3 && Math.max(...firstThree) - Math.min(...firstThree) > 1);
   const walkMax =
     event.kind === 'passFail' && age !== null ? walkMaxSeconds(standards, event, age, sex) : null;
 
@@ -613,6 +627,18 @@ function ComponentPanel({
                     width="4.5rem"
                   />
                 ))}
+                {/* Para 3.15.4.5 calls for a fourth when the first three
+                    disagree by more than an inch, and then uses the three
+                    closest. Telling somebody to take another measurement while
+                    giving them nowhere to put it is not much help. */}
+                {needsFourth && (
+                  <TextBox
+                    ariaLabel="Waist measurement 4"
+                    value={box('w4')}
+                    onChange={(v) => onBox(key('w4'), v)}
+                    width="4.5rem"
+                  />
+                )}
               </div>
             </Field>
             <Field label="Waist used">
@@ -879,21 +905,25 @@ function Tier2Panel({
   const standard = assessment.standard;
   const passed = assessment.result === 'pass';
   const failed = assessment.result === 'fail';
+  // Open whenever the assessment was not met. "Required" is the narrower AFMAN
+  // condition and is the only one that moves the score.
+  const open = bfa.available;
+  const chip = bfa.required ? 'Required' : bfa.available ? 'Optional' : 'Not required';
 
   return (
-    <section className="panel p-5" style={{ opacity: bfa.required ? 1 : 0.72 }}>
+    <section className="panel p-5" style={{ opacity: open ? 1 : 0.72 }}>
       <div className="mb-4 flex flex-wrap items-center gap-x-3 gap-y-2">
         <h2 className="title m-0">{rules.label}</h2>
         <span
           className="util border px-2 py-1"
           style={{
-            borderColor: bfa.required ? 'var(--warn-dim)' : 'var(--rule)',
-            background: bfa.required ? 'var(--warn-dim)' : 'var(--panel-raised)',
-            color: bfa.required ? 'var(--warn)' : 'var(--ink-faint)',
+            borderColor: bfa.required ? 'var(--warn-dim)' : open ? 'var(--rule-strong)' : 'var(--rule)',
+            background: bfa.required ? 'var(--warn-dim)' : open ? 'var(--panel-raised)' : 'var(--panel-raised)',
+            color: bfa.required ? 'var(--warn)' : open ? 'var(--ink)' : 'var(--ink-faint)',
             letterSpacing: '0.09em',
           }}
         >
-          {bfa.required ? 'Required' : 'Not required'}
+          {chip}
         </span>
       </div>
 
@@ -919,7 +949,7 @@ function Tier2Panel({
         </Field>
       </div>
 
-      {bfa.required && standard ? (
+      {open && standard ? (
         <>
           <div
             className="mt-5 flex flex-wrap items-end gap-x-8 gap-y-4 pt-5"
