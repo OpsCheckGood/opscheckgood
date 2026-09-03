@@ -367,6 +367,99 @@ describeBuilt('single-file offline PT calculator', () => {
 
     dom.window.close();
   }, 90000);
+
+  it('opens the Tier 2 worksheet only when the entries call for one', async () => {
+    const { JSDOM } = await import('jsdom');
+    const dom = new JSDOM(html, {
+      runScripts: 'dangerously',
+      pretendToBeVisual: true,
+      url: 'file:///pt-calculator-offline.html',
+    });
+
+    const denied: string[] = [];
+    dom.window.fetch = ((input: unknown) => {
+      denied.push(String(input));
+      return Promise.reject(new Error('network disabled'));
+    }) as typeof fetch;
+
+    const mount = dom.window.document.getElementById('pt-calculator-root')!;
+    await vi.waitFor(
+      () => {
+        expect(mount.querySelector('input')).not.toBeNull();
+      },
+      { timeout: 45000, interval: 100 },
+    );
+    // See the note in the memorandum test: the draft is hydrated in a mount
+    // effect that replaces the whole document.
+    await new Promise((resolve) => dom.window.setTimeout(resolve, 0));
+
+    const doc = dom.window.document;
+    const setValue = (el: HTMLInputElement | HTMLSelectElement, value: string) => {
+      const proto =
+        el.tagName === 'SELECT'
+          ? dom.window.HTMLSelectElement.prototype
+          : dom.window.HTMLInputElement.prototype;
+      Object.getOwnPropertyDescriptor(proto, 'value')!.set!.call(el, value);
+      el.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
+      el.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    };
+    const byLabel = (label: string) =>
+      doc.querySelector<HTMLInputElement>(`input[aria-label="${label}"]`)!;
+
+    // It starts shut, and says so rather than showing empty boxes.
+    expect(mount.textContent).toContain('Not required');
+    expect(doc.getElementById('bfa-neck')).toBeNull();
+
+    // A ratio over .55 with an assessment that is not met is what opens it.
+    setValue(doc.getElementById('pt-age') as HTMLInputElement, '30');
+    setValue(doc.getElementById('body.height') as HTMLInputElement, '66');
+    for (const n of [1, 2, 3]) setValue(byLabel(`Waist measurement ${n}`), '38');
+    setValue(doc.getElementById('strength.value') as HTMLInputElement, '30');
+    setValue(doc.getElementById('core.value') as HTMLInputElement, '30');
+    setValue(byLabel('2 Mile Run minutes'), '20');
+    setValue(byLabel('2 Mile Run seconds'), '0');
+
+    await vi.waitFor(
+      () => {
+        expect(mount.textContent).toContain('50.0');
+      },
+      { timeout: 10000, interval: 50 },
+    );
+    expect(mount.textContent).toContain('Required');
+    expect(mount.textContent).toContain('Tier 2 body fat assessment required');
+
+    // Taping under the standard takes body composition out of the composite
+    // entirely -- both the points earned and the points possible.
+    setValue(doc.getElementById('bfa-neck') as HTMLInputElement, '15.5');
+    setValue(doc.getElementById('bfa-abdomen') as HTMLInputElement, '34.25');
+
+    await vi.waitFor(
+      () => {
+        expect(mount.textContent).toContain('53.1');
+      },
+      { timeout: 10000, interval: 50 },
+    );
+    const passed = mount.textContent ?? '';
+    expect(passed).toContain('18 %');
+    expect(passed).toContain('PASS');
+    expect(passed).toContain('Scored on 80 of 100 possible points');
+
+    // Over it, the assessment is unsatisfactory whatever the points say.
+    setValue(doc.getElementById('bfa-abdomen') as HTMLInputElement, '46');
+    await vi.waitFor(
+      () => {
+        expect(mount.textContent).toContain('37 %');
+      },
+      { timeout: 10000, interval: 50 },
+    );
+    const failed = mount.textContent ?? '';
+    expect(failed).toContain('FAIL');
+    expect(failed).toContain('UNSATISFACTORY');
+    expect(failed).toContain('unsatisfactory regardless of points');
+
+    expect(denied, `page attempted network requests: ${denied.join(', ')}`).toEqual([]);
+    dom.window.close();
+  }, 90000);
 });
 
 /**
@@ -610,6 +703,12 @@ describeBuilt('single-file offline MFR generator', () => {
       },
       { timeout: 45000, interval: 100 },
     );
+
+    // The generator hydrates its draft from localStorage in a mount effect,
+    // and that effect replaces the whole document object. An input exists on
+    // the very first render, before it runs, so waiting for one is not enough:
+    // yield a macrotask first or the entries typed below can be wiped by it.
+    await new Promise((resolve) => dom.window.setTimeout(resolve, 0));
 
     const doc = dom.window.document;
     const setValue = (el: HTMLInputElement | HTMLTextAreaElement, value: string) => {

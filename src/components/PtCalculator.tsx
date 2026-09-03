@@ -4,11 +4,13 @@ import type { ComponentDefinition, EventDefinition, Sex } from '@/lib/data/types
 import {
   chartFor,
   combineTime,
+  formatInches,
   formatTime,
   parseNumber,
   ratioChart,
   score,
   walkMaxSeconds,
+  type BfaOutcome,
   type ComponentEntry,
   type ComponentResult,
   type PtInput,
@@ -106,6 +108,11 @@ function riskTone(label: string | null): 'ok' | 'warn' | 'bad' | 'plain' {
   return index === bands.length - 1 ? 'bad' : 'warn';
 }
 
+function ratingTone(rating: Rating): 'ok' | 'bad' | 'plain' {
+  if (rating === 'excellent' || rating === 'satisfactory') return 'ok';
+  return rating === 'no-score' ? 'plain' : 'bad';
+}
+
 function ratingColor(rating: Rating | null): string {
   if (rating === 'excellent' || rating === 'satisfactory') return 'var(--ok)';
   if (rating === null || rating === 'no-score') return 'var(--ink-faint)';
@@ -165,7 +172,20 @@ export default function PtCalculator() {
             : undefined,
       };
     }
-    return { age: parseNumber(draft.age), sex: draft.sex, trackId: draft.trackId, entries };
+    // The tape sites live in the same box map, keyed by site id, so switching
+    // sex keeps the neck measurement and picks up the sites that sex is taped at.
+    const bodyFat: Record<string, number | null> = {};
+    for (const site of standards.bodyFat?.bySex[draft.sex]?.sites ?? []) {
+      bodyFat[site.id] = parseNumber(draft.boxes[`bfa.${site.id}`] ?? '');
+    }
+
+    return {
+      age: parseNumber(draft.age),
+      sex: draft.sex,
+      trackId: draft.trackId,
+      entries,
+      bodyFat,
+    };
   }, [draft]);
 
   const result: PtResult = useMemo(() => score(standards, input), [input]);
@@ -191,6 +211,21 @@ export default function PtCalculator() {
       '',
       `Composite: ${result.percent === null ? '—' : result.percent.toFixed(1)} / 100`,
       `Rating: ${rating ? `${rating.word} — ${rating.detail}` : '—'}`,
+      ...(result.bfa.required
+        ? [
+            '',
+            `${standards.bodyFat?.label ?? 'Tier 2 body fat assessment'}: ${result.bfa.requirement}`,
+            ...result.bfa.assessment.measurements.map(
+              (m) =>
+                `${m.site.label}: ${m.raw === null ? '—' : m.raw} in` +
+                (m.rounded === null ? '' : ` (uses ${formatInches(m.rounded)})`),
+            ),
+            `Circumference: ${result.bfa.assessment.circumference === null ? '—' : formatInches(result.bfa.assessment.circumference)}`,
+            `Body fat: ${result.bfa.assessment.percent === null ? '—' : `${result.bfa.assessment.percent}%`}` +
+              (result.bfa.assessment.standard ? ` (${result.bfa.assessment.standard.standardLabel})` : ''),
+            `Result: ${result.bfa.assessment.result === null ? '—' : result.bfa.assessment.result.toUpperCase()}`,
+          ]
+        : []),
       ...(result.notes.length ? ['', ...result.notes.map((n) => `- ${n}`)] : []),
       '',
       'Unofficial worksheet. Official scores are the ones in myFitness on AF Form 4446.',
@@ -291,6 +326,16 @@ export default function PtCalculator() {
       ))}
 
       <Composite result={result} onCopy={copySummary} copyNote={copyNote} />
+
+      {standards.bodyFat && (
+        <Tier2Panel
+          bfa={result.bfa}
+          rating={result.rating}
+          whtr={result.whtr}
+          boxes={draft.boxes}
+          onBox={setBox}
+        />
+      )}
 
       <Charts result={result} selected={draft.events} sex={draft.sex} />
 
@@ -639,6 +684,15 @@ function ComponentPanel({
           (para 3.15.4.5).
         </p>
       )}
+
+      {/* The points above still stand -- they simply stopped counting, and
+          saying which is the difference between a readout and an explanation. */}
+      {result?.droppedByBfa && (
+        <p className="m-0 mt-2 text-[11.5px]" style={{ color: 'var(--ok)' }}>
+          Body fat assessment met — these points are not counted, on either side of the
+          composite (para 3.7.2).
+        </p>
+      )}
     </section>
   );
 }
@@ -784,6 +838,193 @@ function Composite({
             </li>
           ))}
         </ul>
+      )}
+    </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Tier 2 body fat assessment
+// ---------------------------------------------------------------------------
+
+/**
+ * The tape worksheet.
+ *
+ * It stays shut until the entries above actually call for one, which is how
+ * the source PDF handles it and is worth keeping: a body fat number nobody has
+ * to produce is one more thing to worry about, and the tool should not invite
+ * somebody to work one out when the answer changes nothing.
+ *
+ * When it is required, it is not a second calculator -- it feeds straight back
+ * into the composite above. A pass takes body composition out of the score
+ * entirely; a fail makes the assessment unsatisfactory whatever the points
+ * say. Both are stated here in those words rather than left to be inferred
+ * from a number moving.
+ */
+function Tier2Panel({
+  bfa,
+  rating,
+  whtr,
+  boxes,
+  onBox,
+}: {
+  bfa: BfaOutcome;
+  rating: Rating | null;
+  whtr: number | null;
+  boxes: Boxes;
+  onBox: (key: string, value: string) => void;
+}) {
+  const rules = standards.bodyFat!;
+  const { assessment } = bfa;
+  const standard = assessment.standard;
+  const passed = assessment.result === 'pass';
+  const failed = assessment.result === 'fail';
+
+  return (
+    <section className="panel p-5" style={{ opacity: bfa.required ? 1 : 0.72 }}>
+      <div className="mb-4 flex flex-wrap items-center gap-x-3 gap-y-2">
+        <h2 className="title m-0">{rules.label}</h2>
+        <span
+          className="util border px-2 py-1"
+          style={{
+            borderColor: bfa.required ? 'var(--warn-dim)' : 'var(--rule)',
+            background: bfa.required ? 'var(--warn-dim)' : 'var(--panel-raised)',
+            color: bfa.required ? 'var(--warn)' : 'var(--ink-faint)',
+            letterSpacing: '0.09em',
+          }}
+        >
+          {bfa.required ? 'Required' : 'Not required'}
+        </span>
+      </div>
+
+      {/* What the entries above decided, which is the whole reason this panel
+          is open or shut. */}
+      <div className="flex flex-wrap items-end gap-x-8 gap-y-4">
+        <Field label="Waist ÷ height">
+          <Readout value={whtr === null ? '—' : whtr.toFixed(2)} width="5.5rem" />
+        </Field>
+        <Field label="Assessment result">
+          <Readout
+            value={rating ? RATING[rating].word : '—'}
+            width="12rem"
+            tone={rating === null ? 'plain' : ratingTone(rating)}
+          />
+        </Field>
+        <Field label="Tier 2 required?">
+          <Readout
+            value={bfa.requirement}
+            width="24rem"
+            tone={bfa.required ? 'warn' : 'plain'}
+          />
+        </Field>
+      </div>
+
+      {bfa.required && standard ? (
+        <>
+          <div
+            className="mt-5 flex flex-wrap items-end gap-x-8 gap-y-4 pt-5"
+            style={{ borderTop: '1px solid var(--rule)' }}
+          >
+            {standard.sites.map((site) => {
+              const measured = assessment.measurements.find((m) => m.site.id === site.id);
+              return (
+                <Field key={site.id} label={`${site.label} (in)`} htmlFor={`bfa-${site.id}`}>
+                  <TextBox
+                    id={`bfa-${site.id}`}
+                    value={boxes[`bfa.${site.id}`] ?? ''}
+                    onChange={(v) => onBox(`bfa.${site.id}`, v)}
+                    width="6rem"
+                  />
+                  {/* The rounded value, because the rounding is what is used
+                      and it does not always go the way you would expect. */}
+                  <span className="util" style={{ letterSpacing: '0.06em' }}>
+                    {measured?.rounded === null || measured === undefined
+                      ? '—'
+                      : `uses ${formatInches(measured.rounded)}`}
+                  </span>
+                </Field>
+              );
+            })}
+          </div>
+
+          <div className="mt-4 flex flex-wrap items-end gap-x-8 gap-y-4">
+            <Field label="Circumference">
+              <Readout
+                value={assessment.circumference === null ? '—' : formatInches(assessment.circumference)}
+                width="7rem"
+              />
+            </Field>
+            <Field label="Height used">
+              <Readout
+                value={assessment.heightIn === null ? '—' : formatInches(assessment.heightIn)}
+                width="7rem"
+              />
+            </Field>
+            <Field label="Body fat">
+              <Readout
+                value={assessment.percent === null ? '—' : `${assessment.percent} %`}
+                width="6rem"
+                strong
+                tone={failed ? 'bad' : passed ? 'ok' : 'computed'}
+              />
+            </Field>
+            <Field label="Standard">
+              <Readout value={standard.standardLabel} width="9rem" tone="plain" />
+            </Field>
+            <Field label="Result">
+              <Readout
+                value={assessment.result === null ? '—' : assessment.result.toUpperCase()}
+                width="7rem"
+                strong
+                tone={failed ? 'bad' : passed ? 'ok' : 'plain'}
+              />
+            </Field>
+          </div>
+
+          <p className="m-0 mt-4 text-[12px] leading-relaxed" style={{ color: 'var(--ink)' }}>
+            {bfa.effect}
+          </p>
+
+          {assessment.need && (
+            <p className="m-0 mt-2 text-[11.5px]" style={{ color: 'var(--accent)' }}>
+              {assessment.need}
+            </p>
+          )}
+          {assessment.crossCheck && (
+            <p className="m-0 mt-2 text-[11.5px]" style={{ color: 'var(--ink-muted)' }}>
+              {assessment.crossCheck}
+            </p>
+          )}
+
+          <p
+            className="m-0 mt-4 text-[11.5px]"
+            style={{ color: 'var(--ink-muted)' }}
+          >
+            Formula: {standard.formulaLabel}.
+          </p>
+          <ul className="m-0 mt-2 flex list-none flex-col gap-1 p-0">
+            {rules.siteNotes.map((note) => (
+              <li
+                key={note}
+                className="flex gap-2 text-[11.5px] leading-relaxed"
+                style={{ color: 'var(--ink-muted)' }}
+              >
+                <span aria-hidden style={{ color: 'var(--ink-faint)' }}>
+                  &middot;
+                </span>
+                {note}
+              </li>
+            ))}
+          </ul>
+          <p className="m-0 mt-3 text-[11.5px]" style={{ color: 'var(--ink-faint)' }}>
+            A Tier 2 assessment is administered by the FAC or MFL, and the official result is the
+            one they record.
+          </p>
+        </>
+      ) : (
+        <p className="m-0 mt-4 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
+          {bfa.effect}
+        </p>
       )}
     </section>
   );

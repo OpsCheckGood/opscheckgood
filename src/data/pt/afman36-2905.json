@@ -5,7 +5,7 @@
     "verifiedDate": "2026-08-30",
     "sourceUrl": "",
     "status": "stub",
-    "notes": "Transcribed mechanically from the maintainer’s own fillable calculator, USAF_Physical_Fitness_Readiness_Assessment_Scoring.pdf, whose embedded document-level JavaScript carries these tables. Values were extracted by script rather than retyped, so they match that PDF exactly. This file stays status=stub because the PDF is one step removed from the official source: the numbers have not been checked back against AFMAN 36-2905 itself, and meta.sourceUrl is not yet known. To promote to verified: open the AFMAN, confirm the tables, set sourceUrl to the e-publishing URL, and set status=verified."
+    "notes": "Transcribed mechanically from the maintainer’s own fillable calculator, USAF_PFRA_Scoring.pdf, whose embedded document-level JavaScript carries these tables. Values were extracted by script rather than retyped, so they match that PDF exactly. This file stays status=stub because the PDF is one step removed from the official source: the numbers have not been checked back against AFMAN 36-2905 itself, and meta.sourceUrl is not yet known. The Tier 2 body fat block carries the DoDI 1308.3 circumference equations the same way; the PDF records that they were checked against 58 published Attachment 9 and 10 cells with no differences, but that check is the maintainer\u2019s, not one this repository can reproduce. To promote to verified: open the AFMAN, confirm the tables, set sourceUrl to the e-publishing URL, and set status=verified."
   },
   "data": {
     "id": "afman36-2905",
@@ -4065,6 +4065,42 @@
       "* marks the minimum passing row. Para 3.7.4: minimums alone cannot reach 75.",
       "Official scores are the ones entered in myFitness on AF Form 4446."
     ],
+    "bodyFat": {
+      "label": "Tier 2 body fat assessment",
+      "heightRounding": "nearestHalf",
+      "percentRounding": "nearestWhole",
+      "bySex": {
+        "male": {
+          "formulaLabel": "abdomen \u2212 neck",
+          "standardLabel": "26% or less",
+          "maxPercent": 26,
+          "tableRef": "Attachment 9",
+          "sites": [
+            { "id": "neck", "label": "Neck", "sign": -1, "rounding": "upQuarter" },
+            { "id": "abdomen", "label": "Abdomen", "sign": 1, "rounding": "downHalf" }
+          ],
+          "equation": { "circumference": 86.010, "height": -70.041, "constant": 36.76 }
+        },
+        "female": {
+          "formulaLabel": "natural waist + buttocks \u2212 neck",
+          "standardLabel": "36% or less",
+          "maxPercent": 36,
+          "tableRef": "Attachment 10",
+          "sites": [
+            { "id": "neck", "label": "Neck", "sign": -1, "rounding": "upQuarter" },
+            { "id": "waist", "label": "Natural waist", "sign": 1, "rounding": "downHalf" },
+            { "id": "buttocks", "label": "Buttocks", "sign": 1, "rounding": "downHalf" }
+          ],
+          "equation": { "circumference": 163.205, "height": -97.684, "constant": -78.387 }
+        }
+      },
+      "siteNotes": [
+        "Neck: just below the larynx. Abdomen (male): at the navel, parallel to the floor.",
+        "Natural waist (female): narrowest point of the torso. Buttocks (female): widest point of the glutes.",
+        "The natural waist is NOT the same site as the waist on the ratio above \u2014 measure it separately.",
+        "Average three measurements at each site. Neck rounds UP to the nearest 1/4 in, every other site rounds DOWN to the nearest 1/2 in."
+      ]
+    },
     "rating": {
       "passMinPercent": 75,
       "excellentMinPercent": 90,

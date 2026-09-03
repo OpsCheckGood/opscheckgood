@@ -1,12 +1,15 @@
 import { describe, it, expect } from 'vitest';
 import { CURRENT_STANDARDS } from '@/lib/data/pt';
 import {
+  assessBodyFat,
   averageWaist,
   chartFor,
   combineTime,
   floorHalf,
   formatTime,
+  formatInches,
   parseTime,
+  roundMeasurement,
   score,
   waistToHeightRatio,
   walkMaxSeconds,
@@ -321,6 +324,14 @@ function toReferenceInputs(state: PtInput): Record<string, string> {
     fields[`W${i + 1}`] = w === null ? '' : String(w);
   });
 
+  // The PDF's page 2 boxes: BF_2 is the abdomen for men and the natural waist
+  // for women, BF_3 the buttocks and female-only.
+  const tape = state.bodyFat ?? {};
+  const site = (id: string) => (tape[id] === undefined || tape[id] === null ? '' : String(tape[id]));
+  fields.BF_Neck = site('neck');
+  fields.BF_2 = state.sex === 'female' ? site('waist') : site('abdomen');
+  fields.BF_3 = state.sex === 'female' ? site('buttocks') : '';
+
   const core = e.core!;
   if (core.value === null) {
     fields.CoreA = '';
@@ -423,6 +434,60 @@ function buildCases(): PtInput[] {
       Object.entries(baseline.entries).map(([id, e]) => [id, { ...e, exempt: true, value: null }]),
     ),
   });
+
+  // Tier 2 tape cases. These need a ratio over .55 AND a score that is not
+  // met, or the assessment never comes into play -- so the performances are
+  // deliberately poor and the waists deliberately large. The tape values then
+  // span passing, failing, partly entered, and not entered at all, because
+  // each one takes a different branch through the composite.
+  const tapes: Array<Record<string, number | null> | undefined> = [
+    undefined,
+    { neck: 15.5, abdomen: 34.25, waist: 30.5, buttocks: 39.5 },
+    { neck: 16.0, abdomen: 46.75, waist: 44.0, buttocks: 50.25 },
+    { neck: 15.75, abdomen: null, waist: 33.0, buttocks: null },
+    { neck: 17.3, abdomen: 38.9, waist: 35.4, buttocks: 42.1 },
+    // A neck bigger than the abdomen: the circumference value goes non-positive.
+    { neck: 40.0, abdomen: 33.0, waist: 30.0, buttocks: 31.0 },
+  ];
+  for (const age of [22, 34, 47, 62]) {
+    for (const sex of ['male', 'female'] as const) {
+      for (const [height, waistIn] of [
+        [66, 38],   // 0.57 -- over the trigger
+        [70, 40],   // 0.57
+        [68, 34],   // 0.50 -- under it, so no assessment is required
+        [64, 40],   // 0.62 -- high risk and zero points
+      ] as const) {
+        for (const tape of tapes) {
+          cases.push({
+            age,
+            sex,
+            trackId: 'standard',
+            entries: {
+              body: body(height, waistIn),
+              strength: entry('pushup', 20),
+              core: entry('situp', 20),
+              cardio: entry('run', 1500),
+            },
+            bodyFat: tape,
+          });
+          // The same tape against a comfortably passing assessment, where a
+          // required assessment must NOT be triggered however large the waist.
+          cases.push({
+            age,
+            sex,
+            trackId: 'standard',
+            entries: {
+              body: body(height, waistIn),
+              strength: entry('pushup', 70),
+              core: entry('situp', 70),
+              cardio: entry('run', 700),
+            },
+            bodyFat: tape,
+          });
+        }
+      }
+    }
+  }
   return cases;
 }
 
@@ -431,6 +496,22 @@ const CASES = buildCases();
 describe('differential against the PDF calculator', () => {
   it('covers every event combination on both tracks', () => {
     expect(CASES.length).toBeGreaterThan(500);
+  });
+
+  /**
+   * A guard on the guard. The Tier 2 comparisons below are only worth anything
+   * if the cases actually reach the branches, and it is easy to change a waist
+   * or a performance here and quietly stop triggering an assessment at all.
+   */
+  it('exercises every branch of the Tier 2 assessment', () => {
+    const outcomes = CASES.map((state) => score(standards, state).bfa);
+    const required = outcomes.filter((b) => b.required);
+    expect(required.length).toBeGreaterThan(50);
+    expect(required.filter((b) => b.assessment.result === 'pass').length).toBeGreaterThan(10);
+    expect(required.filter((b) => b.assessment.result === 'fail').length).toBeGreaterThan(10);
+    expect(required.filter((b) => b.assessment.result === null).length).toBeGreaterThan(10);
+    // And plenty that do not require one, so the locked path is compared too.
+    expect(outcomes.filter((b) => !b.required).length).toBeGreaterThan(50);
   });
 
   it('matches the PDF on every case', () => {
@@ -506,9 +587,215 @@ describe('differential against the PDF calculator', () => {
       if (pdfRatio !== ourRatio) {
         mismatches.push(`${where}\n  whtr: pdf=${pdfRatio} ours=${ourRatio}`);
       }
+
+      // The Tier 2 tape worksheet: the circumference value, the percent, the
+      // pass/fail, and -- the part that moves the score -- whether the PDF
+      // decided an assessment was required at all.
+      const bfa = mine.bfa;
+      const pdfPct = theirs.BF_Pct ?? '';
+      const ourPct = bfa.assessment.percent === null ? '' : `${bfa.assessment.percent} %`;
+      if (pdfPct !== ourPct) {
+        mismatches.push(`${where}\n  body fat: pdf=${pdfPct} ours=${ourPct}`);
+      }
+
+      const pdfCirc = theirs.BF_Circ ?? '';
+      const ourCirc = formatInches(bfa.assessment.circumference);
+      if (pdfCirc !== ourCirc) {
+        mismatches.push(`${where}\n  circumference: pdf=${pdfCirc} ours=${ourCirc}`);
+      }
+
+      const pdfResult = theirs.BF_Result ?? '';
+      const ourResult = bfa.assessment.result === null ? '' : bfa.assessment.result.toUpperCase();
+      if (pdfResult !== ourResult) {
+        mismatches.push(`${where}\n  bfa result: pdf=${pdfResult} ours=${ourResult}`);
+      }
+
+      // BF_Lock is the PDF's own word for "this assessment is required".
+      const pdfRequired = theirs.BF_Lock === 'UNLOCKED';
+      if (pdfRequired !== bfa.required) {
+        mismatches.push(
+          `${where}\n  bfa required: pdf=${pdfRequired} ours=${bfa.required}`,
+        );
+      }
     }
 
     expect(mismatches.slice(0, 10).join('\n')).toBe('');
     expect(mismatches.length).toBe(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Tier 2 body fat assessment
+// ---------------------------------------------------------------------------
+
+/** The tape sites, keyed the way the data names them. */
+function tape(over: Record<string, number | null>): Record<string, number | null> {
+  return { neck: 15.5, abdomen: 34.25, waist: 30.5, buttocks: 39.5, ...over };
+}
+
+/** A case that requires an assessment: ratio over .55 and a score not met. */
+function requiring(sex: 'male' | 'female', bodyFat?: Record<string, number | null>): PtInput {
+  return {
+    age: 34,
+    sex,
+    trackId: 'standard',
+    entries: {
+      body: body(66, 38),
+      strength: entry('pushup', 20),
+      core: entry('situp', 20),
+      cardio: entry('run', 1500),
+    },
+    bodyFat,
+  };
+}
+
+describe('tape measurement rounding', () => {
+  it('rounds the neck up and every other site down', () => {
+    // The directions are asymmetric on purpose: rounding never flatters the
+    // circumference value, so it never flatters the body fat estimate.
+    expect(roundMeasurement(15.3, 'upQuarter')).toBe(15.5);
+    expect(roundMeasurement(15.25, 'upQuarter')).toBe(15.25);
+    expect(roundMeasurement(15.26, 'upQuarter')).toBe(15.5);
+    expect(roundMeasurement(34.9, 'downHalf')).toBe(34.5);
+    expect(roundMeasurement(34.5, 'downHalf')).toBe(34.5);
+    expect(roundMeasurement(69.4, 'nearestHalf')).toBe(69.5);
+    expect(roundMeasurement(69.2, 'nearestHalf')).toBe(69);
+  });
+
+  it('is idempotent', () => {
+    for (const mode of ['upQuarter', 'downHalf', 'nearestHalf'] as const) {
+      const once = roundMeasurement(37.37, mode);
+      expect(roundMeasurement(once, mode)).toBe(once);
+    }
+  });
+});
+
+describe('body fat assessment', () => {
+  it('sums the sites with their signs and applies the equation', () => {
+    const male = assessBodyFat(standards, 'male', 66, tape({}));
+    // Neck 15.5 up to 15.5, abdomen 34.25 down to 34.0, so 34.0 - 15.5.
+    expect(male.circumference).toBe(18.5);
+    expect(male.percent).toBe(18);
+    expect(male.result).toBe('pass');
+
+    const female = assessBodyFat(standards, 'female', 66, tape({}));
+    // Natural waist 30.5 plus buttocks 39.5 minus neck 15.5.
+    expect(female.circumference).toBe(54.5);
+    expect(female.percent).toBe(27);
+    expect(female.result).toBe('pass');
+  });
+
+  it('fails a percent over the standard for that sex', () => {
+    const male = assessBodyFat(standards, 'male', 66, tape({ abdomen: 46.0 }));
+    expect(male.percent).toBe(37);
+    expect(male.result).toBe('fail');
+  });
+
+  it('says which sites are still missing rather than guessing', () => {
+    const partial = assessBodyFat(standards, 'male', 66, tape({ abdomen: null }));
+    expect(partial.circumference).toBeNull();
+    expect(partial.percent).toBeNull();
+    expect(partial.result).toBeNull();
+    expect(partial.need).toContain('abdomen');
+  });
+
+  it('refuses a circumference value that is not positive', () => {
+    const impossible = assessBodyFat(standards, 'male', 66, tape({ neck: 40, abdomen: 33 }));
+    expect(impossible.circumference).toBeNull();
+    expect(impossible.need).toContain('not positive');
+  });
+
+  it('needs a height before it can produce a percent', () => {
+    const noHeight = assessBodyFat(standards, 'male', null, tape({}));
+    expect(noHeight.circumference).toBe(18.5);
+    expect(noHeight.percent).toBeNull();
+    expect(noHeight.need).toContain('height');
+  });
+});
+
+describe('when a Tier 2 assessment is required', () => {
+  it('is not required while the assessment is met', () => {
+    const passing = score(standards, {
+      ...requiring('male'),
+      entries: {
+        body: body(66, 38),
+        strength: entry('pushup', 60),
+        core: entry('situp', 55),
+        cardio: entry('run', 700),
+      },
+    });
+    expect(passing.rating).toBe('satisfactory');
+    expect(passing.bfa.required).toBe(false);
+    expect(passing.bfa.requirement).toContain('high risk');
+  });
+
+  it('is not required when the ratio is not over the threshold', () => {
+    const lowRatio = score(standards, { ...requiring('male'), entries: {
+      body: body(70, 34),
+      strength: entry('pushup', 20),
+      core: entry('situp', 20),
+      cardio: entry('run', 1500),
+    } });
+    // Not met, one way or the other -- it is the ratio that keeps a Tier 2
+    // assessment off the table here, not the score.
+    expect(['unsatisfactory', 'component-fail']).toContain(lowRatio.rating);
+    expect(lowRatio.bfa.required).toBe(false);
+    expect(lowRatio.bfa.requirement).toContain('not over');
+  });
+
+  it('is required when the ratio is over the threshold and the score is not met', () => {
+    const needed = score(standards, requiring('male'));
+    expect(needed.bfa.required).toBe(true);
+    expect(needed.bfa.effect).toContain('required');
+    expect(needed.notes.join(' ')).toContain('Tier 2 body fat assessment required');
+  });
+
+  it('reads back nothing from the worksheet while it is not required', () => {
+    const notNeeded = score(standards, {
+      ...requiring('male', tape({})),
+      entries: {
+        body: body(70, 34),
+        strength: entry('pushup', 20),
+        core: entry('situp', 20),
+        cardio: entry('run', 1500),
+      },
+    });
+    expect(notNeeded.bfa.required).toBe(false);
+    expect(notNeeded.bfa.assessment.percent).toBeNull();
+    expect(notNeeded.bfa.assessment.circumference).toBeNull();
+  });
+});
+
+describe('what a Tier 2 assessment does to the composite', () => {
+  it('drops body composition from both sides of the division when it passes', () => {
+    const before = score(standards, requiring('male'));
+    const after = score(standards, requiring('male', tape({})));
+
+    expect(after.bfa.assessment.result).toBe('pass');
+    expect(after.possible).toBe(before.possible - 20);
+    // The points still stand and are still shown; they just no longer count.
+    const bodyBefore = before.components.find((c) => c.componentId === 'body')!;
+    const bodyAfter = after.components.find((c) => c.componentId === 'body')!;
+    expect(bodyAfter.points).toBe(bodyBefore.points);
+    expect(bodyAfter.possible).toBe(0);
+    expect(bodyAfter.droppedByBfa).toBe(true);
+    expect(after.earned).toBe(before.earned - (bodyBefore.points ?? 0));
+    expect(after.percent).not.toBe(before.percent);
+  });
+
+  it('makes the assessment unsatisfactory when it fails, whatever the points', () => {
+    const failed = score(standards, requiring('male', tape({ abdomen: 46.0 })));
+    expect(failed.bfa.assessment.result).toBe('fail');
+    expect(failed.rating).toBe('component-fail');
+    expect(failed.bfa.effect).toContain('not met');
+  });
+
+  it('leaves the score alone while the worksheet is still empty', () => {
+    const pending = score(standards, requiring('male'));
+    const bodyPoints = pending.components.find((c) => c.componentId === 'body')!.points ?? 0;
+    expect(pending.bfa.required).toBe(true);
+    expect(pending.bfa.assessment.result).toBeNull();
+    expect(pending.possible).toBe(100);
+    expect(pending.earned).toBeGreaterThanOrEqual(bodyPoints);
   });
 });

@@ -2,10 +2,14 @@ import { loadDataset } from './loader';
 import {
   DataFileError,
   type AgeGroup,
+  type BodyFatRules,
+  type BodyFatSite,
+  type BodyFatStandard,
   type ComponentDefinition,
   type Dataset,
   type EventDefinition,
   type LimitTable,
+  type MeasurementRounding,
   type PtStandards,
   type ScoringTable,
   type Sex,
@@ -225,6 +229,90 @@ function normalizeLimitTable(file: string, raw: unknown, key: string): LimitTabl
   return { label: str(file, o, 'label', what), ageGroups, bySex };
 }
 
+const ROUNDINGS: ReadonlyArray<MeasurementRounding> = ['upQuarter', 'downHalf', 'nearestHalf'];
+
+function rounding(
+  file: string,
+  o: Record<string, unknown>,
+  key: string,
+  what: string,
+): MeasurementRounding {
+  const value = o[key];
+  if (typeof value !== 'string' || !ROUNDINGS.includes(value as MeasurementRounding)) {
+    throw new DataFileError(file, `${what} ${key} must be one of ${ROUNDINGS.join(', ')}`);
+  }
+  return value as MeasurementRounding;
+}
+
+/**
+ * The tape rules for one sex.
+ *
+ * A site whose sign is neither +1 nor -1 would quietly drop out of the
+ * circumference sum, so the sign is checked rather than coerced.
+ */
+function normalizeBodyFatStandard(file: string, raw: unknown, what: string): BodyFatStandard {
+  const o = obj(file, raw, what);
+  if (!Array.isArray(o.sites) || o.sites.length === 0) {
+    throw new DataFileError(file, `${what}.sites must be a non-empty array`);
+  }
+  const sites: BodyFatSite[] = o.sites.map((s, i) => {
+    const so = obj(file, s, `${what}.sites[${i}]`);
+    const sign = num(file, so, 'sign', `${what}.sites[${i}]`);
+    if (sign !== 1 && sign !== -1) {
+      throw new DataFileError(file, `${what}.sites[${i}].sign must be 1 or -1`);
+    }
+    return {
+      id: str(file, so, 'id', `${what}.sites[${i}]`),
+      label: str(file, so, 'label', `${what}.sites[${i}]`),
+      sign,
+      rounding: rounding(file, so, 'rounding', `${what}.sites[${i}]`),
+    };
+  });
+  const ids = new Set(sites.map((s) => s.id));
+  if (ids.size !== sites.length) {
+    throw new DataFileError(file, `${what}.sites must have unique ids`);
+  }
+  if (!sites.some((s) => s.sign === 1)) {
+    throw new DataFileError(file, `${what}.sites must include at least one added site`);
+  }
+
+  const equation = obj(file, o.equation, `${what}.equation`);
+  return {
+    formulaLabel: str(file, o, 'formulaLabel', what),
+    standardLabel: str(file, o, 'standardLabel', what),
+    maxPercent: num(file, o, 'maxPercent', what),
+    tableRef: str(file, o, 'tableRef', what),
+    sites,
+    equation: {
+      circumference: num(file, equation, 'circumference', `${what}.equation`),
+      height: num(file, equation, 'height', `${what}.equation`),
+      constant: num(file, equation, 'constant', `${what}.equation`),
+    },
+  };
+}
+
+function normalizeBodyFat(file: string, raw: unknown): BodyFatRules {
+  const what = 'data.bodyFat';
+  const o = obj(file, raw, what);
+  const bySexRaw = obj(file, o.bySex, `${what}.bySex`);
+  const bySex = {} as Record<Sex, BodyFatStandard>;
+  for (const sex of ['male', 'female'] as const) {
+    bySex[sex] = normalizeBodyFatStandard(file, bySexRaw[sex], `${what}.bySex.${sex}`);
+  }
+  if (o.percentRounding !== 'nearestWhole') {
+    throw new DataFileError(file, `${what}.percentRounding must be nearestWhole`);
+  }
+  return {
+    label: str(file, o, 'label', what),
+    heightRounding: rounding(file, o, 'heightRounding', what),
+    percentRounding: 'nearestWhole',
+    bySex,
+    siteNotes: Array.isArray(o.siteNotes)
+      ? o.siteNotes.filter((n): n is string => typeof n === 'string')
+      : [],
+  };
+}
+
 function normalizeStandards(raw: unknown, _meta: unknown, file: string): PtStandards {
   const o = obj(file, raw, 'data');
 
@@ -367,6 +455,7 @@ function normalizeStandards(raw: unknown, _meta: unknown, file: string): PtStand
     chartNotes: Array.isArray(o.chartNotes)
       ? o.chartNotes.filter((n): n is string => typeof n === 'string')
       : [],
+    bodyFat: o.bodyFat === undefined ? undefined : normalizeBodyFat(file, o.bodyFat),
     rating: {
       passMinPercent: num(file, rating, 'passMinPercent', 'data.rating'),
       excellentMinPercent: num(file, rating, 'excellentMinPercent', 'data.rating'),

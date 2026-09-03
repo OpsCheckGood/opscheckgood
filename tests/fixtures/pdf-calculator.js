@@ -1,12 +1,12 @@
 /**
  * The reference implementation, lifted verbatim from the PDF.
  *
- * This is the document-level JavaScript out of
- * USAF_Physical_Fitness_Readiness_Assessment_Scoring.pdf -- the maintainer's
- * own fillable calculator -- decrypted and extracted by script, not retyped.
- * It is the oracle the port in src/lib/pt/score.ts is checked against, so it
- * must stay byte-for-byte what the PDF runs. Do not tidy it, do not fix its
- * style, and do not let a lint rule near it. If the PDF changes, re-extract.
+ * This is the document-level JavaScript out of USAF_PFRA_Scoring.pdf -- the
+ * maintainer's own fillable calculator -- decrypted and extracted by script,
+ * not retyped. It is the oracle the port in src/lib/pt/score.ts is checked
+ * against, so it must stay byte-for-byte what the PDF runs. Do not tidy it, do
+ * not fix its style, and do not let a lint rule near it. If the PDF changes,
+ * re-extract.
  *
  * Everything below the marker is the harness: enough of the Acrobat form API
  * for the script to run under Node against a plain object of field values.
@@ -109,6 +109,9 @@ function markRow(f, key, row, col){
   mark(f, "CH_" + key + "_" + row, col);
 }
 function pt(p){ return p.toFixed(1); }
+/* every field read goes through this: a missing field must never abort the script */
+function toStr(x){ return String(x); }
+function FVAL(f, n){ try { var g = f.getField(n); return g ? String(g.value) : ""; } catch (e) { return ""; } }
 
 /* AFMAN 36-2905 para 3.15.4.5: three waist measurements, the three closest
    averaged, then rounded DOWN to the nearest 1/2 inch. */
@@ -180,22 +183,106 @@ function drawChart(doc, col, blank){
   }
 }
 
+
+/* ---------------- Tier 2 BFA tape worksheet (page 2) ----------------
+   AFMAN 36-2905 Atch 8. Neck rounds UP to the nearest 1/4 in; abdomen,
+   waist and buttocks round DOWN. Male value = abdomen - neck.
+   Female value = waist + buttocks - neck. The value is then matched
+   against height in Atch 9 (M) / Atch 10 (F) - a table, not a formula. */
+function lg(x){ return Math.log(x) / Math.LN10; }
+function ceilQuarter(x){ return Math.ceil(x * 4 - 1e-9) / 4; }
+function floorHalfDown(x){ return Math.floor(x * 2 + 1e-9) / 2; }
+function fmtIn(x){ return (x === null) ? "" : x.toFixed(2).replace(/0$/,"").replace(/\.$/,"") + " in"; }
+
+function bfaCalc(f, sexF){
+  function S(n,v){ var g = f.getField(n); if (g) g.value = v; }
+
+  S("BF_Sex", sexF ? "Female" : "Male");
+  S("BF_Formula", sexF ? "natural waist + buttocks \u2212 neck" : "abdomen \u2212 neck");
+  S("BF_Std", sexF ? "36% or less" : "26% or less");
+  S("BF_Cap1", "NECK");
+  S("BF_Cap2",  sexF ? "NATURAL WAIST" : "ABDOMEN");
+  S("BF_Cap2R", sexF ? "WAIST \u2193" : "ABDOMEN \u2193");
+  S("BF_Cap3",  sexF ? "BUTTOCKS" : "");
+  S("BF_Cap3R", sexF ? "BUTTOCKS \u2193" : "");
+  setDisp(f, "BF_3",     sexF);
+  setDisp(f, "BF_Cap3",  sexF);
+  setDisp(f, "BF_3R",    sexF);
+  setDisp(f, "BF_Cap3R", sexF);
+  if (!sexF){ var g3 = f.getField("BF_3"); if (g3) g3.value = ""; }
+
+  var ht  = toNum(FVAL(f, "Height"));
+  var htR = (ht === null || ht <= 0) ? null : Math.round(ht * 2) / 2;
+  S("BF_Ht",  htR === null ? "" : fmtIn(htR));
+  S("BF_Ht2", htR === null ? "" : fmtIn(htR));
+
+  var neck = toNum(FVAL(f, "BF_Neck"));
+  var m2   = toNum(FVAL(f, "BF_2"));
+  var m3   = toNum(FVAL(f, "BF_3"));
+
+  /* Atch 8: neck rounds UP to the nearest 1/4 in, the rest round DOWN */
+  var neckR = (neck === null) ? null : ceilQuarter(neck);
+  var m2R   = (m2   === null) ? null : floorHalfDown(m2);
+  var m3R   = (m3   === null) ? null : floorHalfDown(m3);
+  S("BF_NeckR", fmtIn(neckR));
+  S("BF_2R",    fmtIn(m2R));
+  S("BF_3R",    fmtIn(m3R));
+
+  var circ = null, need = "";
+  if (sexF){
+    if (neckR !== null && m2R !== null && m3R !== null) circ = m2R + m3R - neckR;
+    else need = "Enter neck, natural waist and buttocks.";
+  } else {
+    if (neckR !== null && m2R !== null) circ = m2R - neckR;
+    else need = "Enter neck and abdomen.";
+  }
+  if (circ !== null && circ <= 0){
+    need = "Check the measurements \u2014 the circumference value is not positive.";
+    circ = null;
+  }
+  S("BF_Circ", circ === null ? "" : fmtIn(circ));
+
+  /* DoD circumference equations; DoDI 1308.3 E3.1.2.1 - whole percent */
+  var pct = null;
+  if (circ !== null && htR !== null && htR > 0){
+    if (sexF) pct = 163.205 * lg(circ) - 97.684 * lg(htR) - 78.387;
+    else      pct = 86.010 * lg(circ) - 70.041 * lg(htR) + 36.76;
+    pct = Math.round(pct);
+    if (pct < 0) pct = 0;
+  }
+  S("BF_Pct", pct === null ? "" : pct + " %");
+
+  var res = "", note = need;
+  if (pct !== null){
+    var max = sexF ? 36 : 26;
+    res = (pct <= max) ? "PASS" : "FAIL";      /* Table 3.2: 26% / 36% or less */
+    S("BF_Result", res);
+    note = "Cross-check " + pct + "% against " + fmtIn(circ) + " and " + fmtIn(htR)
+         + " in " + (sexF ? "Attachment 10." : "Attachment 9.");
+  } else {
+    S("BF_Result", "");
+    if (htR === null) note = need + "  Enter height on page 1.";
+  }
+  S("BF_Notes", note);
+  return { pct: pct, result: res };
+}
+
 function pfraCalc(){
   var f = this;
   function S(n,v){ var g = f.getField(n); if (g) g.value = v; }
 
-  var age = toNum(f.getField("Age").value);
-  var sexF = (String(f.getField("Sex").value).charAt(0) === "F");
-  SWMODE = (String(f.getField("Track").value).indexOf("AFSPECWAR") > -1);
+  var age = toNum(FVAL(f, "Age"));
+  var sexF = (toStr(FVAL(f, "Sex")).charAt(0) === "F");
+  SWMODE = (toStr(FVAL(f, "Track")).indexOf("AFSPECWAR") > -1);
   var notes = [];
 
   clearHL(f);
 
   /* input captions + which boxes are shown, independent of age being valid */
-  var exBody   = (String(f.getField("BodyEvent").value).indexOf("EXEMPT") > -1);
-  var exStr    = (String(f.getField("StrEvent").value).indexOf("EXEMPT") > -1);
-  var exCore   = (String(f.getField("CoreEvent").value).indexOf("EXEMPT") > -1);
-  var exCardio = (String(f.getField("CardioEvent").value).indexOf("EXEMPT") > -1);
+  var exBody   = (toStr(FVAL(f, "BodyEvent")).indexOf("EXEMPT") > -1);
+  var exStr    = (toStr(FVAL(f, "StrEvent")).indexOf("EXEMPT") > -1);
+  var exCore   = (toStr(FVAL(f, "CoreEvent")).indexOf("EXEMPT") > -1);
+  var exCardio = (toStr(FVAL(f, "CardioEvent")).indexOf("EXEMPT") > -1);
 
   setDisp(f, "Height", !exBody);
   setDisp(f, "W1", !exBody);
@@ -208,7 +295,7 @@ function pfraCalc(){
   setDisp(f, "CardioA", !exCardio);
   setDisp(f, "CardioCapA", !exCardio);
 
-  var isPlank = (String(f.getField("CoreEvent").value).indexOf("Plank") > -1);
+  var isPlank = (toStr(FVAL(f, "CoreEvent")).indexOf("Plank") > -1);
   S("CoreCapA", isPlank ? "MIN" : "REPS");
   S("CoreCapB", isPlank ? "SEC" : "");
   S("CoreColon", isPlank ? ":" : "");
@@ -217,7 +304,7 @@ function pfraCalc(){
   setDisp(f, "CoreCapB", isPlank && !exCore);
   if (!isPlank) { var cb0 = f.getField("CoreB"); if (cb0) cb0.value = ""; }
 
-  var isHamr = (String(f.getField("CardioEvent").value).indexOf("HAMR") > -1);
+  var isHamr = (toStr(FVAL(f, "CardioEvent")).indexOf("HAMR") > -1);
   S("CardioCapA", isHamr ? "SHUTTLES" : "MIN");
   S("CardioCapB", isHamr ? "" : "SEC");
   S("CardioColon", isHamr ? "" : ":");
@@ -235,6 +322,8 @@ function pfraCalc(){
         ? "    YOUR SCORING CHART  \u2014  AFSPECWAR / EOD  (age and sex neutral)"
         : "    YOUR SCORING CHART \u2014 enter age and sex above");
     drawChart(f, 0, !SWMODE);
+    bfaCalc(f, sexF);
+    S("BFA_WHtR",""); S("BFA_PFRA",""); S("BFA_Req","Complete page 1 first"); S("BF_Effect","");
     if (SWMODE) S("Notes","AFSPECWAR/EOD standards loaded. Enter an age for the 2 km walk maximum.");
     return "";
   }
@@ -250,8 +339,10 @@ function pfraCalc(){
   var wmax = (sexF ? WALK_F : WALK_M)[walkIndex(age)];
   S("WalkMax", "  Max time  " + mmss(wmax));
 
+  var bfa = bfaCalc(f, sexF);
+
   /* body composition */
-  var ht = toNum(f.getField("Height").value);
+  var ht = toNum(FVAL(f, "Height"));
   var wRatio = null;
   var wa = exBody ? null : waistOf(f, notes);
   if (wa !== null) S("Waist", wa.toFixed(1)); else if (!exBody) S("Waist","");
@@ -275,13 +366,13 @@ function pfraCalc(){
   } else { S("WHtR",""); S("WHtRRisk",""); S("WHtRPts",""); }
 
   /* upper body */
-  var se = String(f.getField("StrEvent").value);
+  var se = toStr(FVAL(f, "StrEvent"));
   if (exStr){ S("StrPts","EXEMPT"); S("StrMin","Exempt \u2014 not scored"); }
   var sarr = FL((se.indexOf("Hand") > -1) ? "HRPU" : "PUSHUP", col);
   var smin = sarr[sarr.length-1];
   if (!exStr) S("StrMin", smin + " reps");
   var skey = (se.indexOf("Hand") > -1) ? "HR" : "PU";
-  var sraw = toNum(f.getField("StrRaw").value);
+  var sraw = toNum(FVAL(f, "StrRaw"));
   var sp = null;
   if (exStr){ sp = "X"; }
   else if (sraw !== null){
@@ -295,13 +386,13 @@ function pfraCalc(){
   } else S("StrPts","");
 
   /* core */
-  var ce = String(f.getField("CoreEvent").value);
+  var ce = toStr(FVAL(f, "CoreEvent"));
   var plank = (ce.indexOf("Plank") > -1);
   var carr = FL(plank ? "PLANK" : (ce.indexOf("Crunch") > -1 ? "CRUNCH" : "SITUP"), col);
   var cmin = carr[carr.length-1];
   if (exCore){ S("CorePts","EXEMPT"); S("CoreMin","Exempt \u2014 not scored"); }
   else S("CoreMin", plank ? mmss(cmin) : (cmin + " reps"));
-  var craw = plank ? splitSecs(f, "CoreA", "CoreB") : toNum(f.getField("CoreA").value);
+  var craw = plank ? splitSecs(f, "CoreA", "CoreB") : toNum(FVAL(f, "CoreA"));
   var ckey = plank ? "PL" : (ce.indexOf("Crunch") > -1 ? "CR" : "SU");
   var cp = null;
   if (exCore){ cp = "X"; }
@@ -317,7 +408,7 @@ function pfraCalc(){
   } else S("CorePts","");
 
   /* cardio */
-  var ke = String(f.getField("CardioEvent").value);
+  var ke = toStr(FVAL(f, "CardioEvent"));
   var kp = null, walk = false;
   if (exCardio){
     kp = "X"; S("CardioPts","EXEMPT"); S("CardioMin","Exempt \u2014 not scored");
@@ -333,7 +424,7 @@ function pfraCalc(){
   } else if (ke.indexOf("HAMR") > -1){
     var harr = FL("HAMR", col); var hmin = harr[harr.length-1];
     S("CardioMin", hmin + " shuttles");
-    var hraw = toNum(f.getField("CardioA").value);
+    var hraw = toNum(FVAL(f, "CardioA"));
     if (hraw !== null){
       var ki = hiIdx(harr, hraw);
       if (ki < 0){
@@ -359,13 +450,14 @@ function pfraCalc(){
   }
 
   /* ---- composite, prorated over the components actually assessed ----
-     DAFMAN 36-2905: exempt components drop out of both the points earned and
-     the points possible; the walk scores the same way as a cardio exemption.
-     Body composition has no component minimum. */
+     AFMAN 36-2905: exempt components drop out of both the points earned and
+     the points possible; the walk scores like a cardio exemption. Body
+     composition has no component minimum. */
   var earned = 0, possible = 0, missing = false, compFail = false, exCount = 0;
+  var bodyPts = 0, bodyPos = 0;
 
   if (wp === null && !exBody) missing = true;
-  else if (!exBody){ earned += wp; possible += 20; }
+  else if (!exBody){ bodyPts = wp; bodyPos = 20; }
   else exCount++;
 
   if (sp === null) missing = true;
@@ -381,6 +473,27 @@ function pfraCalc(){
   else if (kp === "F") compFail = true;
   else { earned += kp; possible += 50; if (kp === 0) compFail = true; }
 
+  /* provisional score with body composition included */
+  var provPos = possible + bodyPos;
+  var prov = (provPos > 0) ? ((earned + bodyPts) / provPos) * 100 : null;
+  var provUnsat = compFail || (prov !== null && prov < 75);
+
+  /* Tier 2 BFA required when WHtR > .55 AND the PFRA is not met (para 3.1.2.1).
+     Para 3.7.2: passing it scores body composition as an EXEMPT component;
+     failing it makes the PFRA unsatisfactory. */
+  var bfaNeeded = (!exBody && wRatio !== null && wRatio > 0.55 && provUnsat && !missing);
+  if (bfaNeeded && bfa.result === "PASS"){
+    bodyPts = 0; bodyPos = 0; exCount++;
+    notes.push("BFA met \u2014 body composition scored as an exempt component (para 3.7.2).");
+  } else if (bfaNeeded && bfa.result === "FAIL"){
+    compFail = true;
+    notes.push("BFA not met \u2014 unsatisfactory PFRA (para 3.7.2).");
+  } else if (bfaNeeded){
+    notes.push("Tier 2 BFA required (WHtR over .55 with an unsatisfactory PFRA) \u2014 see page 2.");
+  }
+
+  earned += bodyPts; possible += bodyPos;
+
   if (possible === 0 && !missing){
     S("Composite","\u2014"); S("Rating","NO SCORE \u2014 PFRA HOLD");
     notes.push("All components exempt \u2014 no composite.");
@@ -390,16 +503,11 @@ function pfraCalc(){
   } else {
     var total = (earned / possible) * 100;
     S("Composite", total.toFixed(1));
-    var unsat = false;
-    if (compFail){ S("Rating","UNSAT \u2014 COMPONENT (NOT READY)"); unsat = true; }
-    else if (total < 75){ S("Rating","UNSATISFACTORY (NOT READY)"); unsat = true; }
-    else if (walk) S("Rating","SATISFACTORY (READY)");   /* walk cannot earn Excellent */
+    if (compFail) S("Rating","UNSAT \u2014 COMPONENT (NOT READY)");
+    else if (total < 75) S("Rating","UNSATISFACTORY (NOT READY)");
+    else if (walk) S("Rating","SATISFACTORY (READY)");
     else if (total < 90) S("Rating","SATISFACTORY (READY)");
     else S("Rating","EXCELLENT (READY)");
-    /* Table 3.3 retest frequency */
-    /* para 3.1.1 / 3.15.4.7 Tier 2 BFA trigger */
-    if (!exBody && wRatio !== null && wRatio > 0.55 && unsat)
-      notes.push("WHtR > .55 with an unsat PFRA: Tier 2 BFA required (male <26%, female <36%).");
     if (possible < 100)
       notes.unshift("Scored on " + possible.toFixed(0) + " of 100 possible points ("
         + earned.toFixed(1) + "/" + possible.toFixed(0) + " \u00d7 100)."
@@ -408,6 +516,45 @@ function pfraCalc(){
   if (exCount > 0)
     notes.push("Exemptions normally mean PFRA Hold \u2014 confirm ALC status with your UFPM.");
   S("Notes", notes.length ? notes.join("  ") : "All assessed components meet their minimums.");
+
+  /* page 2 readback */
+  S("BFA_WHtR", (exBody || wRatio === null) ? "" : wRatio.toFixed(2));
+  S("BFA_PFRA", toStr(FVAL(f, "Rating")));
+  if (exBody) S("BFA_Req", "Body composition exempt");
+  else if (wRatio === null || missing) S("BFA_Req", "Complete page 1 first");
+  else if (bfaNeeded) S("BFA_Req", "YES \u2014 WHtR over .55 and PFRA not met");
+  else if (wRatio > 0.55) S("BFA_Req", "No \u2014 high risk, but PFRA was met");
+  else if (provUnsat) S("BFA_Req", "No \u2014 PFRA not met, but WHtR is not over .55");
+  else S("BFA_Req", "No");
+
+  /* page 2 is locked until page 1 says a Tier 2 BFA is required */
+  setDisp(f, "BF_Neck", bfaNeeded);
+  setDisp(f, "BF_2",    bfaNeeded);
+  setDisp(f, "BF_3",    bfaNeeded && sexF);
+  setDisp(f, "BF_Cap1", bfaNeeded);
+  setDisp(f, "BF_Cap2", bfaNeeded);
+  setDisp(f, "BF_Cap3", bfaNeeded && sexF);
+  S("BF_Lock", bfaNeeded ? "UNLOCKED" : "LOCKED");
+
+  if (!bfaNeeded){
+    S("BF_Effect", "No Tier 2 BFA is required based on page 1.");
+    S("BF_Final", ""); S("BF_FinalRating", "");
+    S("BF_Neck",""); S("BF_2",""); S("BF_3","");
+    S("BF_NeckR",""); S("BF_2R",""); S("BF_3R","");
+    S("BF_Circ",""); S("BF_Pct",""); S("BF_Result",""); S("BF_Notes","");
+  } else if (bfa.result === "PASS"){
+    S("BF_Effect", "PASS \u2014 body composition scored as an exempt component; score recalculated.");
+    S("BF_Final", toStr(FVAL(f, "Composite")));
+    S("BF_FinalRating", toStr(FVAL(f, "Rating")));
+  } else if (bfa.result === "FAIL"){
+    S("BF_Effect", "FAIL \u2014 the PFRA is unsatisfactory regardless of points (para 3.7.2).");
+    S("BF_Final", toStr(FVAL(f, "Composite")));
+    S("BF_FinalRating", toStr(FVAL(f, "Rating")));
+  } else {
+    S("BF_Effect", "Tier 2 BFA REQUIRED \u2014 enter the measurements above.");
+    S("BF_Final", ""); S("BF_FinalRating", "");
+  }
+
   return "";
 }
 

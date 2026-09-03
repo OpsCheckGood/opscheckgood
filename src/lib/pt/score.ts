@@ -1,7 +1,10 @@
 import type {
   AgeGroup,
+  BodyFatSite,
+  BodyFatStandard,
   ComponentDefinition,
   EventDefinition,
+  MeasurementRounding,
   PtStandards,
   Sex,
 } from '../data/types';
@@ -200,6 +203,156 @@ function riskLabel(component: ComponentDefinition, ratio: number): string | null
 }
 
 // ---------------------------------------------------------------------------
+// Tier 2 body fat assessment
+// ---------------------------------------------------------------------------
+
+/**
+ * Tape rounding, in the direction the source specifies for each site.
+ *
+ * The directions are not symmetric and that is deliberate: the neck rounds up
+ * and every other site rounds down, so the circumference value -- and with it
+ * the body fat estimate -- is never flattered by rounding.
+ */
+export function roundMeasurement(value: number, mode: MeasurementRounding): number {
+  if (mode === 'upQuarter') return Math.ceil(value * 4 - 1e-9) / 4;
+  if (mode === 'downHalf') return Math.floor(value * 2 + 1e-9) / 2;
+  return Math.round(value * 2) / 2;
+}
+
+/**
+ * Inches, the way the source prints them: two decimals with one trailing zero
+ * trimmed, so 15.25 stays 15.25 and 15.50 shows as 15.5.
+ */
+export function formatInches(value: number | null): string {
+  if (value === null) return '';
+  return `${value.toFixed(2).replace(/0$/, '').replace(/\.$/, '')} in`;
+}
+
+/** One taped site, as entered and as it will actually be used. */
+export interface BodyFatMeasurement {
+  site: BodyFatSite;
+  raw: number | null;
+  rounded: number | null;
+}
+
+export interface BodyFatAssessment {
+  standard: BodyFatStandard | null;
+  /** Height from the body composition panel, rounded for this calculation. */
+  heightIn: number | null;
+  measurements: BodyFatMeasurement[];
+  circumference: number | null;
+  percent: number | null;
+  result: 'pass' | 'fail' | null;
+  /** What is still missing or wrong. Null once a percent came out. */
+  need: string | null;
+  /** Where to check this result against the published tables. */
+  crossCheck: string | null;
+}
+
+/**
+ * The tape assessment on its own, independent of whether it is required.
+ *
+ * Kept separate from `score` so the worksheet can be filled in and read back
+ * at any time, exactly as the source does: the numbers are the same whether or
+ * not they end up changing the composite.
+ */
+export function assessBodyFat(
+  standards: PtStandards,
+  sex: Sex,
+  heightRaw: number | null,
+  entered: Readonly<Record<string, number | null>>,
+): BodyFatAssessment {
+  const rules = standards.bodyFat;
+  const standard = rules?.bySex[sex] ?? null;
+  const empty: BodyFatAssessment = {
+    standard,
+    heightIn: null,
+    measurements: [],
+    circumference: null,
+    percent: null,
+    result: null,
+    need: null,
+    crossCheck: null,
+  };
+  if (!rules || !standard) return empty;
+
+  const heightIn =
+    heightRaw === null || heightRaw <= 0
+      ? null
+      : roundMeasurement(heightRaw, rules.heightRounding);
+
+  const measurements: BodyFatMeasurement[] = standard.sites.map((site) => {
+    const raw = entered[site.id] ?? null;
+    return {
+      site,
+      raw,
+      rounded: raw === null ? null : roundMeasurement(raw, site.rounding),
+    };
+  });
+
+  const missing = measurements.filter((m) => m.rounded === null).map((m) => m.site.label);
+  let circumference: number | null = null;
+  let need: string | null = null;
+
+  if (missing.length > 0) {
+    need = `Enter ${listOf(missing.map((label) => label.toLowerCase()))}.`;
+  } else {
+    circumference = measurements.reduce((sum, m) => sum + m.site.sign * m.rounded!, 0);
+    if (circumference <= 0) {
+      need = 'Check the measurements — the circumference value is not positive.';
+      circumference = null;
+    }
+  }
+
+  if (circumference === null || heightIn === null) {
+    if (heightIn === null && need === null) {
+      need = 'Enter your height with the body composition measurements.';
+    } else if (heightIn === null) {
+      need = `${need} Enter your height with the body composition measurements.`;
+    }
+    return { ...empty, heightIn, measurements, circumference, need };
+  }
+
+  const { circumference: a, height: b, constant: c } = standard.equation;
+  const percent = Math.max(
+    0,
+    Math.round(a * Math.log10(circumference) + b * Math.log10(heightIn) + c),
+  );
+
+  return {
+    standard,
+    heightIn,
+    measurements,
+    circumference,
+    percent,
+    result: percent <= standard.maxPercent ? 'pass' : 'fail',
+    need: null,
+    crossCheck: `Cross-check ${percent}% against ${formatInches(circumference)} and ${formatInches(heightIn)} in ${standard.tableRef}.`,
+  };
+}
+
+/** The worksheet as it reads before anything is entered into it. */
+export function blankAssessment(standards: PtStandards, sex: Sex): BodyFatAssessment {
+  const standard = standards.bodyFat?.bySex[sex] ?? null;
+  return {
+    standard,
+    heightIn: null,
+    measurements: (standard?.sites ?? []).map((site) => ({ site, raw: null, rounded: null })),
+    circumference: null,
+    percent: null,
+    result: null,
+    need: null,
+    crossCheck: null,
+  };
+}
+
+/** "neck and abdomen", or "neck, natural waist and buttocks". */
+function listOf(items: string[]): string {
+  if (items.length <= 1) return items[0] ?? '';
+  return `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}`;
+}
+
+// ---------------------------------------------------------------------------
 // Input and output
 // ---------------------------------------------------------------------------
 
@@ -222,6 +375,8 @@ export interface PtInput {
   trackId: string;
   /** Keyed by component id. A missing key is treated as blank. */
   entries: Record<string, ComponentEntry>;
+  /** Tier 2 tape measurements in inches, keyed by site id. */
+  bodyFat?: Readonly<Record<string, number | null>>;
 }
 
 export type ComponentStatus =
@@ -248,6 +403,12 @@ export interface ComponentResult {
   minimumDisplay: string | null;
   /** Formatted points, or PASS / FAIL / EXEMPT. */
   display: string;
+  /**
+   * True on body composition when a passed Tier 2 assessment took it out of
+   * the composite. The points still stand and are still shown; they simply no
+   * longer count on either side of the division.
+   */
+  droppedByBfa?: boolean;
 }
 
 export type Rating =
@@ -273,7 +434,18 @@ export interface PtResult {
   waist: number | null;
   whtr: number | null;
   riskLabel: string | null;
+  bfa: BfaOutcome;
   notes: string[];
+}
+
+/** Whether a Tier 2 assessment is required here, and what it did to the score. */
+export interface BfaOutcome {
+  required: boolean;
+  /** Why it is or is not required, in the source's own terms. */
+  requirement: string;
+  assessment: BodyFatAssessment;
+  /** What the assessment did to the composite. */
+  effect: string;
 }
 
 function formatPoints(points: number): string {
@@ -477,6 +649,20 @@ export function score(standards: PtStandards, input: PtInput): PtResult {
       waist: null,
       whtr: null,
       riskLabel: null,
+      bfa: {
+        required: false,
+        requirement: 'Complete the assessment above first',
+        // The worksheet still reads back what has been typed into it; only
+        // whether it is required has to wait for an age.
+        assessment: assessBodyFat(
+          standards,
+          input.sex,
+          input.entries[standards.components.find((c) => c.kind === 'ratio')?.id ?? '']
+            ?.heightIn ?? null,
+          input.bodyFat ?? {},
+        ),
+        effect: 'Complete the assessment above first.',
+      },
       notes: ['Enter your age to load your chart.'],
     };
   }
@@ -485,6 +671,9 @@ export function score(standards: PtStandards, input: PtInput): PtResult {
   let waist: number | null = null;
   let whtr: number | null = null;
   let risk: string | null = null;
+  // The ratio component owns the height the tape assessment also needs.
+  let bodyComponentId: string | null = null;
+  let bodyHeight: number | null = null;
 
   for (const component of standards.components) {
     const entry = input.entries[component.id];
@@ -492,6 +681,10 @@ export function score(standards: PtStandards, input: PtInput): PtResult {
       component.events.find((e) => e.id === entry?.eventId) ?? component.events[0]!;
 
     if (entry?.exempt) {
+      if (component.kind === 'ratio') {
+        bodyComponentId = component.id;
+        bodyHeight = entry.heightIn ?? null;
+      }
       results.push({
         componentId: component.id,
         label: component.label,
@@ -510,6 +703,8 @@ export function score(standards: PtStandards, input: PtInput): PtResult {
     const useEntry: ComponentEntry = entry ?? { eventId: event.id, exempt: false, value: null };
 
     if (component.kind === 'ratio') {
+      bodyComponentId = component.id;
+      bodyHeight = useEntry.heightIn ?? null;
       const scored = scoreRatioComponent(component, event, useEntry, notes);
       results.push(scored.result);
       waist = scored.waist;
@@ -540,13 +735,70 @@ export function score(standards: PtStandards, input: PtInput): PtResult {
   }
 
   const incomplete = results.some((r) => r.status === 'empty');
-  const earned = results.reduce((sum, r) => sum + (r.points ?? 0), 0);
-  const possible = results.reduce((sum, r) => sum + r.possible, 0);
-  const exemptCount = results.filter((r) => r.status === 'exempt').length;
   const walkPassed = results.some((r) => r.status === 'pass' && r.event.excludesExcellent);
-  const componentFail = results.some(
+  let componentFail = results.some(
     (r) => r.status === 'fail' || (r.status === 'below-minimum' && r.points === 0),
   );
+  let exemptCount = results.filter((r) => r.status === 'exempt').length;
+
+  // Body composition is held aside rather than summed with the rest, because a
+  // passed Tier 2 assessment takes it out of the composite after the fact --
+  // and whether one is required depends on the score it would otherwise have.
+  const bodyResult = results.find((r) => r.componentId === bodyComponentId) ?? null;
+  const bodyExempt = bodyResult?.status === 'exempt';
+  const others = results.filter((r) => r !== bodyResult);
+
+  let earned = others.reduce((sum, r) => sum + (r.points ?? 0), 0);
+  let possible = others.reduce((sum, r) => sum + r.possible, 0);
+  let bodyPoints = bodyResult?.points ?? 0;
+  let bodyPossible = bodyResult?.possible ?? 0;
+
+  const threshold = standards.rating.tier2BfaRatioOver;
+  const assessment = assessBodyFat(standards, input.sex, bodyHeight, input.bodyFat ?? {});
+
+  // The provisional score decides whether a Tier 2 assessment is called for:
+  // it is required only when the assessment would otherwise not be met.
+  const provisionalPossible = possible + bodyPossible;
+  const provisional =
+    provisionalPossible > 0 ? ((earned + bodyPoints) / provisionalPossible) * 100 : null;
+  const provisionalUnsat =
+    componentFail || (provisional !== null && provisional < standards.rating.passMinPercent);
+
+  const bfaRequired =
+    !bodyExempt && whtr !== null && whtr > threshold && provisionalUnsat && !incomplete;
+
+  // Nothing is read back from the worksheet unless it is actually required.
+  // The source locks it and blanks it, and that is the right behaviour to
+  // keep: a body fat number nobody has to produce is one more thing to worry
+  // about, and it is not the figure the assessment turns on.
+  const reported = bfaRequired ? assessment : blankAssessment(standards, input.sex);
+
+  let effect = 'No Tier 2 body fat assessment is required by the entries above.';
+  if (bfaRequired && assessment.result === 'pass') {
+    // Para 3.7.2: a passed assessment scores body composition as an exempt
+    // component, which drops it from both sides of the division.
+    bodyPoints = 0;
+    bodyPossible = 0;
+    exemptCount++;
+    if (bodyResult) bodyResult.droppedByBfa = true;
+    effect =
+      'Body fat assessment met — body composition is scored as an exempt component and the composite is recalculated (para 3.7.2).';
+    notes.push('Body fat assessment met — body composition scored as an exempt component (para 3.7.2).');
+  } else if (bfaRequired && assessment.result === 'fail') {
+    componentFail = true;
+    effect =
+      'Body fat assessment not met — the assessment is unsatisfactory regardless of points (para 3.7.2).';
+    notes.push('Body fat assessment not met — unsatisfactory PFRA (para 3.7.2).');
+  } else if (bfaRequired) {
+    effect = 'Tier 2 body fat assessment required — enter the tape measurements.';
+    notes.push(
+      `Waist-to-height ratio over ${threshold.toFixed(2)} with an unsatisfactory score: Tier 2 body fat assessment required.`,
+    );
+  }
+
+  if (bodyResult) bodyResult.possible = bodyPossible;
+  earned += bodyPoints;
+  possible += bodyPossible;
 
   let percent: number | null = null;
   let rating: Rating | null = null;
@@ -564,12 +816,6 @@ export function score(standards: PtStandards, input: PtInput): PtResult {
     else if (percent < standards.rating.excellentMinPercent) rating = 'satisfactory';
     else rating = 'excellent';
 
-    const unsat = rating === 'component-fail' || rating === 'unsatisfactory';
-    if (whtr !== null && whtr > standards.rating.tier2BfaRatioOver && unsat) {
-      notes.push(
-        `Waist-to-height ratio over ${standards.rating.tier2BfaRatioOver.toFixed(2)} with an unsatisfactory score: Tier 2 body fat assessment required.`,
-      );
-    }
     if (possible < 100) {
       notes.unshift(
         `Scored on ${possible} of 100 possible points (${earned.toFixed(1)}/${possible} × 100).` +
@@ -581,6 +827,18 @@ export function score(standards: PtStandards, input: PtInput): PtResult {
   if (exemptCount > 0) {
     notes.push('Exemptions normally mean a PFRA hold — confirm your ALC status with your UFPM.');
   }
+
+  const requirement = bodyExempt
+    ? 'Body composition is exempt'
+    : whtr === null || incomplete
+      ? 'Complete the assessment above first'
+      : bfaRequired
+        ? `Yes — waist-to-height ratio over ${threshold.toFixed(2)} and the assessment was not met`
+        : whtr > threshold
+          ? 'No — high risk, but the assessment was met'
+          : provisionalUnsat
+            ? `No — the assessment was not met, but the ratio is not over ${threshold.toFixed(2)}`
+            : 'No';
 
   return {
     ageGroup,
@@ -595,6 +853,7 @@ export function score(standards: PtStandards, input: PtInput): PtResult {
     waist,
     whtr,
     riskLabel: risk,
+    bfa: { required: bfaRequired, requirement, assessment: reported, effect },
     notes,
   };
 }

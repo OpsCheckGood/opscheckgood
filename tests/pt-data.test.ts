@@ -256,3 +256,55 @@ describe('column layout', () => {
     }
   });
 });
+
+describe('the Tier 2 body fat block', () => {
+  const rules = standards.bodyFat!;
+
+  it('is present and covers both sexes', () => {
+    expect(rules).toBeDefined();
+    for (const sex of standards.sexes) {
+      expect(rules.bySex[sex.id]).toBeDefined();
+    }
+  });
+
+  it('describes the formula with signed sites rather than a code branch', () => {
+    for (const sex of standards.sexes) {
+      const standard = rules.bySex[sex.id]!;
+      expect(standard.sites.length).toBeGreaterThan(1);
+      // Exactly one site is subtracted -- the neck -- and it rounds the other
+      // way from the rest, which is the whole point of holding sites as data.
+      const subtracted = standard.sites.filter((site) => site.sign === -1);
+      expect(subtracted).toHaveLength(1);
+      expect(subtracted[0]!.rounding).toBe('upQuarter');
+      for (const site of standard.sites.filter((s) => s.sign === 1)) {
+        expect(site.rounding).toBe('downHalf');
+      }
+    }
+  });
+
+  it('states a maximum percent and where to check it', () => {
+    for (const sex of standards.sexes) {
+      const standard = rules.bySex[sex.id]!;
+      expect(standard.maxPercent).toBeGreaterThan(0);
+      expect(standard.standardLabel).toContain(String(standard.maxPercent));
+      expect(standard.tableRef).not.toBe('');
+    }
+  });
+
+  it('carries a real equation for each sex', () => {
+    for (const sex of standards.sexes) {
+      const { circumference, height, constant } = rules.bySex[sex.id]!.equation;
+      // A larger circumference must raise the estimate and a greater height
+      // must lower it; a sign error here would be plausible and wrong.
+      expect(circumference).toBeGreaterThan(0);
+      expect(height).toBeLessThan(0);
+      expect(Number.isFinite(constant)).toBe(true);
+    }
+  });
+
+  it('names the ratio that triggers it, and it is one the ladder reaches', () => {
+    const threshold = standards.rating.tier2BfaRatioOver;
+    const ladder = standards.components.find((c) => c.kind === 'ratio')!.ladderRows!;
+    expect(ladder.some((row) => row.ratioMax === threshold)).toBe(true);
+  });
+});

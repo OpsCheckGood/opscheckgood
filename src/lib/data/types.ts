@@ -253,6 +253,63 @@ export interface LimitTable {
   bySex: Record<Sex, number[]>;
 }
 
+/** How a taped measurement is rounded before it is used. */
+export type MeasurementRounding = 'upQuarter' | 'downHalf' | 'nearestHalf';
+
+/**
+ * One site on the tape, and how it enters the circumference value.
+ *
+ * `sign` is what makes the male and female formulas the same code path:
+ * abdomen minus neck, or natural waist plus buttocks minus neck, is just the
+ * signed sum of the sites listed for that sex.
+ */
+export interface BodyFatSite {
+  id: string;
+  label: string;
+  sign: 1 | -1;
+  rounding: MeasurementRounding;
+}
+
+/**
+ * The DoD circumference equation, as coefficients rather than as code:
+ * `percent = circumference * log10(value) + height * log10(heightIn) + constant`.
+ */
+export interface BodyFatEquation {
+  circumference: number;
+  height: number;
+  constant: number;
+}
+
+/** The tape standard for one sex. */
+export interface BodyFatStandard {
+  /** How the circumference value is described, e.g. "abdomen - neck". */
+  formulaLabel: string;
+  /** How the maximum is printed, e.g. "26% or less". */
+  standardLabel: string;
+  maxPercent: number;
+  /** The published table this result should be cross-checked against. */
+  tableRef: string;
+  sites: BodyFatSite[];
+  equation: BodyFatEquation;
+}
+
+/**
+ * Tier 2 body fat assessment.
+ *
+ * Required only when the waist-to-height ratio is over
+ * `RatingRules.tier2BfaRatioOver` and the assessment is otherwise not met.
+ * Everything about it -- which sites are taped, which way each one rounds, the
+ * equation, the maximum -- is data, exactly as the scoring tables are.
+ */
+export interface BodyFatRules {
+  label: string;
+  heightRounding: MeasurementRounding;
+  percentRounding: 'nearestWhole';
+  bySex: Record<Sex, BodyFatStandard>;
+  /** Tape instructions, rendered verbatim under the inputs. */
+  siteNotes: string[];
+}
+
 export interface RatingRules {
   passMinPercent: number;
   excellentMinPercent: number;
@@ -280,6 +337,8 @@ export interface PtStandards {
   limitTables: Record<string, LimitTable>;
   /** Footnotes the source prints under its chart. Rendered verbatim. */
   chartNotes: string[];
+  /** Absent in an edition that does not define a tape assessment. */
+  bodyFat?: BodyFatRules;
   rating: RatingRules;
 }
 
