@@ -73,6 +73,20 @@ export function textOf(p: Para): string {
  */
 export const MAX_LEVEL = 4;
 
+/**
+ * Whether the body's top-level paragraphs carry numbers.
+ *
+ * AFH 33-337 chapter 14, "The Text of the Official Memorandum", rule 2:
+ * "Number and letter each paragraph and subparagraph. A single paragraph is
+ * not numbered." A lone paragraph that has sub-paragraphs of its own still
+ * takes its number, because its children have to hang off something.
+ */
+export function numberParagraphs(paras: Para[]): boolean {
+  if (paras.length > 1) return true;
+  if (paras.length === 0) return false;
+  return (subOf(paras[0]!) ?? []).length > 0;
+}
+
 export function paraLabel(level: number, i: number): string {
   const num = String(i + 1);
   const letter = String.fromCharCode(97 + (i % 26));

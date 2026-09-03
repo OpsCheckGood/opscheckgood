@@ -1,4 +1,6 @@
-import { bodyOf, dutyTitle, paraLabel, sigLine, subOf, tailBlocks } from './format';
+import { bodyOf, dutyTitle, paraLabel, sigLine, subOf, tailBlocks,
+  numberParagraphs,
+} from './format';
 import { cuiDesLines, cuiOn } from './spec';
 import type { MemoDoc, MemoSpec, Para, Run } from './types';
 import { fontOf, fontSize, lineFactor } from './fonts';
@@ -49,7 +51,9 @@ function inlineHtml(body: string | Run[]): string {
 
 function paraHtml(p: Para, i: number, level: number, numbered: boolean): string {
   const label = numbered || level > 0 ? `${paraLabel(level, i)}&nbsp;&nbsp;` : '';
-  const indent = level ? ` style="margin-left:${(level * 0.25).toFixed(2)}in"` : '';
+  // First line only: AFH 33-337 ch.14 rule 5 puts every wrapped line back on
+  // the margin, so this is a text-indent rather than a margin.
+  const indent = level ? ` style="text-indent:${(level * 0.25).toFixed(2)}in"` : '';
   let h = `<p class="para${level ? ' subp' : ''}"${indent}>${label}${inlineHtml(bodyOf(p))}</p>`;
   const sub = subOf(p);
   if (sub) h += sub.map((sp, j) => paraHtml(sp, j, level + 1, true)).join('');
@@ -83,7 +87,8 @@ function sigHtml(name: string, rank: string, title: string): string {
  */
 export function memoInnerHtml(doc: MemoDoc, spec: MemoSpec): string {
   const color = doc.lhColor || '#000099';
-  const paras = (spec.paras || []).map((p, i) => paraHtml(p, i, 0, true)).join('');
+  const numbered = numberParagraphs(spec.paras || []);
+  const paras = (spec.paras || []).map((p, i) => paraHtml(p, i, 0, numbered)).join('');
 
   let inds = '';
   for (const ind of spec.inds || []) {

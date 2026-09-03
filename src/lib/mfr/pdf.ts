@@ -1,4 +1,6 @@
-import { bodyOf, dutyTitle, paraLabel, sigLine, subOf, tailBlocks } from './format';
+import { bodyOf, dutyTitle, paraLabel, sigLine, subOf, tailBlocks,
+  numberParagraphs,
+} from './format';
 import { baseline, fontOf, fontSize, lineHeight, textWidth, type StyleCode } from './fonts';
 import { cuiDesLines, cuiOn } from './spec';
 import { COPPERPLATE_TTF_BASE64, COPPERPLATE_WIDTHS } from './assets/letterheadFont';
@@ -248,8 +250,10 @@ export function buildPdfPages(doc: MemoDoc, spec: MemoSpec, seal: SealImage | nu
 
   /**
    * Flows runs from `x0`, wrapping at `maxW`, breaking pages as needed.
-   * `hang` indents every line after the first, which is how a wrapped SUBJECT
-   * aligns under its first word rather than falling back to the margin.
+   *
+   * `hang` shifts every line after the first. Positive for a wrapped SUBJECT,
+   * which aligns under its own first word; negative for a sub-paragraph, whose
+   * continuation lines drop back to the left margin (AFH 33-337 ch.14 rule 5).
    */
   const flow = (runs: Run[], x0: number, maxW: number, hang = 0) => {
     const toks = tokenize(runs);
@@ -313,7 +317,12 @@ export function buildPdfPages(doc: MemoDoc, spec: MemoSpec, seal: SealImage | nu
       const x = LEFT + INDENT * level;
       const w = WIDTH - INDENT * level;
       const runs = asRuns(p, numbered || level > 0 ? `${paraLabel(level, i)}  ` : '');
-      const n = countLines(runs, x, w);
+      // AFH 33-337 ch.14 rule 5: only the first line of a sub-paragraph is
+      // indented, to put its number under the parent's first character. Every
+      // line after it returns to the left margin, so the wrap is a NEGATIVE
+      // hang of exactly the indent this level carries.
+      const wrapBack = -INDENT * level;
+      const n = countLines(runs, x, w, wrapBack);
       const last = keepSig && !level && i === list.length - 1 && !subOf(p);
       const need = n * LH + (last ? SIG_H : 0);
       const fits = bottom() - TOP;
@@ -321,7 +330,7 @@ export function buildPdfPages(doc: MemoDoc, spec: MemoSpec, seal: SealImage | nu
       // never loop on a block that would not fit on an empty page either.
       if (y + need > bottom() && need <= fits && y > TOP) newPage();
       else if (y + 2 * LH > bottom() && y > TOP) newPage();
-      flow(runs, x, w);
+      flow(runs, x, w, wrapBack);
       const sub = subOf(p);
       if (sub) flowParas(sub, true, level + 1, keepSig);
     });
@@ -354,7 +363,7 @@ export function buildPdfPages(doc: MemoDoc, spec: MemoSpec, seal: SealImage | nu
   flow([{ t: `SUBJECT:  ${spec.subject || ''}` }], LEFT, WIDTH, tw('SUBJECT:  ', 1, FS));
   y += GAP;
 
-  flowParas(spec.paras || [], true, 0, true);
+  flowParas(spec.paras || [], numberParagraphs(spec.paras || []), 0, true);
   signature(spec.sig.name, spec.sig.rank, spec.sig.title);
   tail(spec);
 
@@ -427,8 +436,37 @@ export function buildPdfPages(doc: MemoDoc, spec: MemoSpec, seal: SealImage | nu
  * built from recorded byte offsets, which is why everything is written through
  * one `put`.
  */
+/**
+ * Page numbers on the continuation pages.
+ *
+ * AFH 33-337 chapter 14, rule 12: "The first page of a memorandum is never
+ * numbered. You may omit page numbers on a one- or two-page memorandum;
+ * however, memorandums longer than two pages must have page numbers. Number
+ * the succeeding pages starting with page 2. Place page numbers 0.5-inch from
+ * the top of the page, flush with the right margin."
+ *
+ * So: nothing at all under three pages, and from three pages up every page
+ * after the first carries its own number. The baseline sits one ascent below
+ * the half inch so the digits, rather than the line box, start there.
+ */
+function numberPages(doc: MemoDoc, pages: string[]): string[] {
+  if (pages.length <= 2) return pages;
+  const size = fontSize(doc);
+  return pages.map((cs, i) => {
+    if (i === 0) return cs;
+    const label = String(i + 1);
+    const x = RIGHT - textWidth(doc, label, 1, size);
+    const top = 36 + size * 0.8;
+    return (
+      `q ${BLACK} rg BT /F1 ${size} Tf 1 0 0 1 ${x.toFixed(2)} ` +
+      `${(PAGE_H - top).toFixed(2)} Tm (${pdfEscape(label)}) Tj ET Q\n` +
+      cs
+    );
+  });
+}
+
 export function assemblePdf(doc: MemoDoc, pages: string[], seal: SealImage | null): Blob {
-  const list = pages.length ? pages : [''];
+  const list = numberPages(doc, pages.length ? pages : ['']);
   const n = list.length;
   const bytes: number[] = [];
   const offsets: number[] = [];

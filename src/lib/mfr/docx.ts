@@ -1,4 +1,6 @@
-import { bodyOf, dutyTitle, paraLabel, sigLine, subOf, tailBlocks } from './format';
+import { bodyOf, dutyTitle, paraLabel, sigLine, subOf, tailBlocks,
+  numberParagraphs,
+} from './format';
 import { fontOf, fontSize } from './fonts';
 import { cuiDesLines, cuiOn } from './spec';
 import { zipStore, type ZipEntry } from './zip';
@@ -70,7 +72,18 @@ function run(text: string, o: RunOpts = {}): string {
 interface ParaOpts {
   jc?: 'center' | 'right' | 'left';
   hang?: number;
+  /** Indents every line: the signature block, which sits as a unit at 4.5in. */
   indent?: number;
+  /**
+   * Indents only the first line, leaving the rest at the margin.
+   *
+   * AFH 33-337 chapter 14, rule 5 for the text of a memorandum: "All second
+   * and subsequent lines of text for all paragraphs at all levels begin flush
+   * with the left margin; do not indent." So a sub-paragraph's number is
+   * indented to align under its parent's first character (rule 4) and the text
+   * that wraps off it returns to the margin.
+   */
+  firstLine?: number;
   after?: number;
 }
 
@@ -82,6 +95,7 @@ function para(runs: string, o: ParaOpts = {}): string {
   let pp = `<w:spacing w:before="0" w:after="${o.after != null ? o.after : 0}" w:line="240" w:lineRule="auto"/>`;
   if (o.hang) pp += `<w:ind w:left="${o.hang}" w:hanging="${o.hang}"/>`;
   else if (o.indent) pp += `<w:ind w:left="${o.indent}"/>`;
+  else if (o.firstLine) pp += `<w:ind w:left="0" w:firstLine="${o.firstLine}"/>`;
   if (o.jc) pp += `<w:jc w:val="${o.jc}"/>`;
   return `<w:p><w:pPr>${pp}</w:pPr>${runs || ''}</w:p>`;
 }
@@ -132,7 +146,7 @@ function subParas(p: Para, font: string, size: number, level = 0): string {
       (sp, j) =>
         para(paraRuns(sp, `${paraLabel(next, j)}  `, font, size), {
           after: 240,
-          indent: LEVEL_TWIPS * next,
+          firstLine: LEVEL_TWIPS * next,
         }) + subParas(sp, font, size, next),
     )
     .join('');
@@ -158,8 +172,9 @@ function memoBodyXml(doc: MemoDoc, spec: MemoSpec): string {
     hang: SUBJ_HANG,
   });
 
+  const numbered = numberParagraphs(spec.paras || []);
   for (const [i, p] of (spec.paras || []).entries()) {
-    x += para(paraRuns(p, `${i + 1}.  `, font, size), { after: 240 });
+    x += para(paraRuns(p, numbered ? `${i + 1}.  ` : '', font, size), { after: 240 });
     x += subParas(p, font, size);
   }
 

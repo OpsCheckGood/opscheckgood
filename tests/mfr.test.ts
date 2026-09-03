@@ -692,3 +692,107 @@ describe('template selection', () => {
     expect(buildSpec(doc({ template: 'locar' }), FIXED).subject).toBe('Letter of Counseling');
   });
 });
+
+// ---------------------------------------------------------------------------
+// AFH 33-337, The Tongue and Quill, chapter 14
+// ---------------------------------------------------------------------------
+
+/**
+ * The format rules, read from the handbook rather than from the template.
+ *
+ * Each case cites the rule it enforces. These are the ones an eye does not
+ * catch: a memorandum with the wrong wrap indent or a numbered lone paragraph
+ * looks perfectly reasonable until somebody who knows the standard reads it.
+ */
+describe('Tongue and Quill conformance', () => {
+  const rich = doc({
+    from: '82 RS/MXAA',
+    subject: 'Request for Additional Manning',
+    paras: [{ t: 'Parent paragraph.', sub: ['A sub-paragraph.'] }] as unknown as MemoDoc['paras'],
+    prepName: 'John D. Smith',
+    prepRank: 'TSgt',
+    prepTitle: 'Section Chief',
+  });
+
+  it('indents only the first line of a sub-paragraph (ch.14 text rule 5)', async () => {
+    // "All second and subsequent lines of text for all paragraphs at all levels
+    // begin flush with the left margin; do not indent." In Word that is a
+    // first-line indent, never a left indent, which would move every line.
+    const xml = new TextDecoder('latin1').decode(
+      await bytesOf(buildDocx(rich, customSpec(rich, FIXED))),
+    );
+    expect(xml).toContain('<w:ind w:left="0" w:firstLine="360"/>');
+    // The signature block is the exception: it sits as a unit at 4.5in.
+    expect(xml).toContain('w:ind w:left="5040"');
+  });
+
+  it('does not number a lone paragraph (ch.14 text rule 2)', async () => {
+    // "Number and letter each paragraph and subparagraph. A single paragraph is
+    // not numbered."
+    const one = doc({
+      from: 'A/B',
+      subject: 'S',
+      paras: ['The only paragraph.'],
+      prepName: 'John D. Smith',
+    });
+    const xml = new TextDecoder('latin1').decode(
+      await bytesOf(buildDocx(one, customSpec(one, FIXED))),
+    );
+    expect(xml).toContain('The only paragraph.');
+    expect(xml).not.toContain('1.  The only paragraph.');
+
+    // Two paragraphs are numbered, and so is a lone one carrying children --
+    // its sub-paragraphs have to hang off something.
+    const two = doc({ ...one, paras: ['First.', 'Second.'] });
+    const twoXml = new TextDecoder('latin1').decode(
+      await bytesOf(buildDocx(two, customSpec(two, FIXED))),
+    );
+    expect(twoXml).toContain('1.  First.');
+    expect(twoXml).toContain('2.  Second.');
+  });
+
+  it('keeps the same numbering decision in the preview and the PDF', () => {
+    // Three renderers, one rule. They disagreed before this was made central.
+    const one = doc({ from: 'A/B', subject: 'S', paras: ['Only one.'] });
+    expect(memoInnerHtml(one, customSpec(one, FIXED))).not.toContain('1.&nbsp;&nbsp;');
+    const pages = buildPdfPages(one, customSpec(one, FIXED), null);
+    expect(pages.join('')).not.toContain('(1.  ');
+  });
+
+  it('numbers continuation pages only past two pages (ch.14 text rule 12)', async () => {
+    // "The first page of a memorandum is never numbered... memorandums longer
+    // than two pages must have page numbers... starting with page 2."
+    const short = doc({ from: 'A/B', subject: 'S', paras: ['Short.'] });
+    const shortPdf = new TextDecoder('latin1').decode(
+      await bytesOf(assemblePdf(short, buildPdfPages(short, customSpec(short, FIXED), null), null)),
+    );
+    expect(shortPdf).not.toContain('(2) Tj');
+
+    // Enough text to run past two pages.
+    const long = doc({
+      from: 'A/B',
+      subject: 'S',
+      paras: Array.from({ length: 90 }, (_, i) => `Paragraph ${i + 1}. ${'Filler text. '.repeat(6)}`),
+      prepName: 'John D. Smith',
+    });
+    const pages = buildPdfPages(long, customSpec(long, FIXED), null);
+    expect(pages.length).toBeGreaterThan(2);
+    const longPdf = new TextDecoder('latin1').decode(
+      await bytesOf(assemblePdf(long, pages, null)),
+    );
+    expect(longPdf).toContain('(2) Tj');
+    expect(longPdf).toContain('(3) Tj');
+  });
+
+  it('places the closing elements the required number of lines apart', async () => {
+    // Signature block five lines below the last line of text and 4.5in from the
+    // page edge; attachments three lines below it; cc two lines below that.
+    const xml = new TextDecoder('latin1').decode(
+      await bytesOf(buildDocx(rich, customSpec(rich, FIXED))),
+    );
+    // 5040 twips from a 1in margin is 4.5in from the page edge.
+    expect(xml).toContain('w:ind w:left="5040"');
+    const pages = buildPdfPages(rich, customSpec(rich, FIXED), null).join('');
+    expect(pages).toContain('JOHN D. SMITH, TSgt, USAF');
+  });
+});
