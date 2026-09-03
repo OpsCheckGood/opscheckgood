@@ -47,14 +47,23 @@ interface RunOpts {
   color?: string;
 }
 
+/**
+ * A run.
+ *
+ * The order of the children of `w:rPr` is not a style choice. CT_RPr is an
+ * xsd:sequence, so Word validates it positionally and refuses the whole
+ * document -- "Word found unreadable content" -- if anything is out of place.
+ * It has to be rFonts, b, i, caps, color, sz, szCs, and the ordering test in
+ * tests/mfr.test.ts is what keeps it that way.
+ */
 function run(text: string, o: RunOpts = {}): string {
   let rp = '';
+  if (o.font) rp += `<w:rFonts w:ascii="${xe(o.font)}" w:hAnsi="${xe(o.font)}"/>`;
   if (o.b) rp += '<w:b/>';
   if (o.i) rp += '<w:i/>';
   if (o.caps) rp += '<w:caps/>';
-  if (o.font) rp += `<w:rFonts w:ascii="${xe(o.font)}" w:hAnsi="${xe(o.font)}"/>`;
-  if (o.sz) rp += `<w:sz w:val="${Math.round(o.sz * 2)}"/><w:szCs w:val="${Math.round(o.sz * 2)}"/>`;
   if (o.color) rp += `<w:color w:val="${xe(o.color)}"/>`;
+  if (o.sz) rp += `<w:sz w:val="${Math.round(o.sz * 2)}"/><w:szCs w:val="${Math.round(o.sz * 2)}"/>`;
   return `<w:r><w:rPr>${rp}</w:rPr><w:t xml:space="preserve">${xe(text)}</w:t></w:r>`;
 }
 
@@ -65,12 +74,15 @@ interface ParaOpts {
   after?: number;
 }
 
+/**
+ * A paragraph. Same rule as `run`: CT_PPr is an xsd:sequence, so spacing comes
+ * before ind, which comes before jc, whatever order reads more naturally here.
+ */
 function para(runs: string, o: ParaOpts = {}): string {
-  let pp = '';
-  if (o.jc) pp += `<w:jc w:val="${o.jc}"/>`;
+  let pp = `<w:spacing w:before="0" w:after="${o.after != null ? o.after : 0}" w:line="240" w:lineRule="auto"/>`;
   if (o.hang) pp += `<w:ind w:left="${o.hang}" w:hanging="${o.hang}"/>`;
   else if (o.indent) pp += `<w:ind w:left="${o.indent}"/>`;
-  pp += `<w:spacing w:before="0" w:after="${o.after != null ? o.after : 0}" w:line="240" w:lineRule="auto"/>`;
+  if (o.jc) pp += `<w:jc w:val="${o.jc}"/>`;
   return `<w:p><w:pPr>${pp}</w:pPr>${runs || ''}</w:p>`;
 }
 
@@ -294,8 +306,8 @@ export function buildDocx(doc: MemoDoc, spec: MemoSpec): Blob {
       des
         .map(
           (t) =>
-            `<w:p><w:pPr><w:ind w:left="${SIG_TWIPS}"/><w:jc w:val="left"/>` +
-            '<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/></w:pPr>' +
+            `<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>` +
+            `<w:ind w:left="${SIG_TWIPS}"/><w:jc w:val="left"/></w:pPr>` +
             `<w:r><w:rPr><w:sz w:val="16"/><w:szCs w:val="16"/></w:rPr><w:t xml:space="preserve">${xe(
               t,
             )}</w:t></w:r></w:p>`,

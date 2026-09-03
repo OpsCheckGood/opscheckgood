@@ -506,6 +506,66 @@ describe('PDF output', () => {
 });
 
 describe('Word output', () => {
+  /**
+   * Word rejects the whole document if these are out of order.
+   *
+   * CT_PPr and CT_RPr are xsd:sequence, so Word validates the children of
+   * w:pPr and w:rPr positionally and answers a misordered file with "Word
+   * found unreadable content" -- not with a hint about which element is wrong.
+   * Nothing about the XML looks wrong to a reader and the file unzips
+   * perfectly, so this is the test that has to catch it.
+   */
+  const PPR_ORDER = ['w:spacing', 'w:ind', 'w:jc'];
+  const RPR_ORDER = ['w:rFonts', 'w:b', 'w:i', 'w:caps', 'w:color', 'w:sz', 'w:szCs'];
+
+  /** Every child sequence found inside `tag`, as arrays of element names. */
+  function childSequences(xml: string, tag: string): string[][] {
+    const out: string[][] = [];
+    for (const m of xml.matchAll(new RegExp(`<${tag}>(.*?)</${tag}>`, 'g'))) {
+      out.push([...m[1]!.matchAll(/<(w:[a-zA-Z]+)[\s/>]/g)].map((c) => c[1]!));
+    }
+    return out;
+  }
+
+  /** The sequences that step backwards through `order`, for the failure text. */
+  function outOfOrder(sequences: string[][], order: string[]): string[] {
+    return sequences
+      .filter((seq) => {
+        const ranks = seq.map((n) => order.indexOf(n)).filter((r) => r >= 0);
+        return ranks.some((r, i) => i > 0 && r < ranks[i - 1]!);
+      })
+      .map((seq) => seq.join(' '));
+  }
+
+  it('orders the children of w:pPr and w:rPr the way the schema demands', async () => {
+    // Every paragraph shape the generator emits: centred letterhead,
+    // right-aligned date, the hanging-indent subject, body and sub-paragraphs,
+    // the indented signature block, and the lists under it.
+    const rich = doc({
+      lh1: 'DEPARTMENT OF THE AIR FORCE',
+      lh2: '82D RECONNAISSANCE SQUADRON',
+      from: '82 RS/MXAA',
+      subject: 'Request for Additional Manning',
+      paras: ['First paragraph.', 'Second paragraph.'],
+      atch: ['Roster'],
+      cc: ['82 RS/CC'],
+      distro: ['82 RS/MXAA'],
+      prepName: 'John D. Smith',
+      prepRank: 'TSgt',
+      prepTitle: 'Section Chief',
+    });
+    const xml = new TextDecoder('latin1').decode(
+      await bytesOf(buildDocx(rich, customSpec(rich, FIXED))),
+    );
+
+    const pprs = childSequences(xml, 'w:pPr');
+    const rprs = childSequences(xml, 'w:rPr');
+    expect(pprs.length).toBeGreaterThan(5);
+    expect(rprs.length).toBeGreaterThan(5);
+    expect(outOfOrder(pprs, PPR_ORDER)).toEqual([]);
+    expect(outOfOrder(rprs, RPR_ORDER)).toEqual([]);
+  });
+
   const d = doc({
     from: '82 RS/MXAA',
     subject: 'Request for Additional Manning',

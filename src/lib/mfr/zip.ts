@@ -29,6 +29,15 @@ export function crc32(u8: Uint8Array): number {
   return (c ^ 0xffffffff) >>> 0;
 }
 
+/**
+ * 1 January 1980 as a DOS date: day 1, month 1, year 0 from the 1980 epoch.
+ *
+ * Zero is not a valid DOS date -- it reads as day 0 of month 0 -- and some
+ * readers refuse or warn on it. A fixed date rather than the current one keeps
+ * the output byte-identical between runs, which the determinism test relies on.
+ */
+const DOS_EPOCH = (0 << 9) | (1 << 5) | 1;
+
 export function zipStore(files: ZipEntry[]): Uint8Array<ArrayBuffer> {
   const parts: Uint8Array[] = [];
   const central: Uint8Array[][] = [];
@@ -55,8 +64,8 @@ export function zipStore(files: ZipEntry[]): Uint8Array<ArrayBuffer> {
     put(le(20, 2)); // version needed
     put(le(0, 2)); // flags
     put(le(0, 2)); // method: stored
-    put(le(0, 2)); // mod time
-    put(le(0, 2)); // mod date
+    put(le(0, 2)); // mod time: midnight
+    put(le(DOS_EPOCH, 2)); // mod date
     put(le(crc, 4));
     put(le(data.length, 4));
     put(le(data.length, 4));
@@ -67,12 +76,12 @@ export function zipStore(files: ZipEntry[]): Uint8Array<ArrayBuffer> {
 
     central.push([
       le(0x02014b50, 4),
-      le(20, 2),
-      le(20, 2),
-      le(0, 2),
-      le(0, 2),
-      le(0, 2),
-      le(0, 2),
+      le(20, 2), // version made by
+      le(20, 2), // version needed
+      le(0, 2), // flags
+      le(0, 2), // method: stored
+      le(0, 2), // mod time: midnight
+      le(DOS_EPOCH, 2), // mod date
       le(crc, 4),
       le(data.length, 4),
       le(data.length, 4),
