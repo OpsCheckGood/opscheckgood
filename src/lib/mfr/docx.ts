@@ -175,7 +175,12 @@ function memoBodyXml(doc: MemoDoc, spec: MemoSpec): string {
   const size = fontSize(doc);
   const color = (doc.lhColor || '#000099').replace('#', '');
   const lhRun = (text: string, sz: number) =>
-    run(text, { font: LETTERHEAD_FONT, b: true, caps: true, sz, color });
+    // No w:b. "Copperplate Gothic Bold" is already the bold family and has no
+    // bolder cut, so asking Word for bold makes it synthesise emboldening on
+    // top and the letterhead comes out heavier than the PDF and the preview,
+    // neither of which asks for it: the PDF draws the embedded face directly,
+    // and the preview requests weight 700 against a face declared at 700.
+    run(text, { font: LETTERHEAD_FONT, caps: true, sz, color });
 
   let x = para((doc.seal ? sealRun() : '') + lhRun(doc.lh1, 12), { jc: 'center', after: 0 });
   x += para(lhRun(doc.lh2, 10.5), { jc: 'center', after: 0 });

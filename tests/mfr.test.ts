@@ -784,6 +784,24 @@ describe('Tongue and Quill conformance', () => {
     expect(longPdf).toContain('(3) Tj');
   });
 
+  it('does not ask Word to bold an already-bold letterhead face', async () => {
+    // Copperplate Gothic Bold is the bold family; there is no bolder cut, so
+    // <w:b/> makes Word synthesise emboldening and the letterhead comes out
+    // heavier than the other two renderers. The PDF draws the embedded face
+    // with no bold operator, and the preview asks for 700 against a face
+    // declared at 700, so neither doubles it.
+    const xml = new TextDecoder('latin1').decode(
+      await bytesOf(buildDocx(rich, customSpec(rich, FIXED))),
+    );
+    const letterheadRuns = [...xml.matchAll(/<w:rPr>((?:(?!<\/w:rPr>).)*Copperplate[^<]*(?:(?!<\/w:rPr>).)*)<\/w:rPr>/g)];
+    expect(letterheadRuns.length).toBeGreaterThan(1);
+    for (const m of letterheadRuns) {
+      expect(m[1]).not.toContain('<w:b/>');
+      // ...but it is still the letterhead: uppercased, in the letterhead face.
+      expect(m[1]).toContain('<w:caps/>');
+    }
+  });
+
   it('lifts the letterhead so Word puts it where the PDF does', async () => {
     // The letterhead is flowed text, so it cannot start above the top margin,
     // while the seal beside it is anchored 0.5in from the page edge. A 1in top
