@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { tools, firstSergeant, settings, home } from '../lib/site-nav';
 
 interface Props {
   title: string;
@@ -21,18 +22,27 @@ const {
   tagline,
 } = Astro.props;
 
-const home = import.meta.env.BASE_URL;
-const base = home.replace(/\/$/, '');
 const year = new Date().getFullYear();
 
+// Everything below is derived from the one tool catalogue in lib/site-nav, so
+// a tool added there appears in the header menu, the footer and the tab bar
+// without a second edit.
+
+// The header's Tools menu. First Sergeant is a collection with its own landing
+// page, so it sits at the end of the list rather than inside it.
+const menuTools = [...tools, firstSergeant].filter((tool) => tool.ready);
+
 // Tools listed in the footer, alongside the reference pages a reader might
-// want. Derived from routes that actually exist so nothing here 404s.
-const footerTools = [
-  { label: 'First Sergeant Toolkit', href: `${base}/first-sergeant/` },
-  { label: 'Bullet Bench', href: `${base}/tools/bullet-bench/` },
-  { label: 'PT Calculator', href: `${base}/tools/pt-calculator/` },
-  { label: 'BTZ Calculator', href: `${base}/tools/btz-calculator/` },
-  { label: 'MFR Generator', href: `${base}/tools/mfr/` },
+// want. Same source as the menu, so nothing here 404s.
+const footerTools = menuTools;
+
+// Site-level pages. On a phone the header nav is hidden and the tab bar has no
+// room for these, so the footer is the only way to reach Settings: it is not
+// decoration.
+const footerSite = [
+  { name: 'All tools', href: home },
+  { name: firstSergeant.name, href: firstSergeant.href },
+  { name: settings.name, href: settings.href },
 ];
 
 // External references, for checking the shipped data against its source. Plain
@@ -43,20 +53,13 @@ const footerReference = [
   { label: 'AF e-Publishing', href: 'https://www.e-publishing.af.mil/' },
 ];
 
-// Site-level navigation only. A tool's own pages -- Bullet Bench's abbreviation
-// lists and thesaurus, say -- belong to that tool and are reached from inside
-// it, not from here. Unbuilt entries are named but not linked: a dead link is
-// worse than an honest "not yet".
 // The phone tab bar. Five is the most a tab bar can hold before the labels
 // stop being readable, so these are the tools people actually open; the rest
-// stay reachable from the Tools screen.
+// stay reachable from the Tools screen and the footer.
 const tabs = [
   { label: 'Tools', href: home },
-  { label: 'Bullet', href: `${base}/tools/bullet-bench/` },
-  { label: 'PT', href: `${base}/tools/pt-calculator/` },
-  { label: 'BTZ', href: `${base}/tools/btz-calculator/` },
-  { label: 'MFR', href: `${base}/tools/mfr/` },
-];
+  ...tools.filter((tool) => tool.ready).map((tool) => ({ label: tool.short, href: tool.href })),
+].slice(0, 5);
 
 // Which tab is the page we are on, matched longest-first so /tools/mfr/ does
 // not also light up Tools.
@@ -66,10 +69,13 @@ const activeTab =
     .sort((a, b) => b.href.length - a.href.length)
     .find((t) => path === t.href.replace(/\/+$/, ''))?.href ?? null;
 
+// Site-level navigation only. A tool's own pages -- Bullet Bench's abbreviation
+// lists and thesaurus, say -- belong to that tool and are reached from inside
+// it. Tools carries a menu; the rest are plain links.
 const nav = [
-  { label: 'Tools', href: home, ready: true },
-  { label: 'First Sergeant', href: `${home.replace(/\/$/, '')}/first-sergeant/`, ready: true },
-  { label: 'Settings', href: `${base}/settings/`, ready: true },
+  { label: 'Tools', href: home, ready: true, menu: menuTools },
+  { label: 'First Sergeant', href: firstSergeant.href, ready: true, menu: null },
+  { label: 'Settings', href: settings.href, ready: true, menu: null },
 ];
 ---
 
@@ -153,19 +159,11 @@ const nav = [
         }
       </div>
 
-      <nav class="ml-auto flex flex-wrap items-center gap-x-7 gap-y-2">
+      <nav class="ml-auto flex flex-wrap items-center gap-x-7 gap-y-2" aria-label="Site">
         <span class="desktop-only contents">
         {
           nav.map((item) =>
-            item.ready ? (
-              <a
-                href={item.href}
-                class="util no-underline"
-                style="color: var(--ink-muted); letter-spacing: 0.13em;"
-              >
-                {item.label}
-              </a>
-            ) : (
+            !item.ready ? (
               <span
                 class="util"
                 title="Not built yet"
@@ -173,6 +171,44 @@ const nav = [
               >
                 {item.label}
               </span>
+            ) : item.menu ? (
+              /*
+                The label stays a real link to the tools index, so a click or a
+                keyboard Enter goes somewhere sensible; the panel is an
+                additional shortcut, not the only route. Opening on hover and on
+                focus-within keeps it reachable without a pointer, and costs no
+                JavaScript.
+              */
+              <div class="nav-menu">
+                <a
+                  href={item.href}
+                  class="util no-underline nav-menu-label"
+                  style="color: var(--ink-muted); letter-spacing: 0.13em;"
+                >
+                  {item.label}
+                  <span class="nav-menu-caret" aria-hidden="true"></span>
+                </a>
+                <div class="nav-menu-panel">
+                  <ul class="nav-menu-list">
+                    {item.menu.map((tool) => (
+                      <li>
+                        <a href={tool.href} class="no-underline">
+                          <span class="nav-menu-name">{tool.name}</span>
+                          <span class="nav-menu-note">{tool.tagline}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ) : (
+              <a
+                href={item.href}
+                class="util no-underline"
+                style="color: var(--ink-muted); letter-spacing: 0.13em;"
+              >
+                {item.label}
+              </a>
             ),
           )
         }
@@ -202,9 +238,11 @@ const nav = [
       }
     </nav>
 
-    <footer class="mt-10 border-t" style="border-color: var(--rule);">
-      <div class="desktop-only mx-auto grid max-w-[1560px] gap-8 px-3 sm:px-6 py-8 sm:grid-cols-2 lg:grid-cols-4">
-        <div class="lg:col-span-2">
+    <footer class="site-footer">
+      <div
+        class="mx-auto grid max-w-[1560px] gap-x-8 gap-y-9 px-3 sm:px-6 py-10 sm:grid-cols-2 lg:grid-cols-4"
+      >
+        <div>
           <a
             href={home}
             class="no-underline"
@@ -212,23 +250,25 @@ const nav = [
           >
             OPS CHECK GOOD
           </a>
-          <p class="body m-0 mt-2 max-w-[46ch]">
-            Tools for Airmen.
+          <p class="body m-0 mt-2 max-w-[34ch]">
+            Free tools for Airmen. Total force, enlisted and officer.
+          </p>
+          <p class="m-0 mt-3 max-w-[34ch]" style="font-size: var(--text-small); color: var(--ink-muted);">
+            Everything runs in the browser. Nothing you type leaves the device.
           </p>
         </div>
 
-        <nav aria-label="Tools">
-          <h2 class="util m-0">Tools</h2>
+        <nav aria-labelledby="footer-tools-heading">
+          <h2 id="footer-tools-heading" class="util m-0">Tools</h2>
           <ul class="m-0 mt-3 list-none space-y-2 p-0">
             {
               footerTools.map((item) => (
                 <li>
                   <a
                     href={item.href}
-                    class="no-underline"
-                    style="font-size: var(--text-small); color: var(--ink-muted);"
+                    class="footer-link"
                   >
-                    {item.label}
+                    {item.name}
                   </a>
                 </li>
               ))
@@ -236,9 +276,26 @@ const nav = [
           </ul>
         </nav>
 
+        <nav aria-labelledby="footer-site-heading">
+          <h2 id="footer-site-heading" class="util m-0">Site</h2>
+          <ul class="m-0 mt-3 list-none space-y-2 p-0">
+            {
+              footerSite.map((item) => (
+                <li>
+                  <a
+                    href={item.href}
+                    class="footer-link"
+                  >
+                    {item.name}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
 
-        <nav aria-label="Reference">
-          <h2 class="util m-0">Reference</h2>
+        <nav aria-labelledby="footer-reference-heading">
+          <h2 id="footer-reference-heading" class="util m-0">Reference</h2>
           <ul class="m-0 mt-3 list-none space-y-2 p-0">
             {
               footerReference.map((item) => (
@@ -247,10 +304,9 @@ const nav = [
                     href={item.href}
                     target="_blank"
                     rel="noreferrer noopener"
-                    class="no-underline"
-                    style="font-size: var(--text-small); color: var(--ink-muted);"
+                    class="footer-link"
                   >
-                    {item.label} <span aria-hidden style="color: var(--ink-faint);">↗</span>
+                    {item.label} <span aria-hidden="true" style="color: var(--ink-faint);">↗</span>
                   </a>
                 </li>
               ))
@@ -259,26 +315,28 @@ const nav = [
         </nav>
       </div>
 
-      <div class="border-t" style="border-color: var(--rule);">
-        <div class="mx-auto flex max-w-[1560px] flex-wrap items-center gap-x-6 gap-y-2 px-3 sm:px-6 py-4">
+      {/*
+        One closing bar rather than three stacked rules: the copyright, the line
+        about who built it and the disclaimer are all fine print, and separating
+        them with borders gave the quietest part of the page the most chrome.
+      */}
+      <div class="site-footer-legal">
+        <div class="mx-auto flex max-w-[1560px] flex-wrap items-baseline gap-x-6 gap-y-2 px-3 sm:px-6 py-5">
           <p class="util m-0" style="letter-spacing: 0.08em;">
             &copy; {year} Ops Check Good
           </p>
-          <p class="m-0 ml-auto" style="font-size: var(--text-small); color: var(--ink-muted);">
+          <p class="m-0" style="font-size: var(--text-small); color: var(--ink-muted);">
             Built for Airmen, by Airmen.
           </p>
+          <p
+            class="m-0 mt-1 basis-full max-w-[80ch] leading-relaxed"
+            style="font-size: var(--text-micro); color: var(--ink-faint);"
+          >
+            Unofficial personal project. Not affiliated with, endorsed by, or produced by the
+            United States Air Force or the Department of Defense. Official guidance governs;
+            check current instructions and your chain of command before relying on anything here.
+          </p>
         </div>
-      </div>
-
-      <div class="border-t" style="border-color: var(--rule);">
-        <p
-          class="mx-auto m-0 max-w-[70ch] px-3 sm:px-6 py-4 leading-relaxed"
-          style="font-size: var(--text-micro); color: var(--ink-faint);"
-        >
-          Unofficial personal project. Not affiliated with, endorsed by, or produced by the
-          United States Air Force or the Department of Defense. Official guidance governs;
-          check current instructions and your chain of command before relying on anything here.
-        </p>
       </div>
     </footer>
 

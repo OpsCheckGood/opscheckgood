@@ -124,9 +124,20 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+/*
+ * A column, so the footer sits at the bottom of the viewport on a short page
+ * -- a 404, Settings, a tool nobody has typed into yet -- instead of floating
+ * halfway up with ground beneath it.
+ */
 body {
   margin: 0;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-shell {
+  flex: 1 0 auto;
 }
 
 /*
@@ -309,6 +320,135 @@ body {
 }
 
 /* ---------------------------------------------------------------------------
+ * Header menu
+ *
+ * Tools carries a menu of the tools themselves. It opens on hover and on
+ * focus-within, which means no JavaScript and no ARIA that the markup cannot
+ * back up: the label stays an ordinary link to the tools index, and the panel
+ * is a shortcut layered on top of it. Hidden with visibility rather than
+ * display so the links leave the tab order while it is shut, and rejoin it the
+ * moment the label takes focus.
+ * ------------------------------------------------------------------------ */
+
+.nav-menu {
+  position: relative;
+}
+
+.nav-menu-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* A caret drawn rather than typed, so it lines up with the label at any size
+   and does not depend on a glyph being present in the face. */
+.nav-menu-caret {
+  width: 0;
+  height: 0;
+  border-left: 3.5px solid transparent;
+  border-right: 3.5px solid transparent;
+  border-top: 4px solid currentColor;
+  opacity: 0.7;
+  transition: transform 120ms ease;
+}
+
+.nav-menu-panel {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 40;
+  /* The pointer has to cross the gap between label and panel without the panel
+     closing under it, so the gap belongs to the panel. */
+  padding-top: 10px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease;
+}
+
+.nav-menu:hover .nav-menu-panel,
+.nav-menu:focus-within .nav-menu-panel {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+.nav-menu:hover .nav-menu-caret,
+.nav-menu:focus-within .nav-menu-caret {
+  transform: rotate(180deg);
+}
+
+.nav-menu-list {
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  min-width: 264px;
+  background: var(--panel);
+  border: 1px solid var(--rule-strong);
+  box-shadow: 0 10px 24px rgb(0 0 0 / 0.14);
+}
+
+.nav-menu-list a {
+  display: block;
+  padding: 8px 10px;
+  text-decoration: none;
+}
+
+.nav-menu-list a:hover,
+.nav-menu-list a:focus-visible {
+  background: var(--accent-dim);
+}
+
+.nav-menu-name {
+  display: block;
+  font-size: var(--text-small);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.nav-menu-note {
+  display: block;
+  margin-top: 1px;
+  font-size: var(--text-micro);
+  color: var(--ink-faint);
+}
+
+/* ---------------------------------------------------------------------------
+ * Site footer
+ *
+ * Its own ground, one hairline above it and one before the fine print. Two
+ * bands, not four: this is the quietest part of the page and should read that
+ * way.
+ * ------------------------------------------------------------------------ */
+
+.site-footer {
+  margin-top: 2.5rem;
+  border-top: 1px solid var(--rule);
+  background: var(--panel);
+}
+
+/* The footer's link colour lives here rather than inline, so hover has
+   something to change without an !important fight with a style attribute. */
+.footer-link {
+  font-size: var(--text-small);
+  color: var(--ink-muted);
+  text-decoration: none;
+}
+
+.footer-link:hover {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.site-footer-legal {
+  border-top: 1px solid var(--rule);
+}
+
+
+/* ---------------------------------------------------------------------------
  * Phones
  *
  * On a phone this is used standing up, one-handed, often in a hallway. It
@@ -337,10 +477,6 @@ body {
     border-right: 0;
     margin-left: calc(-1 * var(--gutter, 0.75rem));
     margin-right: calc(-1 * var(--gutter, 0.75rem));
-  }
-
-  .app-shell {
-    padding-bottom: calc(var(--tabbar) + env(safe-area-inset-bottom));
   }
 
   .tabbar {
@@ -387,10 +523,16 @@ body {
     padding-top: env(safe-area-inset-top);
   }
 
-  /* Desktop-only chrome. The tab bar covers navigation on a phone, and the
-     footer's four link columns are a desktop artefact. */
+  /* Desktop-only chrome: the tab bar covers navigation on a phone, so the
+     header's links and the Tools menu would be a second copy of it. */
   .desktop-only {
     display: none !important;
+  }
+
+  /* The tab bar is fixed, so the last thing in the document has to clear it or
+     the disclaimer sits underneath it. The footer is that last thing. */
+  .site-footer {
+    padding-bottom: calc(var(--tabbar) + env(safe-area-inset-bottom));
   }
 }
 

@@ -1,3 +1,4 @@
+/// <reference types="astro/client" />
 /**
  * The one list of tools the site knows about.
  *
@@ -83,7 +84,7 @@ export const tools: Tool[] = [
 export const firstSergeant = {
   name: 'First Sergeant Toolkit',
   short: 'First Sergeant',
-  tagline: 'Everything a shirt reaches for.',
+  tagline: 'Where do I send them?',
   href: `${base}/first-sergeant/`,
   ready: true,
 };
