@@ -832,3 +832,98 @@ describe('Tongue and Quill conformance', () => {
     expect(pages).toContain('JOHN D. SMITH, TSgt, USAF');
   });
 });
+
+// ---------------------------------------------------------------------------
+// The LOCAR gets everything the memorandum gets
+// ---------------------------------------------------------------------------
+
+/**
+ * The letter of counselling, admonishment or reprimand renders through the
+ * same three exporters, but by a different spec and with three indorsements
+ * the plain memorandum never builds. Every fix made to the memorandum is
+ * asserted here against the LOCAR's own output, because "it is shared code"
+ * is a claim, and this is the test of it.
+ */
+describe('LOCAR output carries the same corrections', () => {
+  const locarDoc = doc({
+    template: 'locar',
+    locarType: 'Counseling',
+    from: '82 RS/MXAA',
+    lh1: 'DEPARTMENT OF THE AIR FORCE',
+    lh2: '82D RECONNAISSANCE SQUADRON',
+    prepName: 'John D. Smith',
+    prepRank: 'TSgt',
+    prepTitle: 'Section Chief',
+  } as Partial<MemoDoc>);
+  const spec = () => locarSpec(locarDoc, FIXED);
+
+  it('builds the three acknowledgement indorsements', () => {
+    expect(spec().inds).toHaveLength(3);
+  });
+
+  it('binds the namespaces and orders w:pPr and w:rPr correctly', async () => {
+    const xml = new TextDecoder('latin1').decode(await bytesOf(buildDocx(locarDoc, spec())));
+    expect(xml).toContain(
+      'xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"',
+    );
+    const seqs = (tag: string) =>
+      [...xml.matchAll(new RegExp(`<${tag}>(.*?)</${tag}>`, 'g'))].map((m) =>
+        [...m[1]!.matchAll(/<(w:[a-zA-Z]+)[\s/>]/g)].map((c) => c[1]!),
+      );
+    const backwards = (seq: string[], order: string[]) => {
+      const ranks = seq.map((n) => order.indexOf(n)).filter((r) => r >= 0);
+      return ranks.some((r, i) => i > 0 && r < ranks[i - 1]!);
+    };
+    expect(seqs('w:pPr').filter((q) => backwards(q, ['w:spacing', 'w:ind', 'w:jc']))).toEqual([]);
+    expect(
+      seqs('w:rPr').filter((q) =>
+        backwards(q, ['w:rFonts', 'w:b', 'w:i', 'w:caps', 'w:color', 'w:sz', 'w:szCs']),
+      ),
+    ).toEqual([]);
+  });
+
+  it('lifts the letterhead and leaves it unbolded', async () => {
+    const xml = new TextDecoder('latin1').decode(await bytesOf(buildDocx(locarDoc, spec())));
+    expect(xml).toContain('w:pgMar w:top="900"');
+    expect(xml).toContain('w:after="660"');
+    for (const m of xml.matchAll(
+      /<w:rPr>((?:(?!<\/w:rPr>).)*Copperplate[^<]*(?:(?!<\/w:rPr>).)*)<\/w:rPr>/g,
+    )) {
+      expect(m[1]).not.toContain('<w:b/>');
+    }
+  });
+
+  it('numbers an indorsement only when it has more than one paragraph', () => {
+    const inds = spec().inds!;
+    for (const ind of inds) {
+      expect(`${ind.head}: ${ind.numbered}`).toBe(`${ind.head}: ${ind.paras.length > 1}`);
+    }
+    // The default language gives the member's final indorsement one paragraph,
+    // so it is the one that must come out unnumbered.
+    expect(inds.some((i) => !i.numbered)).toBe(true);
+  });
+
+  it('packages cleanly and opens as a real document', async () => {
+    const bytes = await bytesOf(buildDocx(locarDoc, spec()));
+    const xml = new TextDecoder('latin1').decode(bytes);
+    expect(xml.startsWith('PK')).toBe(true);
+    for (const part of [
+      '[Content_Types].xml',
+      '_rels/.rels',
+      'word/document.xml',
+      'word/_rels/document.xml.rels',
+    ]) {
+      expect(xml).toContain(part);
+    }
+  });
+
+  it('numbers its continuation pages', async () => {
+    // A LOCAR with three indorsements runs past two pages on its own.
+    const pages = buildPdfPages(locarDoc, spec(), null);
+    expect(pages.length).toBeGreaterThan(2);
+    const pdf = new TextDecoder('latin1').decode(
+      await bytesOf(assemblePdf(locarDoc, pages, null)),
+    );
+    expect(pdf).toContain('(2) Tj');
+  });
+});

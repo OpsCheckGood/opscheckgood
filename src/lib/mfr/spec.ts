@@ -7,6 +7,7 @@ import {
   sigRank,
   slugify,
   subjectCase,
+  numberParagraphs,
 } from './format';
 import type {
   Indorsement,
@@ -82,7 +83,10 @@ function indSpec(d: Indorsement, i: number, base: { from: string; date: string; 
     line2Right: own ? '' : h.line2Right || '',
     memoFor: String(d.memoFor || '').trim() ? `MEMORANDUM FOR  ${String(d.memoFor).trim()}` : '',
     subj: String(d.subj || '').trim(),
-    numbered: true,
+    // AFH 33-337 ch.14 text rule 2, the same rule the body follows: a single
+    // paragraph is not numbered. Decided from the paragraphs rather than
+    // hardcoded, so it cannot drift when the text changes.
+    numbered: numberParagraphs(d.paras && d.paras.length ? d.paras : ['']),
     paras: d.paras && d.paras.length ? d.paras : [''],
     atch: d.atch || [],
     cc: d.cc || [],
@@ -186,7 +190,7 @@ export function locarSpec(doc: MemoDoc, now: Date = new Date()): MemoSpec {
       head: `1st Ind to ${office}, ${letterDate}, ${subject}`,
       line2: recipient,
       subj: 'ACKNOWLEDGEMENT',
-      numbered: true,
+      numbered: numberParagraphs(fill(LOCAR.acknowledgement.memberFirst)),
       sig: memberSig,
       paras: fill(LOCAR.acknowledgement.memberFirst),
     },
@@ -194,7 +198,7 @@ export function locarSpec(doc: MemoDoc, now: Date = new Date()): MemoSpec {
       head: `2d Ind, ${issuer}`,
       headRight: '________________ (date)',
       memoFor: `MEMORANDUM FOR  ${recipient}`,
-      numbered: true,
+      numbered: numberParagraphs(fill(LOCAR.acknowledgement.issuerDecision)),
       sig: issuerSig,
       paras: fill(LOCAR.acknowledgement.issuerDecision),
     },
@@ -202,7 +206,7 @@ export function locarSpec(doc: MemoDoc, now: Date = new Date()): MemoSpec {
       head: `3d Ind, ${recipient}`,
       headRight: '________________ (date)',
       memoFor: `MEMORANDUM FOR  ${issuer}`,
-      numbered: false,
+      numbered: numberParagraphs(fill(LOCAR.acknowledgement.memberFinal)),
       sig: memberSig,
       paras: fill(LOCAR.acknowledgement.memberFinal),
     },
