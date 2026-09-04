@@ -1,11 +1,11 @@
 {
   "meta": {
-    "source": "MilitaryINSTALLATIONS — Beale AFB",
-    "version": "1 (retrieved 2026-08-30)",
-    "verifiedDate": "2026-08-30",
+    "source": "MilitaryINSTALLATIONS — Beale AFB; www.beale.af.mil",
+    "version": "2 (MilitaryINSTALLATIONS retrieved 2026-08-30, base website read 2026-09-04)",
+    "verifiedDate": "2026-09-04",
     "sourceUrl": "https://installations.militaryonesource.mil/military-installation/beale-afb",
     "status": "verified",
-    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+    "notes": "Two sources, kept apart. The programme contacts (medical, family support, legal, housing, family advocacy, EFMP, child care, emergency relief) were imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. The agencies Military OneSource does not publish per installation were filled by scripts/import-base-directories.mjs from https://www.beale.af.mil/, and Military OneSource itself is copied from national.json. Every contact carries the URL of the page it was read from; nothing here was typed in, inferred, or generated. Where both sources published a number the MilitaryINSTALLATIONS value stands and the base site’s is recorded in that contact’s notes rather than discarded. Still empty here, because no source read published one: mental-health. Re-run either importer to refresh; the diff is the change."
   },
   "data": {
     "id": "beale-afb",
@@ -14,12 +14,12 @@
     "contacts": [
       {
         "categoryId": "command-post",
-        "name": "",
-        "phone": "",
+        "name": "Command Post",
+        "phone": "530-634-5700",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.beale.af.mil/Contact-Us/Directory/",
         "notes": ""
       },
       {
@@ -34,32 +34,32 @@
       },
       {
         "categoryId": "chaplain",
-        "name": "",
-        "phone": "",
+        "name": "Chapels Valley Chapel",
+        "phone": "530-634-4705",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.beale.af.mil/Contact-Us/Directory/",
         "notes": ""
       },
       {
         "categoryId": "sarc",
-        "name": "",
-        "phone": "",
+        "name": "Sexual Assault Response Coordinator (SAPR) Hotline",
+        "phone": "530-634-4000",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.beale.af.mil/Contact-Us/Directory/",
         "notes": ""
       },
       {
         "categoryId": "security-forces",
-        "name": "",
-        "phone": "",
+        "name": "Law Enforcement",
+        "phone": "530-634-2131",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.beale.af.mil/Contact-Us/Directory/",
         "notes": ""
       },
       {
@@ -84,12 +84,12 @@
       },
       {
         "categoryId": "finance",
-        "name": "",
-        "phone": "",
+        "name": "9th Comptroller Squadron",
+        "phone": "530-634-2218",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.beale.af.mil/Contact-Us/Directory/",
         "notes": ""
       },
       {
@@ -110,16 +110,16 @@
         "location": "17860 Warren Shingle Beale AFB, CA 95903",
         "hours": "",
         "url": "https://installations.militaryonesource.mil/military-installation/beale-afb/housing/housing",
-        "notes": "Dorm Residents Only 24 hours daily"
+        "notes": "Dorm Residents Only 24 hours daily Base website lists 530-634-2792 for “Housing Office” (https://www.beale.af.mil/Contact-Us/Directory/, read 2026-09-04)."
       },
       {
         "categoryId": "mpf",
-        "name": "",
-        "phone": "",
+        "name": "Military Personnel Flight",
+        "phone": "530-634-3187",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.beale.af.mil/Contact-Us/Directory/",
         "notes": ""
       },
       {
@@ -130,7 +130,7 @@
         "location": "15301 Warren Shingle Road Beale AFB, CA 95903",
         "hours": "",
         "url": "https://installations.militaryonesource.mil/military-installation/beale-afb/military-and-family-support-center/family-advocacy-program",
-        "notes": "Mon - Fri 7:30 a.m. to 4:30 p.m. Closed every Wednesday each month from 0730 - 0930 Saturday, Sunday and Holidays"
+        "notes": "Mon - Fri 7:30 a.m. to 4:30 p.m. Closed every Wednesday each month from 0730 - 0930 Saturday, Sunday and Holidays Base website lists 530-634-3420 for “Family Advocacy Program” (https://www.beale.af.mil/Contact-Us/Directory/, read 2026-09-04)."
       },
       {
         "categoryId": "efmp",
@@ -150,7 +150,7 @@
         "location": "18000 Robert Nicoletti Way Beale AFB, CA 95903",
         "hours": "",
         "url": "https://installations.militaryonesource.mil/military-installation/beale-afb/child-and-youth-services/child-care",
-        "notes": "Mon - Fri 7:00 a.m. - 5:00 p.m. Weekends & Holidays - closed Recalls: +45 minutes to 6:30 p.m. until exercise is over (Modified during HPCON: Charlie)."
+        "notes": "Mon - Fri 7:00 a.m. - 5:00 p.m. Weekends & Holidays - closed Recalls: +45 minutes to 6:30 p.m. until exercise is over (Modified during HPCON: Charlie). Base website lists 530-812-4418 for “Family Child Care” (https://www.beale.af.mil/Contact-Us/Directory/, read 2026-09-04)."
       },
       {
         "categoryId": "emergency-relief",
@@ -164,22 +164,22 @@
       },
       {
         "categoryId": "military-onesource",
-        "name": "",
-        "phone": "",
+        "name": "Military OneSource",
+        "phone": "800-342-9647",
         "dsn": "",
-        "location": "",
-        "hours": "",
-        "url": "",
-        "notes": ""
+        "location": "Worldwide, by phone and online",
+        "hours": "24 hours a day, 7 days a week",
+        "url": "https://www.militaryonesource.mil/",
+        "notes": "Non-medical counselling, financial counselling, and referral to the right local agency. OCONUS and international dialling options are listed on the site."
       },
       {
         "categoryId": "equal-opportunity",
-        "name": "",
-        "phone": "",
+        "name": "Equal Opportunity Office (Military and Civilian)",
+        "phone": "530-634-2077",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.beale.af.mil/Contact-Us/Directory/",
         "notes": ""
       }
     ]

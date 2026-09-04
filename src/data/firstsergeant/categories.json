@@ -1,11 +1,11 @@
 {
   "meta": {
     "source": "Ops Check Good — helping-agency taxonomy",
-    "version": "1",
+    "version": "2",
     "verifiedDate": "2026-08-30",
     "sourceUrl": "",
     "status": "stub",
-    "notes": "The list of agencies a First Sergeant routes to, used as the spine of the toolkit: installation directories and situation cards both key off these ids. Drafted from the maintainer’s brief rather than from a published list of helping agencies, so it stays status=stub until someone checks it against official guidance and against what the installations actually field. Adding, removing, or re-wording an agency is a data edit here; no component names one. mosPages names the MilitaryINSTALLATIONS program page that carries each agency, and is what scripts/import-installations.mjs reads to build a directory. An empty list means Military OneSource does not publish that agency per installation — the crisis agencies mostly fall in that bucket, which is why the worldwide fallback matters. Adding a mapping is a data edit here; the importer names no agency itself."
+    "notes": "The list of agencies a First Sergeant routes to, used as the spine of the toolkit: installation directories and situation cards both key off these ids. Drafted from the maintainer’s brief rather than from a published list of helping agencies, so it stays status=stub until someone checks it against official guidance and against what the installations actually field. Adding, removing, or re-wording an agency is a data edit here; no component names one. mosPages names the MilitaryINSTALLATIONS program page that carries each agency, and is what scripts/import-installations.mjs reads to build a directory. An empty list means Military OneSource does not publish that agency per installation — the crisis agencies mostly fall in that bucket, which is why the worldwide fallback matters. Adding a mapping is a data edit here; the importer names no agency itself. siteLabels and siteExcludeLabels are the same idea for the installations' own websites: scripts/import-base-directories.mjs matches a directory line's label against siteLabels, drops it if any siteExcludeLabels phrase appears, and drops it again if two categories both claim it. Widening or tightening what the importer will accept is a data edit here; the script names no agency itself. military-onesource carries no siteLabels on purpose — it is one worldwide number, taken from national.json, never read off a base page."
   },
   "data": {
     "categories": [
@@ -14,35 +14,111 @@
         "label": "Command Post",
         "urgency": "crisis",
         "blurb": "Round-the-clock unit notification, recalls, and emergency reporting.",
-        "mosPages": []
+        "mosPages": [],
+        "siteLabels": [
+          "Command Post",
+          "Wing Command Post",
+          "Base Command Post"
+        ],
+        "siteExcludeLabels": [
+          "fax",
+          "after hours number for",
+          "test"
+        ]
       },
       {
         "id": "mental-health",
         "label": "Mental Health",
         "urgency": "crisis",
         "blurb": "Behavioural health assessment and care, including same-day walk-in.",
-        "mosPages": []
+        "mosPages": [],
+        "siteLabels": [
+          "Mental Health",
+          "Mental Health Clinic",
+          "Behavioral Health",
+          "Behavioural Health",
+          "Mental Health Flight"
+        ],
+        "siteExcludeLabels": [
+          "fax",
+          "adolescent",
+          "alcohol and drug",
+          "substance"
+        ]
       },
       {
         "id": "chaplain",
         "label": "Chaplain",
         "urgency": "crisis",
         "blurb": "Confidential counselling with no reporting requirement.",
-        "mosPages": []
+        "mosPages": [],
+        "siteLabels": [
+          "Chapel",
+          "Chaplain",
+          "Chapel Office",
+          "Base Chapel",
+          "Wing Chaplain",
+          "Chaplain Corps",
+          "Chapel Center"
+        ],
+        "siteExcludeLabels": [
+          "fax",
+          "chapel fund",
+          "annex fax"
+        ]
       },
       {
         "id": "sarc",
         "label": "Sexual Assault Response Coordinator",
         "urgency": "crisis",
         "blurb": "Restricted and unrestricted reporting, advocacy, and referral.",
-        "mosPages": []
+        "mosPages": [],
+        "siteLabels": [
+          "SARC",
+          "Sexual Assault Response Coordinator",
+          "SAPR",
+          "Sexual Assault Prevention and Response",
+          "SAPR Hotline",
+          "Sexual Assault Hotline",
+          "SARC Hotline"
+        ],
+        "siteExcludeLabels": [
+          "fax",
+          "safe helpline",
+          "dod safe helpline",
+          "victims counsel",
+          "special victims counsel",
+          "victim advocate"
+        ]
       },
       {
         "id": "security-forces",
         "label": "Security Forces",
         "urgency": "crisis",
         "blurb": "Law enforcement, installation entry, and on-base emergencies.",
-        "mosPages": []
+        "mosPages": [],
+        "siteLabels": [
+          "Security Forces",
+          "Security Forces Squadron",
+          "Base Defense Operations Center",
+          "BDOC",
+          "Law Enforcement Desk",
+          "Security Forces Desk",
+          "Law Enforcement"
+        ],
+        "siteExcludeLabels": [
+          "fax",
+          "visitor",
+          "pass and id",
+          "vehicle registration",
+          "reports and analysis",
+          "armory",
+          "kennel",
+          "investigations",
+          "police report",
+          "crime stoppers",
+          "training"
+        ]
       },
       {
         "id": "medical",
@@ -51,6 +127,33 @@
         "blurb": "Clinic appointments, urgent care, and emergency treatment.",
         "mosPages": [
           "health/health-care"
+        ],
+        "siteLabels": [
+          "Medical Group",
+          "Appointment Line",
+          "Appointments",
+          "Medical Clinic",
+          "Medical Treatment Facility",
+          "Military Treatment Facility",
+          "Clinic Appointment Line",
+          "TRICARE Appointment Line",
+          "Hospital"
+        ],
+        "siteExcludeLabels": [
+          "fax",
+          "dental",
+          "veterinary",
+          "animal",
+          "pharmacy",
+          "optometry",
+          "public health",
+          "flight medicine",
+          "immunization",
+          "immunizations",
+          "physical therapy",
+          "radiology",
+          "laboratory",
+          "referral"
         ]
       },
       {
@@ -60,6 +163,20 @@
         "blurb": "Financial counselling, relocation, deployment support, and spouse programmes.",
         "mosPages": [
           "military-and-family-support-center/military-and-family-support-center"
+        ],
+        "siteLabels": [
+          "Military and Family Readiness Center",
+          "Airman and Family Readiness Center",
+          "Military and Family Support Center",
+          "Airman and Family Readiness",
+          "Family Readiness Center",
+          "A/FRC",
+          "M/FRC",
+          "Airmen and Family Readiness Center"
+        ],
+        "siteExcludeLabels": [
+          "fax",
+          "appointment line"
         ]
       },
       {
@@ -67,7 +184,23 @@
         "label": "Finance",
         "urgency": "standard",
         "blurb": "Pay problems, entitlements, allowances, and travel vouchers.",
-        "mosPages": []
+        "mosPages": [],
+        "siteLabels": [
+          "Finance",
+          "Comptroller",
+          "Financial Services Office",
+          "Military Pay",
+          "Finance Office",
+          "Financial Management"
+        ],
+        "siteExcludeLabels": [
+          "fax",
+          "aid society",
+          "financial counseling",
+          "financial counselling",
+          "personal financial",
+          "emergency"
+        ]
       },
       {
         "id": "legal",
@@ -76,6 +209,21 @@
         "blurb": "Legal assistance, wills, powers of attorney, and civil matters.",
         "mosPages": [
           "legal/legal-assistance"
+        ],
+        "siteLabels": [
+          "Legal Office",
+          "Legal Assistance",
+          "Base Legal",
+          "Staff Judge Advocate",
+          "Judge Advocate",
+          "Legal Services"
+        ],
+        "siteExcludeLabels": [
+          "fax",
+          "area defense counsel",
+          "victims counsel",
+          "special victims counsel",
+          "claims"
         ]
       },
       {
@@ -85,6 +233,21 @@
         "blurb": "On-base housing, off-base referral, and landlord disputes.",
         "mosPages": [
           "housing/housing"
+        ],
+        "siteLabels": [
+          "Housing Office",
+          "Military Housing Office",
+          "Housing Management Office",
+          "Base Housing",
+          "Privatized Housing",
+          "Unaccompanied Housing"
+        ],
+        "siteExcludeLabels": [
+          "fax",
+          "maintenance",
+          "lodging",
+          "temporary lodging",
+          "inn"
         ]
       },
       {
@@ -92,7 +255,19 @@
         "label": "Military Personnel Flight",
         "urgency": "standard",
         "blurb": "Assignments, promotions, separations, retirements, and records.",
-        "mosPages": []
+        "mosPages": [],
+        "siteLabels": [
+          "Military Personnel Flight",
+          "MPF",
+          "Military Personnel Section",
+          "Force Support Squadron Customer Service",
+          "Personnel Customer Service"
+        ],
+        "siteExcludeLabels": [
+          "fax",
+          "civilian personnel",
+          "civilian"
+        ]
       },
       {
         "id": "family-advocacy",
@@ -101,6 +276,15 @@
         "blurb": "Prevention and response for family maltreatment.",
         "mosPages": [
           "military-and-family-support-center/family-advocacy-program"
+        ],
+        "siteLabels": [
+          "Family Advocacy",
+          "Family Advocacy Program",
+          "Family Advocacy Office"
+        ],
+        "siteExcludeLabels": [
+          "fax",
+          "new parent support"
         ]
       },
       {
@@ -110,6 +294,15 @@
         "blurb": "Enrolment, assignment coordination, and family support.",
         "mosPages": [
           "exceptional-family-member-program/exceptional-family-member-program"
+        ],
+        "siteLabels": [
+          "Exceptional Family Member Program",
+          "EFMP",
+          "EFMP Family Support",
+          "Special Needs Identification and Assignment Coordination"
+        ],
+        "siteExcludeLabels": [
+          "fax"
         ]
       },
       {
@@ -119,6 +312,20 @@
         "blurb": "Child development centre, family child care, and respite care.",
         "mosPages": [
           "child-and-youth-services/child-care"
+        ],
+        "siteLabels": [
+          "Child Development Center",
+          "Child Development",
+          "Child Care Office",
+          "Family Child Care",
+          "Child and Youth Programs"
+        ],
+        "siteExcludeLabels": [
+          "fax",
+          "annex",
+          "school age",
+          "youth center",
+          "teen"
         ]
       },
       {
@@ -128,6 +335,16 @@
         "blurb": "Air Force Aid Society and equivalent emergency financial assistance.",
         "mosPages": [
           "military-and-family-support-center/financial-assistance"
+        ],
+        "siteLabels": [
+          "Air Force Aid Society",
+          "AFAS",
+          "Army Emergency Relief",
+          "Navy Marine Corps Relief Society",
+          "Emergency Relief"
+        ],
+        "siteExcludeLabels": [
+          "fax"
         ]
       },
       {
@@ -135,14 +352,28 @@
         "label": "Military OneSource",
         "urgency": "crisis",
         "blurb": "Round-the-clock non-medical counselling and referral, worldwide. Works when nothing local is open and when the member is not near an installation.",
-        "mosPages": []
+        "mosPages": [],
+        "siteLabels": [],
+        "siteExcludeLabels": []
       },
       {
         "id": "equal-opportunity",
         "label": "Equal Opportunity",
         "urgency": "standard",
         "blurb": "Discrimination and harassment complaints and mediation.",
-        "mosPages": []
+        "mosPages": [],
+        "siteLabels": [
+          "Equal Opportunity",
+          "Equal Opportunity Office",
+          "Military Equal Opportunity",
+          "MEO",
+          "EO Office"
+        ],
+        "siteExcludeLabels": [
+          "fax",
+          "equal employment opportunity complaints",
+          "no fear"
+        ]
       }
     ]
   }

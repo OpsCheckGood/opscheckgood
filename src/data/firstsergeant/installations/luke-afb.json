@@ -1,11 +1,11 @@
 {
   "meta": {
-    "source": "MilitaryINSTALLATIONS — Luke AFB",
-    "version": "1 (retrieved 2026-08-30)",
-    "verifiedDate": "2026-08-30",
+    "source": "MilitaryINSTALLATIONS — Luke AFB; www.luke.af.mil",
+    "version": "2 (MilitaryINSTALLATIONS retrieved 2026-08-30, base website read 2026-09-04)",
+    "verifiedDate": "2026-09-04",
     "sourceUrl": "https://installations.militaryonesource.mil/military-installation/luke-afb",
     "status": "verified",
-    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+    "notes": "Two sources, kept apart. The programme contacts (medical, family support, legal, housing, family advocacy, EFMP, child care, emergency relief) were imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. The agencies Military OneSource does not publish per installation were filled by scripts/import-base-directories.mjs from https://www.luke.af.mil/, and Military OneSource itself is copied from national.json. Every contact carries the URL of the page it was read from; nothing here was typed in, inferred, or generated. Where both sources published a number the MilitaryINSTALLATIONS value stands and the base site’s is recorded in that contact’s notes rather than discarded. Still empty here, because no source read published one: mpf. Re-run either importer to refresh; the diff is the change."
   },
   "data": {
     "id": "luke-afb",
@@ -14,52 +14,52 @@
     "contacts": [
       {
         "categoryId": "command-post",
-        "name": "",
-        "phone": "",
+        "name": "Command Post",
+        "phone": "623-856-5600",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.luke.af.mil/",
         "notes": ""
       },
       {
         "categoryId": "mental-health",
-        "name": "",
-        "phone": "",
+        "name": "Mental Health",
+        "phone": "623-856-7579",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.luke.af.mil/Home/Helping-Agencies/",
         "notes": ""
       },
       {
         "categoryId": "chaplain",
-        "name": "",
-        "phone": "",
+        "name": "Chapel",
+        "phone": "623-856-6211",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.luke.af.mil/Home/Helping-Agencies/",
         "notes": ""
       },
       {
         "categoryId": "sarc",
-        "name": "",
-        "phone": "",
+        "name": "SAPR",
+        "phone": "623-856-4878",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.luke.af.mil/Home/Helping-Agencies/",
         "notes": ""
       },
       {
         "categoryId": "security-forces",
-        "name": "",
-        "phone": "",
+        "name": "Law Enforcement Desk",
+        "phone": "623-856-6322",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.luke.af.mil/",
         "notes": ""
       },
       {
@@ -84,12 +84,12 @@
       },
       {
         "categoryId": "finance",
-        "name": "",
-        "phone": "",
+        "name": "Military Pay",
+        "phone": "623-856-7028",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.luke.af.mil/",
         "notes": ""
       },
       {
@@ -130,7 +130,7 @@
         "location": "7219 North Litchfield Road Bldg 1130 2nd Floor Luke AFB, AZ 85309-1529",
         "hours": "",
         "url": "https://installations.militaryonesource.mil/military-installation/luke-afb/military-and-family-support-center/family-advocacy-program",
-        "notes": "Mon - Fri 7:30 a.m. - 4:30 p.m. Sat and Sun - closed Holidays - closed"
+        "notes": "Mon - Fri 7:30 a.m. - 4:30 p.m. Sat and Sun - closed Holidays - closed Base website lists 623-856-3417 for “Family Advocacy” (https://www.luke.af.mil/Home/Helping-Agencies/, read 2026-09-04)."
       },
       {
         "categoryId": "efmp",
@@ -164,22 +164,22 @@
       },
       {
         "categoryId": "military-onesource",
-        "name": "",
-        "phone": "",
+        "name": "Military OneSource",
+        "phone": "800-342-9647",
         "dsn": "",
-        "location": "",
-        "hours": "",
-        "url": "",
-        "notes": ""
+        "location": "Worldwide, by phone and online",
+        "hours": "24 hours a day, 7 days a week",
+        "url": "https://www.militaryonesource.mil/",
+        "notes": "Non-medical counselling, financial counselling, and referral to the right local agency. OCONUS and international dialling options are listed on the site."
       },
       {
         "categoryId": "equal-opportunity",
-        "name": "",
-        "phone": "",
+        "name": "Equal Opportunity",
+        "phone": "623-856-7711",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.luke.af.mil/",
         "notes": ""
       }
     ]

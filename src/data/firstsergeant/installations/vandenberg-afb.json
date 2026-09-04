@@ -1,11 +1,11 @@
 {
   "meta": {
-    "source": "MilitaryINSTALLATIONS — Vandenberg SFB",
-    "version": "1 (retrieved 2026-08-30)",
-    "verifiedDate": "2026-08-30",
+    "source": "MilitaryINSTALLATIONS — Vandenberg SFB; www.vandenberg.spaceforce.mil",
+    "version": "2 (MilitaryINSTALLATIONS retrieved 2026-08-30, base website read 2026-09-04)",
+    "verifiedDate": "2026-09-04",
     "sourceUrl": "https://installations.militaryonesource.mil/military-installation/vandenberg-afb",
     "status": "verified",
-    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+    "notes": "Two sources, kept apart. The programme contacts (medical, family support, legal, housing, family advocacy, EFMP, child care, emergency relief) were imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. The agencies Military OneSource does not publish per installation were filled by scripts/import-base-directories.mjs from https://www.vandenberg.spaceforce.mil/, and Military OneSource itself is copied from national.json. Every contact carries the URL of the page it was read from; nothing here was typed in, inferred, or generated. Where both sources published a number the MilitaryINSTALLATIONS value stands and the base site’s is recorded in that contact’s notes rather than discarded. Still empty here, because no source read published one: command-post, mental-health, chaplain, sarc. Re-run either importer to refresh; the diff is the change."
   },
   "data": {
     "id": "vandenberg-afb",
@@ -54,12 +54,12 @@
       },
       {
         "categoryId": "security-forces",
-        "name": "",
-        "phone": "",
+        "name": "Law Enforcement Desk",
+        "phone": "805-606-3911",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.vandenberg.spaceforce.mil/Contact-Us/Commanders-Action-Line/",
         "notes": ""
       },
       {
@@ -84,12 +84,12 @@
       },
       {
         "categoryId": "finance",
-        "name": "",
-        "phone": "",
+        "name": "Finance",
+        "phone": "805-606-4606",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.vandenberg.spaceforce.mil/Contact-Us/Commanders-Action-Line/",
         "notes": ""
       },
       {
@@ -114,12 +114,12 @@
       },
       {
         "categoryId": "mpf",
-        "name": "",
-        "phone": "",
+        "name": "MPF",
+        "phone": "805-606-7499",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.vandenberg.spaceforce.mil/Contact-Us/Commanders-Action-Line/",
         "notes": ""
       },
       {
@@ -160,26 +160,26 @@
         "location": "706 Washington Ave Bldg 10122 Vandenberg AFB, CA 93437-6223",
         "hours": "",
         "url": "https://installations.militaryonesource.mil/military-installation/vandenberg-afb/military-and-family-support-center/financial-assistance",
-        "notes": "Walk-in Hours: Mon - Fri 7:30 a.m. - 16:30 p.m. Sat and Sun - closed"
+        "notes": "Walk-in Hours: Mon - Fri 7:30 a.m. - 16:30 p.m. Sat and Sun - closed Base website lists 703-972-2650 for “Air Force Aid Society’s Falcon Loan- http://www.afas.org/falcon-loan” (https://www.vandenberg.spaceforce.mil/About-Us/Resources/, read 2026-09-04)."
       },
       {
         "categoryId": "military-onesource",
-        "name": "",
-        "phone": "",
+        "name": "Military OneSource",
+        "phone": "800-342-9647",
         "dsn": "",
-        "location": "",
-        "hours": "",
-        "url": "",
-        "notes": ""
+        "location": "Worldwide, by phone and online",
+        "hours": "24 hours a day, 7 days a week",
+        "url": "https://www.militaryonesource.mil/",
+        "notes": "Non-medical counselling, financial counselling, and referral to the right local agency. OCONUS and international dialling options are listed on the site."
       },
       {
         "categoryId": "equal-opportunity",
-        "name": "",
-        "phone": "",
+        "name": "Equal Opportunity",
+        "phone": "805-606-0370",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.vandenberg.spaceforce.mil/Contact-Us/Commanders-Action-Line/",
         "notes": ""
       }
     ]

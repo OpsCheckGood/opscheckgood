@@ -1,11 +1,11 @@
 {
   "meta": {
-    "source": "MilitaryINSTALLATIONS — Keesler AFB",
-    "version": "1 (retrieved 2026-08-30)",
-    "verifiedDate": "2026-08-30",
+    "source": "MilitaryINSTALLATIONS — Keesler AFB; www.keesler.af.mil",
+    "version": "2 (MilitaryINSTALLATIONS retrieved 2026-08-30, base website read 2026-09-04)",
+    "verifiedDate": "2026-09-04",
     "sourceUrl": "https://installations.militaryonesource.mil/military-installation/keesler-afb",
     "status": "verified",
-    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+    "notes": "Two sources, kept apart. The programme contacts (medical, family support, legal, housing, family advocacy, EFMP, child care, emergency relief) were imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. The agencies Military OneSource does not publish per installation were filled by scripts/import-base-directories.mjs from https://www.keesler.af.mil/, and Military OneSource itself is copied from national.json. Every contact carries the URL of the page it was read from; nothing here was typed in, inferred, or generated. Where both sources published a number the MilitaryINSTALLATIONS value stands and the base site’s is recorded in that contact’s notes rather than discarded. Still empty here, because no source read published one: sarc. Re-run either importer to refresh; the diff is the change."
   },
   "data": {
     "id": "keesler-afb",
@@ -14,32 +14,32 @@
     "contacts": [
       {
         "categoryId": "command-post",
-        "name": "",
-        "phone": "",
+        "name": "Command Post",
+        "phone": "228-377-4330",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.keesler.af.mil/Directory/",
         "notes": ""
       },
       {
         "categoryId": "mental-health",
-        "name": "",
-        "phone": "",
+        "name": "Mental Health",
+        "phone": "228-376-0385",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.keesler.af.mil/Directory/",
         "notes": ""
       },
       {
         "categoryId": "chaplain",
-        "name": "",
-        "phone": "",
+        "name": "Chapel (Larcher)",
+        "phone": "228-377-4859",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.keesler.af.mil/Directory/",
         "notes": ""
       },
       {
@@ -54,12 +54,12 @@
       },
       {
         "categoryId": "security-forces",
-        "name": "",
-        "phone": "",
+        "name": "Security Forces (Front Desk)",
+        "phone": "228-377-3040",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.keesler.af.mil/Directory/",
         "notes": ""
       },
       {
@@ -70,7 +70,7 @@
         "location": "301 Fisher Street Keesler AFB, MS 39534",
         "hours": "",
         "url": "https://installations.militaryonesource.mil/military-installation/keesler-afb/health/health-care",
-        "notes": "Mon - Fri Active Duty 5:00 am – 6:00 pm Retirees/ Spouses 6:00 am – 6:00 pm"
+        "notes": "Mon - Fri Active Duty 5:00 am – 6:00 pm Retirees/ Spouses 6:00 am – 6:00 pm Base website lists 228-376-2550 for “81st Medical Group” (https://www.keesler.af.mil/Directory/, read 2026-09-04)."
       },
       {
         "categoryId": "mfrc",
@@ -84,12 +84,12 @@
       },
       {
         "categoryId": "finance",
-        "name": "",
-        "phone": "",
+        "name": "Finance (NAF)",
+        "phone": "228-376-8191",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.keesler.af.mil/Directory/",
         "notes": ""
       },
       {
@@ -114,12 +114,12 @@
       },
       {
         "categoryId": "mpf",
-        "name": "",
-        "phone": "",
+        "name": "Customer Service MPF",
+        "phone": "228-376-8347",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.keesler.af.mil/Directory/",
         "notes": ""
       },
       {
@@ -140,7 +140,7 @@
         "location": "500 Fisher Street, Room 110 81 MSS/DPF Keesler AFB, MS 39534",
         "hours": "",
         "url": "https://installations.militaryonesource.mil/military-installation/keesler-afb/exceptional-family-member-program/exceptional-family-member-program",
-        "notes": "Mon - Thu 8:00 a.m. - 4:00 p.m. Fri 8:00 a.m. - 3:00 p.m. Sat and Sun - closed"
+        "notes": "Mon - Thu 8:00 a.m. - 4:00 p.m. Fri 8:00 a.m. - 3:00 p.m. Sat and Sun - closed Base website lists 228-376-4056 for “Exceptional Family Member Program” (https://www.keesler.af.mil/Directory/, read 2026-09-04)."
       },
       {
         "categoryId": "childcare",
@@ -150,7 +150,7 @@
         "location": "604 J Street Keesler AFB, MS 39534",
         "hours": "",
         "url": "https://installations.militaryonesource.mil/military-installation/keesler-afb/child-and-youth-services/child-care",
-        "notes": "Mon – Fri 6:00 a.m. – 5:30 p.m. Sat, Sun & Holidays - closed"
+        "notes": "Mon – Fri 6:00 a.m. – 5:30 p.m. Sat, Sun & Holidays - closed Base website lists 228-377-5935 for “Family Child Care” (https://www.keesler.af.mil/Directory/, read 2026-09-04)."
       },
       {
         "categoryId": "emergency-relief",
@@ -164,22 +164,22 @@
       },
       {
         "categoryId": "military-onesource",
-        "name": "",
-        "phone": "",
+        "name": "Military OneSource",
+        "phone": "800-342-9647",
         "dsn": "",
-        "location": "",
-        "hours": "",
-        "url": "",
-        "notes": ""
+        "location": "Worldwide, by phone and online",
+        "hours": "24 hours a day, 7 days a week",
+        "url": "https://www.militaryonesource.mil/",
+        "notes": "Non-medical counselling, financial counselling, and referral to the right local agency. OCONUS and international dialling options are listed on the site."
       },
       {
         "categoryId": "equal-opportunity",
-        "name": "",
-        "phone": "",
+        "name": "Equal Opportunity (EO)",
+        "phone": "228-377-2975",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.keesler.af.mil/Directory/",
         "notes": ""
       }
     ]

@@ -1,0 +1,61 @@
+<!--
+  A stand-in for an installation's own A-Z phone directory.
+
+  Written to mirror the markup those pages actually use (DNN, one <p> per
+  entry, colour spans everywhere) and to carry the awkward cases the importer
+  has to survive: a number split across two spans, a tel: href that disagrees
+  with the text a human reads, two agencies sharing one line, and labels that
+  look like a helping agency but are not one.
+-->
+<html>
+  <head><title>Example Air Force Base &gt; Contact Us</title></head>
+  <body>
+    <script>var phone = "555-867-5309"; // must never be read as a contact</script>
+    <style>.card { width: 530-634-2941; }</style>
+    <nav>
+      <ul>
+        <li><a href="/Contact-Us/Directory/">Directory</a></li>
+        <li><a href="/Contact-Us/">Contact Us</a></li>
+        <li><a href="/Portals/1/documents/Telephone-Directory.pdf">Phone Book</a></li>
+        <li><a href="/News/Article-Display/Article/1234/new-phone-numbers/">New Phone Numbers</a></li>
+        <li><a href="https://www.example-other.af.mil/Contact-Us/">Directory</a></li>
+        <li><a href="/Units/Mission-Partners/Defense-Logistics-Agency/">Defense Logistics Agency</a></li>
+        <li><a href="/About-Us/History/">History</a></li>
+        <li><a href="http://www.example.af.mil/Contact-Us/Old/">Directory</a></li>
+      </ul>
+    </nav>
+
+    <h2>C</h2>
+    <p><span style="color:#000000;">Command Post</span> <a href="tel:(505) 555-5700">(505) 555-5700</a></p>
+    <p><span style="color:#000000;">Chapels Foothills Chapel:&nbsp;</span><a href="tel:(505) 555-4701"><span style="color:#000000;">(505) 555-4701</span></a></p>
+    <p><span style="color:#000000;">Chapel:&nbsp;</span><a href="tel:(505) 555-4700"><span style="color:#000000;">(505) 555-4700</span></a></p>
+    <p><span style="color:#000000;">Civilian Personnel Office:&nbsp;</span>(505) 555-2255</p>
+
+    <h2>E</h2>
+    <p>Equal Opportunity Office (Military and Civilian): <a href="http://(505) 555-2077">(505) 555-2077/2069</a></p>
+
+    <h2>F</h2>
+    <p>Family Advocacy/Mental Health: (505) 555-3420</p>
+    <p><span>Finance (Military/Travel Pay):&nbsp;</span><span>(505) 555-22</span><span>18</span></p>
+
+    <h2>M</h2>
+    <p>Military Personnel Flight: (505) 555-3187, DSN 555-3187</p>
+
+    <h2>S</h2>
+    <p>Security Forces Visitor Center: (505) 555-2100</p>
+    <p>Security Forces Squadron:&nbsp; (505) 555-2131</p>
+    <p>Sexual Assault Response Coordinator (SAPR) Hotline&nbsp;: (505) 555-4000</p>
+
+    <h2>Notes</h2>
+    <p>Base Operator: (505) 555-3262</p>
+    <p>(505) 555-2941 (Medical Group Appointment Line)</p>
+    <p>The exchange moved to Building 1206 in 2019 and the annex to 2400.</p>
+    <p>For emergencies after duty hours, contact the Command Post at (505) 555-5701.</p>
+    <p>To report the death of a retired member, contact the Defense Finance and Accounting Service (DFAS) at (800) 321-1080.</p>
+    <p>Legal Assistance appointments, call: (505) 555-3251</p>
+    <p>TRICARE Nurse Advice Line: (800) 874-2273</p>
+    <p>Contact the Command Post at Comm 0505-555-7000, DSN 315-555-7000.</p>
+    <p>3&#65039;&#8419; Call the desk and pass on the information (505) 555-2200</p>
+    <p>Deployment brief slots are 0730-1630 daily.</p>
+  </body>
+</html>

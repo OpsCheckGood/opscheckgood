@@ -343,6 +343,44 @@ do.
 Adding a new form is a data edit plus one line in `src/lib/data/forms.ts`. If it ever
 requires changing a component, the abstraction is wrong.
 
+### To refresh the installation directories
+
+The First Sergeant toolkit's per-installation helping-agency numbers come from two
+sources, and both are read by script at build time. Nothing is fetched at runtime.
+
+```
+node scripts/import-installations.mjs --air-force     # MilitaryINSTALLATIONS
+node scripts/import-base-directories.mjs --discover   # resolve each base's own site
+node scripts/import-base-directories.mjs              # read those sites, fill the gaps
+```
+
+`import-installations.mjs` reads the official MilitaryINSTALLATIONS programme pages —
+medical, family support, legal, housing, family advocacy, EFMP, child care, emergency
+relief. Which programme page carries which agency lives in `categories.json` as
+`mosPages`. Which installations are Air Force is read off each landing page's own
+branch-of-service banner rather than guessed from its name.
+
+Military OneSource publishes no page at all for the command post, mental health, the
+chaplain, the SARC, security forces, finance, the MPF or EO. Those come from each
+installation's own `*.af.mil` site instead. `import-base-directories.mjs` resolves that
+site (a hostname guessed from the slug, then kept only if the page it serves names the
+installation back — the title it read is recorded in `base-sites.json` as the evidence),
+reads its directory pages, and fills **only** the fields MilitaryINSTALLATIONS left
+empty. Where both sources publish a number, the MilitaryINSTALLATIONS value stands and
+the base site's is written into that contact's notes, so the disagreement is visible
+rather than resolved behind your back.
+
+Which label on a base page means which agency is data, not code: `siteLabels` and
+`siteExcludeLabels` in `categories.json`. The matcher is deliberately timid — a label it
+does not recognise is dropped, and a label two agencies both claim ("Family
+Advocacy/Mental Health") is dropped as ambiguous. An empty field is a correct answer;
+a plausible invented one is not.
+
+`*.af.mil` returns 403 to a plain client, so pages are fetched through a text-extraction
+proxy (`--proxy`, default `https://r.jina.ai/`) and cached to disk, which is what makes
+the run resumable. That proxy is a build-time convenience; the shipped site has no
+network dependency of any kind.
+
 ### To populate abbreviations
 
 `[{"phrase": "United States Air Force Academy", "abbr": "USAFA"}]`. File order does not

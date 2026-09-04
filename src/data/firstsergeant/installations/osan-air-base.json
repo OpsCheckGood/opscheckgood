@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "source": "MilitaryINSTALLATIONS — Osan Air Base; www.osan.af.mil",
+    "version": "2 (MilitaryINSTALLATIONS retrieved 2026-09-04, base website read 2026-09-04)",
+    "verifiedDate": "2026-09-04",
+    "sourceUrl": "https://installations.militaryonesource.mil/military-installation/osan-air-base",
+    "status": "verified",
+    "notes": "Two sources, kept apart. The programme contacts (medical, family support, legal, housing, family advocacy, EFMP, child care, emergency relief) were imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. The agencies Military OneSource does not publish per installation were filled by scripts/import-base-directories.mjs from https://www.osan.af.mil/, and Military OneSource itself is copied from national.json. Every contact carries the URL of the page it was read from; nothing here was typed in, inferred, or generated. Where both sources published a number the MilitaryINSTALLATIONS value stands and the base site’s is recorded in that contact’s notes rather than discarded. Still empty here, because no source read published one: command-post, mental-health, chaplain, sarc, security-forces, medical, finance, legal, mpf, family-advocacy, equal-opportunity. Re-run either importer to refresh; the diff is the change."
+  },
+  "data": {
+    "id": "osan-air-base",
+    "label": "Osan Air Base",
+    "example": false,
+    "contacts": [
+      {
+        "categoryId": "command-post",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "mental-health",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "chaplain",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "sarc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "security-forces",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "medical",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "mfrc",
+        "name": "Military and Family Readiness Center",
+        "phone": "011-82-505-784-5440",
+        "dsn": "315-784-5440",
+        "location": "Osan AB Pyeongtaek City South Korea 96278-2102",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/osan-air-base/military-and-family-support-center/military-and-family-support-center",
+        "notes": "Mon - Fri 8:00 a.m. - 4:00 p.m. Sat and Sun - closed All U.S. Holidays and Wing Training Days - closed"
+      },
+      {
+        "categoryId": "finance",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "legal",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "housing",
+        "name": "Housing Management Office",
+        "phone": "011-82-505-784-1840",
+        "dsn": "315-784-1840",
+        "location": "Building 600, Room 101 (first floor) Osan AB Pyeongtaek South Korea 459-122",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/osan-air-base/housing/housing",
+        "notes": "Mon, Tues, Thurs, and Fri: 08:00 - 3:30 p.m. Weds 8:00 a.m. - 3:00 p.m. closed 1st & 3rd Thurs at 1200 (training) Sat & Sun Closed All U.S. and Korean Holidays - closed"
+      },
+      {
+        "categoryId": "mpf",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "family-advocacy",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "efmp",
+        "name": "Military and Family Readiness Center – EFMP Family Support",
+        "phone": "011-82-505-783-4636",
+        "dsn": "315-783-4636",
+        "location": "Osan AB Pyeongtaek City South Korea 459-122",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/osan-air-base/exceptional-family-member-program/exceptional-family-member-program",
+        "notes": "Mon - Fri 8:00 a.m. - 4:00 p.m. Sat and Sun - closed All U.S. Holidays and Wing Training Days - closed"
+      },
+      {
+        "categoryId": "childcare",
+        "name": "Child Development Center",
+        "phone": "011-82-505-784-4966",
+        "dsn": "315-784-4966",
+        "location": "Osan AB Bldg 213 Pyeongtaek South Korea 96278",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/osan-air-base/child-and-youth-services/child-care",
+        "notes": "Mon - Fri 7:00 a.m. - 6:00 p.m. Sat and Sun - closed Closed on all U.S. Holidays, PACAF Family Days and Wing Training Days."
+      },
+      {
+        "categoryId": "emergency-relief",
+        "name": "Military and Family Readiness Center",
+        "phone": "011-82-505-784-5440",
+        "dsn": "315-784-5440",
+        "location": "Osan AB Pyeongtaek City South Korea 96278-2102",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/osan-air-base/military-and-family-support-center/financial-assistance",
+        "notes": "Mon - Fri 8:00 a.m. - 4:00 p.m. Sat and Sun - closed All U.S. Holidays and Wing Training Days - closed"
+      },
+      {
+        "categoryId": "military-onesource",
+        "name": "Military OneSource",
+        "phone": "800-342-9647",
+        "dsn": "",
+        "location": "Worldwide, by phone and online",
+        "hours": "24 hours a day, 7 days a week",
+        "url": "https://www.militaryonesource.mil/",
+        "notes": "Non-medical counselling, financial counselling, and referral to the right local agency. OCONUS and international dialling options are listed on the site."
+      },
+      {
+        "categoryId": "equal-opportunity",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      }
+    ]
+  }
+}

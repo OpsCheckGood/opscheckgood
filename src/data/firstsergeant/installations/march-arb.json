@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "source": "MilitaryINSTALLATIONS — March ARB",
+    "version": "2 (MilitaryINSTALLATIONS retrieved 2026-09-04, Military OneSource read 2026-09-04)",
+    "verifiedDate": "2026-09-04",
+    "sourceUrl": "https://installations.militaryonesource.mil/military-installation/march-arb",
+    "status": "verified",
+    "notes": "Two sources, kept apart. The programme contacts (medical, family support, legal, housing, family advocacy, EFMP, child care, emergency relief) were imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. The agencies Military OneSource does not publish per installation were left empty — no official installation website was resolved for it, and Military OneSource itself is copied from national.json. Every contact carries the URL of the page it was read from; nothing here was typed in, inferred, or generated. Where both sources published a number the MilitaryINSTALLATIONS value stands and the base site’s is recorded in that contact’s notes rather than discarded. Still empty here, because no source read published one: command-post, mental-health, chaplain, sarc, security-forces, medical, finance, housing, mpf, family-advocacy, efmp, childcare, equal-opportunity. Re-run either importer to refresh; the diff is the change."
+  },
+  "data": {
+    "id": "march-arb",
+    "label": "March ARB",
+    "example": false,
+    "contacts": [
+      {
+        "categoryId": "command-post",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "mental-health",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "chaplain",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "sarc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "security-forces",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "medical",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "mfrc",
+        "name": "Military and Family Readiness Office",
+        "phone": "951-655-5350",
+        "dsn": "312-447-5350",
+        "location": "1351 Graeber Street Bldg. 2314 March ARB, CA 92518",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/march-arb/military-and-family-support-center/military-and-family-support-center",
+        "notes": "Mon-Fri.: 8:00 a.m. – 4:00 p.m. Sat and Sun of UTA weekends 7:30 a.m. – 4:00 p.m. All other Sat, Sun and holidays – closed Commander's Key Support Liaison Program 452 AMW Key Spouse Mentor Mon-Fri Daytime (and by request), UTA Weekends, Daytime (and by request) For information on the Commander's Key Support Liaison Program, call the M&FRO at 951-655-5350/5322."
+      },
+      {
+        "categoryId": "finance",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "legal",
+        "name": "Office of the Staff Judge Advocate - 951 RSPTS/JA (weekdays) and 452 AMW/JA (on UTA Weekends)",
+        "phone": "951-655-4479",
+        "dsn": "312-447-4479",
+        "location": "2145 Graeber Street Building 470 Room 209 March ARB, CA 92518",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/march-arb/legal/legal-assistance",
+        "notes": "Mon to Fri: 8:00 a.m. to 4:30 p.m. Legal Assistance (walk-ins for Notary and POA): Tuesdays and Thursdays from 8:00 a.m. to 4:00 p.m. Appointments available on Saturdays and Sundays of UTA Weekends"
+      },
+      {
+        "categoryId": "housing",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "mpf",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "family-advocacy",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "efmp",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "childcare",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "emergency-relief",
+        "name": "163 ATKW Guard Military & Family Readiness Office",
+        "phone": "951-419-1566",
+        "dsn": "312-447-2545",
+        "location": "1560 Graeber Street Bldg. 2273 163 FSS/FSS March ARB, CA 92518",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/march-arb/military-and-family-support-center/financial-assistance",
+        "notes": "Mondays, Tuesdays, Thursdays and Fridays: 7:30 a.m. – 4:30 p.m. Wednesdays: Closed from 0730 to 1300 hours Sat of UTA weekends 7:30 a.m. – 3:30 p.m. Sun of UTA weekends 7:30 a.m. – 3:00 p.m. All other Sat, Sun and holidays – closed"
+      },
+      {
+        "categoryId": "military-onesource",
+        "name": "Military OneSource",
+        "phone": "800-342-9647",
+        "dsn": "",
+        "location": "Worldwide, by phone and online",
+        "hours": "24 hours a day, 7 days a week",
+        "url": "https://www.militaryonesource.mil/",
+        "notes": "Non-medical counselling, financial counselling, and referral to the right local agency. OCONUS and international dialling options are listed on the site."
+      },
+      {
+        "categoryId": "equal-opportunity",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      }
+    ]
+  }
+}

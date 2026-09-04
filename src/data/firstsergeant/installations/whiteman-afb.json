@@ -1,11 +1,11 @@
 {
   "meta": {
-    "source": "MilitaryINSTALLATIONS — Whiteman AFB",
-    "version": "1 (retrieved 2026-08-30)",
-    "verifiedDate": "2026-08-30",
+    "source": "MilitaryINSTALLATIONS — Whiteman AFB; www.whiteman.af.mil",
+    "version": "2 (MilitaryINSTALLATIONS retrieved 2026-08-30, base website read 2026-09-04)",
+    "verifiedDate": "2026-09-04",
     "sourceUrl": "https://installations.militaryonesource.mil/military-installation/whiteman-afb",
     "status": "verified",
-    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+    "notes": "Two sources, kept apart. The programme contacts (medical, family support, legal, housing, family advocacy, EFMP, child care, emergency relief) were imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. The agencies Military OneSource does not publish per installation were filled by scripts/import-base-directories.mjs from https://www.whiteman.af.mil/, and Military OneSource itself is copied from national.json. Every contact carries the URL of the page it was read from; nothing here was typed in, inferred, or generated. Where both sources published a number the MilitaryINSTALLATIONS value stands and the base site’s is recorded in that contact’s notes rather than discarded. Still empty here, because no source read published one: command-post, mental-health, chaplain, security-forces, medical, finance, mpf, childcare, equal-opportunity. Re-run either importer to refresh; the diff is the change."
   },
   "data": {
     "id": "whiteman-afb",
@@ -44,12 +44,12 @@
       },
       {
         "categoryId": "sarc",
-        "name": "",
-        "phone": "",
+        "name": "SAPR Hotline, 24/7",
+        "phone": "660-687-7272",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.whiteman.af.mil/Connect/Striker-Strong-Resource-Directory/",
         "notes": ""
       },
       {
@@ -164,13 +164,13 @@
       },
       {
         "categoryId": "military-onesource",
-        "name": "",
-        "phone": "",
+        "name": "Military OneSource",
+        "phone": "800-342-9647",
         "dsn": "",
-        "location": "",
-        "hours": "",
-        "url": "",
-        "notes": ""
+        "location": "Worldwide, by phone and online",
+        "hours": "24 hours a day, 7 days a week",
+        "url": "https://www.militaryonesource.mil/",
+        "notes": "Non-medical counselling, financial counselling, and referral to the right local agency. OCONUS and international dialling options are listed on the site."
       },
       {
         "categoryId": "equal-opportunity",

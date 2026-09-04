@@ -1,0 +1,717 @@
+{
+  "meta": {
+    "source": "Official installation websites (*.af.mil, *.jb.mil)",
+    "version": "9 (retrieved 2026-09-04)",
+    "verifiedDate": "2026-09-04",
+    "sourceUrl": "https://www.af.mil/",
+    "status": "verified",
+    "notes": "Where scripts/import-base-directories.mjs goes to find the agencies MilitaryINSTALLATIONS does not publish per installation. `sites` is written by `--discover`: a hostname is guessed from the installation's slug, fetched, and kept only if the page it serves names the installation back — `title` is the page title that was read, and is the evidence for the entry. A guessed hostname that fails that check is discarded, so an installation with no entry here simply has no site the importer could confirm; nothing is assumed from the name. `extraHosts` seeds candidates for installations whose site is not derivable from the slug (Davis-Monthan is www.dm.af.mil, Wright-Patterson is www.wpafb.af.mil). Those are candidates only: they go through the same title check as every other guess. `pageHints` are matched against link text to decide which of a site's pages are worth reading. Widening either list is a data edit here — the importer names no host and no page itself."
+  },
+  "data": {
+    "pageHints": [
+      "\\bdirector(y|ies)\\b",
+      "\\bphone\\b",
+      "\\bphones\\b",
+      "\\bphone book\\b",
+      "\\btelephone\\b",
+      "\\bcontact us\\b",
+      "\\bcontacts\\b",
+      "\\bcontact\\b",
+      "\\bagencies\\b",
+      "helping agenc",
+      "\\bkey (phone )?numbers\\b",
+      "\\bimportant numbers\\b",
+      "\\bbase operator\\b",
+      "\\bnewcomers?\\b",
+      "\\bbase information\\b",
+      "\\bresources\\b"
+    ],
+    "extraHosts": {
+      "buckley-afb": [
+        "www.buckley.spaceforce.mil"
+      ],
+      "davis-monthan-afb": [
+        "www.dm.af.mil"
+      ],
+      "f-e-warren-afb": [
+        "www.warren.af.mil"
+      ],
+      "joint-base-anacostia-bolling": [
+        "www.jbab.jb.mil",
+        "www.bolling.af.mil"
+      ],
+      "joint-base-andrews-naval-air-facility-washington": [
+        "www.jba.af.mil"
+      ],
+      "joint-base-charleston": [
+        "www.jbcharleston.jb.mil"
+      ],
+      "joint-base-elmendorf-richardson-jber": [
+        "www.jber.jb.mil"
+      ],
+      "joint-base-langley-eustis": [
+        "www.jble.af.mil"
+      ],
+      "joint-base-lewis-mcchord": [
+        "www.mcchord.af.mil"
+      ],
+      "joint-base-mcguire-dix-lakehurst": [
+        "www.jbmdl.jb.mil"
+      ],
+      "joint-base-pearl-harbor-hickam": [
+        "www.hickam.af.mil"
+      ],
+      "joint-base-san-antonio-lackland-randolph-sam-houston": [
+        "www.jbsa.mil"
+      ],
+      "joint-region-marianas-andersen-afb": [
+        "www.andersen.af.mil"
+      ],
+      "los-angeles-afb": [
+        "www.losangeles.spaceforce.mil"
+      ],
+      "maxwell-afb-and-gunter-annex": [
+        "www.maxwell.af.mil"
+      ],
+      "moron-ab": [
+        "www.moron.af.mil"
+      ],
+      "patrick-afb": [
+        "www.patrick.spaceforce.mil"
+      ],
+      "pentagon-air-force": [
+        "www.pentagon.af.mil"
+      ],
+      "peterson-afb": [
+        "www.peterson.spaceforce.mil"
+      ],
+      "raf-alconbury-raf-molesworth": [
+        "www.501csw.usafe.af.mil"
+      ],
+      "raf-croughton-raf-fairford": [
+        "www.fairford.af.mil",
+        "www.501csw.usafe.af.mil"
+      ],
+      "raf-lakenheath": [
+        "www.lakenheath.af.mil"
+      ],
+      "raf-mildenhall": [
+        "www.mildenhall.af.mil"
+      ],
+      "schriever-afb": [
+        "www.petersonschriever.spaceforce.mil"
+      ],
+      "usaf-academy": [
+        "www.usafa.af.mil"
+      ],
+      "vandenberg-afb": [
+        "www.vandenberg.spaceforce.mil"
+      ],
+      "wright-patterson-afb": [
+        "www.wpafb.af.mil"
+      ]
+    },
+    "sites": [
+      {
+        "id": "altus-afb",
+        "label": "Altus AFB",
+        "url": "https://www.altus.af.mil/",
+        "title": "Altus Air Force Base",
+        "evidence": "Altus Air Force Base The Home page for Altus Air Force Base, home of the 97th Air Mobility Wing. 97th Air Mobility Wing, Altus Air Force Base, Oklahoma, Air Force, C-17, KC-135, KC-46, Globemaster III, Stratotanker, Pegasus, Combat Airpower, Air Refueling, Transport, Cargo Aircraft, aerial refueling, boom operator, loadmaster, pilots.",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "arnold-afb",
+        "label": "Arnold AFB",
+        "url": "https://www.arnold.af.mil/",
+        "title": "Home page of Arnold Air Force Base",
+        "evidence": "Home page of Arnold Air Force Base The official website for the Arnold Air Force Base Arnold",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "aviano-air-base",
+        "label": "Aviano Air Base",
+        "url": "https://www.aviano.af.mil/",
+        "title": "Aviano Air Base Home Page",
+        "evidence": "Aviano Air Base Home Page The official website for the Aviano Air Base Aviano",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "barksdale-air-force-base",
+        "label": "Barksdale Air Force Base",
+        "url": "https://www.barksdale.af.mil/",
+        "title": "Barksdale Air Force Base > Home",
+        "evidence": "Barksdale Air Force Base > Home The official website for Barksdale Air Force Base air force, af, barksdale, usaf, base, BAFB",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "beale-afb",
+        "label": "Beale AFB",
+        "url": "https://www.beale.af.mil/",
+        "title": "Beale Air Force Base > Home",
+        "evidence": "Beale Air Force Base > Home The Official Website of Beale AF Base Beale AFB, BAFB, USAF, Air Force, 9th RW",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "buckley-afb",
+        "label": "Buckley SFB",
+        "url": "https://www.buckley.spaceforce.mil/",
+        "title": "Buckley Space Force Base > HOME",
+        "evidence": "Buckley Space Force Base > HOME The official website for the Buckley Space Force Base Buckley SFB, Buckley Garrison, Space Delta 4 USSF, Cavalier, missile warning system, Space Force, United States Space Force Guardians of the North: Inside Cavalier Space Force Station",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "cannon-afb",
+        "label": "Cannon AFB",
+        "url": "https://www.cannon.af.mil/",
+        "title": "Home",
+        "evidence": "Home The official website for Cannon Air Force Base, New Mexico. The home of the Steadfast Line. 27 SOW, Cannon, CAFB, Cannon AFB, AFSOC, Air Commandos, New Mexcio,",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "columbus-afb",
+        "label": "Columbus AFB",
+        "url": "https://www.columbus.af.mil/",
+        "title": "Columbus Air Force Base 14th Flying Training Wing Home",
+        "evidence": "Columbus Air Force Base 14th Flying Training Wing Home Columbus Air Force Base 14th Flying Training Wing Home Columbus, Air, Force, Base, 14th, Flying, Training, Wing, Home",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "creech-afb",
+        "label": "Creech AFB",
+        "url": "https://www.creech.af.mil/",
+        "title": "Creech Air Force Base > Home",
+        "evidence": "Creech Air Force Base > Home The Official Website of Creech Air Force Base Creech AFB, USAF, 432d Wing, 432d Air Expeditionary Wing",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "davis-monthan-afb",
+        "label": "Davis-Monthan AFB",
+        "url": "https://www.dm.af.mil/",
+        "title": "Davis-Monthan Air Force Base > Home",
+        "evidence": "Davis-Monthan Air Force Base > Home The official website of Davis-Monthan Air Force Base. As a large premier base, DM has won the Commanders-in-Chief Installation Excellence Award in 2018 and 2012. After being named the \"Best Base in the Air Force\", DM continued to grow the partnership between the base and the city of Tucson. With 11,000 Airmen, 46,000 personnel and full Combat Search and Rescue a",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "dover-afb",
+        "label": "Dover AFB",
+        "url": "https://www.dover.af.mil/",
+        "title": "Dover AFB home",
+        "evidence": "Dover AFB home Dover AFB is home to the 436th Airlift Wing. Dover Air Force Base, Dover AFB, 436th Airlift Wing, 436 AW, Air Mobility Command, AMC, rapid global mobility, global airlift, cargo, C-5, C-17, Galaxy, Globrmaster",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "dyess-afb",
+        "label": "Dyess AFB",
+        "url": "https://www.dyess.af.mil/",
+        "title": "Home",
+        "evidence": "Home The official website for Dyess Air Force Base Dyess AFB, 7th Bomb Wing, 317th Airlift Wing",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "edwards-afb",
+        "label": "Edwards AFB",
+        "url": "https://www.edwards.af.mil/",
+        "title": "Edwards Air Force Base - Home",
+        "evidence": "Edwards Air Force Base - Home The official website for the Edwards Air Force Base: The Center of the Aerospace Testing Universe. Find out everything there is to know about Edwards Air Force Base. Edwards AFB, F35, F22, F16, KC130, KC46, KC130, B-1, B-52, B-2, Stealth Bombers, BAF, Benefield Anechoic Facility, For The War Fighter, The Center of the Aerospace Testing Universe",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "eglin-afb",
+        "label": "Eglin AFB",
+        "url": "https://www.eglin.af.mil/",
+        "title": "Eglin Air Force Base > Home",
+        "evidence": "Eglin Air Force Base > Home The official website for the Eglin Air Force Base Eglin AFB",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "eielson-afb",
+        "label": "Eielson AFB",
+        "url": "https://www.eielson.af.mil/",
+        "title": "Eielson Home",
+        "evidence": "Eielson Home The official website of Eielson Air Force Base Eielson AFB, PACAF",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "ellsworth-air-force-base",
+        "label": "Ellsworth Air Force Base",
+        "url": "https://www.ellsworth.af.mil/",
+        "title": "Ellsworth Air Force Base > Home",
+        "evidence": "Ellsworth Air Force Base > Home The official website for the Ellsworth Air Force Base Ellsworth AFB",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "f-e-warren-afb",
+        "label": "F. E. Warren AFB",
+        "url": "https://www.warren.af.mil/",
+        "title": "Home",
+        "evidence": "Home Official Home Page of F. E. Warren Air Force Base, Wyoming. F.E Warren Air Force Base, F.E. Warren,",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "fairchild-afb",
+        "label": "Fairchild AFB",
+        "url": "https://www.fairchild.af.mil/",
+        "title": "Home page of Fairchild Air Force Base",
+        "evidence": "Home page of Fairchild Air Force Base The official website for the Fairchild Air Force Base Fairchild AFB, AMC",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "goodfellow-afb",
+        "label": "Goodfellow AFB",
+        "url": "https://www.goodfellow.af.mil/",
+        "title": "Goodfellow Air Force Base",
+        "evidence": "Goodfellow Air Force Base The official website of Goodfellow Air Force Base, San Angelo, Texas, home of the 17th Training Wing (17TRW) goodfellow air force base, goodfellow afb, goodfellow, 17th training wing, 17trw, GAFB",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "grand-forks-afb",
+        "label": "Grand Forks AFB",
+        "url": "https://www.grandforks.af.mil/",
+        "title": "Grand Forks Air Force Base > Home",
+        "evidence": "Grand Forks Air Force Base > Home The official website for Grand Forks Grand Forks",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "hanscom-afb",
+        "label": "Hanscom AFB",
+        "url": "https://www.hanscom.af.mil/",
+        "title": "Home page of Hanscom Air Force Base",
+        "evidence": "Home page of Hanscom Air Force Base The official website for the Hanscom Air Force Base Hanscom AFB",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "hill-afb",
+        "label": "Hill AFB",
+        "url": "https://www.hill.af.mil/",
+        "title": "Home page of Hill Air Force Base",
+        "evidence": "Home page of Hill Air Force Base The official website for the Hill Air Force Base Hill AFB",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "holloman-afb",
+        "label": "Holloman AFB",
+        "url": "https://www.holloman.af.mil/",
+        "title": "Holloman Air Force Base > Home",
+        "evidence": "Holloman Air Force Base > Home The Official Website of Holloman Air Force Base Holloman AFB, USAF",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "hurlburt-field",
+        "label": "Hurlburt Field",
+        "url": "https://www.hurlburt.af.mil/",
+        "title": "Hurlburt Field > Home",
+        "evidence": "Hurlburt Field > Home The official website for Hurlburt Field Hurlburt Field, Hurlburt, 1st Special Operations Wing, Air Commandos, 1 SOW",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "incirlik-ab",
+        "label": "Incirlik AB",
+        "url": "https://www.incirlik.af.mil/",
+        "title": "Home page of Incirlik Air Base",
+        "evidence": "Home page of Incirlik Air Base The official website for the Incirlik Air Base Incirlik",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "joint-base-anacostia-bolling",
+        "label": "Joint Base Anacostia-Bolling",
+        "url": "https://www.jbab.jb.mil/",
+        "title": "Joint Base Anacostia-Bolling",
+        "evidence": "Joint Base Anacostia-Bolling Homepage for Joint Base Anacostia-Bolling joint base anacostia-bolling, bolling, jbab, air force district of washington, afdw, 11th wing, 11 wg, 11th wg, The Chiefs Own, anacostia, bolling air force base, Naval support facility anacostia, naval district washington, ndw, bafb",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "joint-base-andrews-naval-air-facility-washington",
+        "label": "Joint Base Andrews-Naval Air Facility Washington",
+        "url": "https://www.jba.af.mil/",
+        "title": "Joint Base Andrews",
+        "evidence": "Joint Base Andrews The official site of Joint Base Andrews JB Andrews, Joint Base Andrews, JBA Joint Base, mission video Joint Base Andrews Mission Video 2023",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "joint-base-charleston",
+        "label": "Joint Base Lindsey Graham",
+        "url": "https://www.jbcharleston.jb.mil/",
+        "title": "Joint Base Charleston",
+        "evidence": "Joint Base Charleston The official site of Joint Base Lindsey Graham Joint Base Lindsey Graham",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "joint-base-elmendorf-richardson-jber",
+        "label": "Joint Base Elmendorf-Richardson (JBER)",
+        "url": "https://www.jber.jb.mil/",
+        "title": "JBER Home",
+        "evidence": "JBER Home The official site for Joint Base Elmendorf-Richardson JB Elmendorf-Richardson, Joint Base Elmendorf-Richardson, Joint Base Elmendorf Richardson, JB Elmendorf Richardson, JBER",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "joint-base-langley-eustis",
+        "label": "Joint Base Langley-Eustis",
+        "url": "https://www.jble.af.mil/",
+        "title": "Joint Base Langley-Eustis",
+        "evidence": "Joint Base Langley-Eustis The official site of Joint Base Langley-Eustis JBLE, JB Langley-Eustis, JB Langley Eustis, Joint Base Langley-Eustis, Joint Base Langley Eustis",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "joint-base-lewis-mcchord",
+        "label": "Joint Base Lewis-McChord",
+        "url": "https://www.mcchord.af.mil/",
+        "title": "Team McChord",
+        "evidence": "Team McChord This is the main page for Team McChord Air Mobility Command 62d Airlift Wing 62d Airlift Wing Hype Video",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "joint-base-mcguire-dix-lakehurst",
+        "label": "Joint Base McGuire-Dix-Lakehurst",
+        "url": "https://www.jbmdl.jb.mil/",
+        "title": "Joint Base McGuire-Dix-Lakehurst",
+        "evidence": "Joint Base McGuire-Dix-Lakehurst The Official site of Joint Base McGuire-Dix-Lakehurst Joint Base McGuire-Dix-Lakehurst, JBMDL, JB McGuire-Dix-Lakehurst, JBMDL, Joint Base McGuire Dix Lakehurst, JB McGuire Dix Lakehurst",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "joint-base-san-antonio-lackland-randolph-sam-houston",
+        "label": "Joint Base San Antonio (Lackland, Randolph, Sam Houston)",
+        "url": "https://www.jbsa.mil/",
+        "title": "Joint Base San Antonio",
+        "evidence": "Joint Base San Antonio Official website of Joint Base San Antonio (JBSA). The Air Force is the lead agency for Joint Base San Antonio, comprising three primary locations at JBSA-Fort Sam Houston, JBSA-Lackland and JBSA-Randolph, plus eight other operating locations and 266 mission partners. joint base san antonio, jbsa, joint base, san antonio, randolph, randolph afb, lackland air force base, fort",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "joint-region-marianas-andersen-afb",
+        "label": "Joint Region Marianas - Andersen AFB",
+        "url": "https://www.andersen.af.mil/",
+        "title": "Andersen Air Force Base, Guam",
+        "evidence": "Andersen Air Force Base, Guam The Home page of Andersen Air Force Base Andersen Air Force Base, Guam",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "kadena-ab",
+        "label": "Kadena AB",
+        "url": "https://www.kadena.af.mil/",
+        "title": "Homepage of Kadena Air Base",
+        "evidence": "Homepage of Kadena Air Base The official site of Kadena Air Base Kadena Air Base, Kadena AB",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "keesler-afb",
+        "label": "Keesler AFB",
+        "url": "https://www.keesler.af.mil/",
+        "title": "Keesler Air Force Base",
+        "evidence": "Keesler Air Force Base Keesler Air Force Base is located within the city limits of Biloxi, Miss., on the Mississippi Gulf Coast. The host unit, the 81st Training Wing, is the electronics training Center of Excellence for the U. S. Air Force. Keesler is also home to 2nd Air Force, 403rd Wing (Hurricane Hunters), Mathies NCO Academy and the 85th Engineering Installation Squadron. Keesler's training ",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "kirtland-air-force-base",
+        "label": "Kirtland Air Force Base",
+        "url": "https://www.kirtland.af.mil/",
+        "title": "Kirtland Air Force Base > Home",
+        "evidence": "Kirtland Air Force Base > Home The official website for the Kirtland Air Force Base Kirtland AFB,",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "kunsan-ab",
+        "label": "Kunsan AB",
+        "url": "https://www.kunsan.af.mil/",
+        "title": "Kunsan Air Base",
+        "evidence": "Kunsan Air Base This is the official site for the Kunsan Air Base. kunsan, air, base, kunsan air base, kunsan ab, south korea, republic of korea, 8th fighter wing, 8 FW",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "laughlin-afb",
+        "label": "Laughlin AFB",
+        "url": "https://www.laughlin.af.mil/",
+        "title": "Home",
+        "evidence": "Home Official website of Laughlin Air Force Base, located in Del Rio, Texas, and under the command of the Air Education and Training Command laughlin air force base, laughlin afb, laughlin, del rio, texas, 47th flying training wing, 47ftw 47 ftw, ftw, flying training wing, aetc, air education and training command",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "little-rock-afb",
+        "label": "Little Rock AFB",
+        "url": "https://www.littlerock.af.mil/",
+        "title": "This is the official home page for LRAFB.",
+        "evidence": "This is the official home page for LRAFB. The official website for Little Rock Air Force Base located in Jacksonville, AR. Little Rock Air Force Base, LRAFB,",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "los-angeles-afb",
+        "label": "Los Angeles SFB",
+        "url": "https://www.losangeles.spaceforce.mil/",
+        "title": "Los Angeles Air Force Base",
+        "evidence": "Los Angeles Air Force Base The official website for Los Angeles Air Force Base Space Base Delta 3, SBD-3, Los Angeles AFB",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "luke-afb",
+        "label": "Luke AFB",
+        "url": "https://www.luke.af.mil/",
+        "title": "Luke AFB Home Page",
+        "evidence": "Luke AFB Home Page The official website of Luke Air Force Base Luke, AFB, Air Force Home of the 56th Fighter Wing",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "macdill-afb",
+        "label": "MacDill AFB",
+        "url": "https://www.macdill.af.mil/",
+        "title": "MacDill Air Force Base > Home",
+        "evidence": "MacDill Air Force Base > Home The official website for the MacDill Air Force Base MacDill, Air Force, Macdill, Airmen, Airman, Military, Tampa Bay, Air Force",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "malmstrom-air-force-base",
+        "label": "Malmstrom Air Force Base",
+        "url": "https://www.malmstrom.af.mil/",
+        "title": "Malmstrom Air Force Base > Units > Home",
+        "evidence": "Malmstrom Air Force Base > Units > Home The official website for the Malmstrom Air Force Base Malmstrom AFB",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "maxwell-afb-and-gunter-annex",
+        "label": "Maxwell AFB and Gunter Annex",
+        "url": "https://www.maxwell.af.mil/",
+        "title": "Maxwell Air Force Base",
+        "evidence": "Maxwell Air Force Base This is the official website of the Maxwell Air Force Base. Maxwell",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "mcconnell-afb",
+        "label": "McConnell AFB",
+        "url": "https://www.mcconnell.af.mil/",
+        "title": "McConnell Air Force Base > Home",
+        "evidence": "McConnell Air Force Base > Home The official website for the McConnell Air Force Base, located in Wichita, Kansas. McConnell AFB",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "minot-afb",
+        "label": "Minot AFB",
+        "url": "https://www.minot.af.mil/",
+        "title": "Minot Air Force Base",
+        "evidence": "Minot Air Force Base The official website for Minot Air Force Base, where only the best come North. Minot AFB, Team Minot, Minot Air Force Base, 5th Bomb Wing, 91st Missile Wing, B-52, Stratofortress, Minuteman III, ICBM, Air Force Global Strike, Air Force, U.S. Air Force, Minot, North Dakota, base, north, nuclear, airplane, aviation, missile, why not minot, military, department of defense, DOD, U",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "misawa-ab",
+        "label": "Misawa AB",
+        "url": "https://www.misawa.af.mil/",
+        "title": "Misawa Air Base > Home",
+        "evidence": "Misawa Air Base > Home The official site for Misawa Air Base. Misawa Air Base, Misawa AB, Misawa",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "moody-afb",
+        "label": "Moody AFB",
+        "url": "https://www.moody.af.mil/",
+        "title": "Moody Air Force Base > Home",
+        "evidence": "Moody Air Force Base > Home The Official Website of Moody Air Force Base Moody Air Force Base, AFB, USAF, Georgia",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "mountain-home-afb",
+        "label": "Mountain Home AFB",
+        "url": "https://www.mountainhome.af.mil/",
+        "title": "Home",
+        "evidence": "Home Keep invisible so all other pages are visible in the display menu without having to scroll Mountain Home Air Force Base, MHAFB, AFB, USAF, Mountain Home AFB",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "nellis-afb",
+        "label": "Nellis AFB",
+        "url": "https://www.nellis.af.mil/",
+        "title": "U.S. Air Force Warfare Center",
+        "evidence": "U.S. Air Force Warfare Center The Official Website of the U.S. Air Force Warfare Center USAFWC, U.S. Air Force Warfare Center, Warfare Center, Nellis Air Force Base, ACC, Air Combat Command, Air Force, USAF",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "offutt-afb",
+        "label": "Offutt AFB",
+        "url": "https://www.offutt.af.mil/",
+        "title": "Offutt Air Force Base > Home",
+        "evidence": "Offutt Air Force Base > Home The Official Website of Offutt Air Force Base Offutt Air Force Base, AFB, 55th Wing, 55, 55WG, USAF",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "osan-air-base",
+        "label": "Osan Air Base",
+        "url": "https://www.osan.af.mil/",
+        "title": "Osan Air Base > Home",
+        "evidence": "Osan Air Base > Home Osan Air Base Home Page Osan, Osan Air Base, 51st Fighter Wing, 51 FW, 51FW",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "patrick-afb",
+        "label": "Patrick SFB",
+        "url": "https://www.patrick.spaceforce.mil/",
+        "title": "Patrick Space Force Base > Home",
+        "evidence": "Patrick Space Force Base > Home The official website for Patrick Space Force Base and Cape Canaveral Space Force Station, Florida Patrick Space Force Base, Cape Canaveral Space Force Station, Florida",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "peterson-afb",
+        "label": "Peterson SFB",
+        "url": "https://www.peterson.spaceforce.mil/",
+        "title": "Peterson & Schriever SFB",
+        "evidence": "Peterson & Schriever SFB The official website for Peterson and Schriever Space Force Base",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "pope-army-airfield",
+        "label": "Pope Army Airfield",
+        "url": "https://www.pope.af.mil/",
+        "title": "Team Pope > Home",
+        "evidence": "Team Pope > Home The official website for Team Pope Pope Army Airfield, AMC, 43 AMOG, Team Pope, Pope Air Force Base, 43AMOG, 43rd AMOG, 43rd Air Mobility Operations Group",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "raf-lakenheath",
+        "label": "RAF Lakenheath",
+        "url": "https://www.lakenheath.af.mil/",
+        "title": "Home page of RAF Lakenheath - Tag USAFE",
+        "evidence": "Home page of RAF Lakenheath - Tag USAFE The official website for Royal Air Force Lakenheath Lakenheath, U.S. Air Force, F-15 Eagles, F-35 Lightning II",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "raf-mildenhall",
+        "label": "RAF Mildenhall",
+        "url": "https://www.mildenhall.af.mil/",
+        "title": "Royal Air Force Mildenhall > Home",
+        "evidence": "Royal Air Force Mildenhall > Home The official website for the Royal Air Force Mildenhall Mildenall",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "ramstein-ab",
+        "label": "Ramstein AB",
+        "url": "https://www.ramstein.af.mil/",
+        "title": "Home",
+        "evidence": "Home The official website for the Ramstein Air Base We Care Resources",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "robins-afb",
+        "label": "Robins AFB",
+        "url": "https://www.robins.af.mil/",
+        "title": "Home",
+        "evidence": "Home The official website for Robins Air Force Base. Robins AFB, RAFB, ALC, WRALC, Warner-Robins AFB, Warner-Robins Air Force Base, WRAFB, Depot Robins AFB, Robins Air Force Base, RAFB Robins Air Force Base Mission Video",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "schriever-afb",
+        "label": "Schriever SFB",
+        "url": "https://www.petersonschriever.spaceforce.mil/",
+        "title": "Peterson & Schriever SFB",
+        "evidence": "Peterson & Schriever SFB The official website for Peterson and Schriever Space Force Base",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "scott-air-force-base",
+        "label": "Scott Air Force Base",
+        "url": "https://www.scott.af.mil/",
+        "title": "Home",
+        "evidence": "Home The official website for the Scott Air Force Base Scott AFB",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "seymour-johnson-afb",
+        "label": "Seymour Johnson AFB",
+        "url": "https://www.seymourjohnson.af.mil/",
+        "title": "Home",
+        "evidence": "Home The Official Website of Seymour Johnson Air Force Base Seymour Johnson, Air Force Base, AFB, SJAFB, Home",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "shaw-air-force-base",
+        "label": "Shaw Air Force Base",
+        "url": "https://www.shaw.af.mil/",
+        "title": "Shaw Air Force Base > Home",
+        "evidence": "Shaw Air Force Base > Home The official website for Shaw Air Force Base, home of the 20th Fighter Wing. Shaw AFB, USAF, Shaw Air Force Base, Shaw, United States Air Force, Team Shaw, Wild Weasel, F-16, Viper, Fighting Falcon, South Carolina, Sumter, 20th Fighter Wing, Army Central Command, ARCENT, U.S. Air Forces Central, AFCENT, 9th Air Force (Air Forces Central), 15th Air Force, Third Army, 3rd ",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "sheppard-afb",
+        "label": "Sheppard AFB",
+        "url": "https://www.sheppard.af.mil/",
+        "title": "Sheppard Air Force Base > Home",
+        "evidence": "Sheppard Air Force Base > Home The official website of Sheppard Air Force Base Sheppard Air Force Base AFB USAF U.S. Air Force",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "spangdahlem-ab",
+        "label": "Spangdahlem AB",
+        "url": "https://www.spangdahlem.af.mil/",
+        "title": "Spangdahlem Air Base",
+        "evidence": "Spangdahlem Air Base The official website for Spangdahlem Air Base, home of the 52nd Fighter Wing. Spangdahlem, U.S. Air Force, Air Base, F-16, NATO, USAFE, U.S. Air Forces Europe",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "tinker-afb",
+        "label": "Tinker AFB",
+        "url": "https://www.tinker.af.mil/",
+        "title": "Home page of Tinker Air Force Base",
+        "evidence": "Home page of Tinker Air Force Base The official website of Tinker Air Force Base Tinker Air Force Base, Air Force Materiel Command, Air Force Sustainment Center, Oklahoma City Air Logistics Complex, AFMC, ACC, Air Combat Command, Air Force, USAF",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "travis-air-force-base",
+        "label": "Travis Air Force Base",
+        "url": "https://www.travis.af.mil/",
+        "title": "Travis Air Force Base > Home",
+        "evidence": "Travis Air Force Base > Home The official website for Travis Air Force Base Travis AFB, Travis Air Force Base, KC-10 Extender, C-17 Globemaster III, C-5M Super Galaxy, rapid mobility, 60th Air Mobility Wing, air mobility, Team Travis, Air power, 60 AMW,",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "tyndall-afb",
+        "label": "Tyndall AFB",
+        "url": "https://www.tyndall.af.mil/",
+        "title": "Tyndall Air Force Base > Home",
+        "evidence": "Tyndall Air Force Base > Home The Official Website of Tyndall Air Force Base Tyndall Air Force Base, Tyndall, AFB, USAF ACC, USAF, U.S.NAVY, WSEP, CheckeredFlag, joint Joint Force Integration demonstrated during CKF 26-2 and WSEP 26.04",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "usaf-academy",
+        "label": "USAF Academy",
+        "url": "https://www.usafa.af.mil/",
+        "title": "Air Force Academy Homepage",
+        "evidence": "Air Force Academy Homepage Official homepage for the U.S. Air Force Academy USAFA, U.S. Air Force Academy, Air Force",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "vance-afb",
+        "label": "Vance AFB",
+        "url": "https://www.vance.af.mil/",
+        "title": "Vance Air Force Base > Home",
+        "evidence": "Vance Air Force Base > Home The official website of Vance Air Force Base Vance AFB, Air Force, USAF",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "vandenberg-afb",
+        "label": "Vandenberg SFB",
+        "url": "https://www.vandenberg.spaceforce.mil/",
+        "title": "Vandenberg Space Force Base",
+        "evidence": "Vandenberg Space Force Base The home page of Space Launch Delta 30 and Vandenberg Space Force Base. Vandenberg SFB",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "whiteman-afb",
+        "label": "Whiteman AFB",
+        "url": "https://www.whiteman.af.mil/",
+        "title": "Whiteman AFB Home Page",
+        "evidence": "Whiteman AFB Home Page The official website for the Whiteman Air Force Base Whiteman AFB, B2, 509th Bomb Wing, 509th BW, Whiteman, B-2",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "wright-patterson-afb",
+        "label": "Wright-Patterson AFB",
+        "url": "https://www.wpafb.af.mil/",
+        "title": "Wright-Patterson AFB > Home",
+        "evidence": "Wright-Patterson AFB > Home Official website for Wright-Patterson Air Force Base, home of the 88th Air Base Wing and Team Wright-Patt. Find news, resources, and information to support Airmen, civilians, and families. WPAFB, Wright-Patterson Air Force Base, 88th Air Base Wing, Team Wright-Patt, Strength Through Support, base information, Air Force Ohio, military community resources Wright-Patterson",
+        "checked": "2026-09-04"
+      },
+      {
+        "id": "yokota-ab",
+        "label": "Yokota AB",
+        "url": "https://www.yokota.af.mil/",
+        "title": "Yokota Air Base Home",
+        "evidence": "Yokota Air Base Home The official site for Yokota Air Base Yokota Air Base, Yokota",
+        "checked": "2026-09-04"
+      }
+    ]
+  }
+}

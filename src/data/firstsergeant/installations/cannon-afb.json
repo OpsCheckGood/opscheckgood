@@ -1,11 +1,11 @@
 {
   "meta": {
-    "source": "MilitaryINSTALLATIONS — Cannon AFB",
-    "version": "1 (retrieved 2026-08-30)",
-    "verifiedDate": "2026-08-30",
+    "source": "MilitaryINSTALLATIONS — Cannon AFB; www.cannon.af.mil",
+    "version": "2 (MilitaryINSTALLATIONS retrieved 2026-08-30, base website read 2026-09-04)",
+    "verifiedDate": "2026-09-04",
     "sourceUrl": "https://installations.militaryonesource.mil/military-installation/cannon-afb",
     "status": "verified",
-    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+    "notes": "Two sources, kept apart. The programme contacts (medical, family support, legal, housing, family advocacy, EFMP, child care, emergency relief) were imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. The agencies Military OneSource does not publish per installation were filled by scripts/import-base-directories.mjs from https://www.cannon.af.mil/, and Military OneSource itself is copied from national.json. Every contact carries the URL of the page it was read from; nothing here was typed in, inferred, or generated. Where both sources published a number the MilitaryINSTALLATIONS value stands and the base site’s is recorded in that contact’s notes rather than discarded. Still empty here, because no source read published one: mental-health. Re-run either importer to refresh; the diff is the change."
   },
   "data": {
     "id": "cannon-afb",
@@ -14,12 +14,12 @@
     "contacts": [
       {
         "categoryId": "command-post",
-        "name": "",
-        "phone": "",
+        "name": "Command Post",
+        "phone": "575-784-2253",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.cannon.af.mil/Home/Phone-Directory/",
         "notes": ""
       },
       {
@@ -34,32 +34,32 @@
       },
       {
         "categoryId": "chaplain",
-        "name": "",
-        "phone": "",
+        "name": "Chapel",
+        "phone": "575-784-2507",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.cannon.af.mil/Home/Phone-Directory/",
         "notes": ""
       },
       {
         "categoryId": "sarc",
-        "name": "",
-        "phone": "",
+        "name": "SARC",
+        "phone": "575-784-1069",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.cannon.af.mil/Home/Phone-Directory/",
         "notes": ""
       },
       {
         "categoryId": "security-forces",
-        "name": "",
-        "phone": "",
+        "name": "Security Forces",
+        "phone": "575-784-4111",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.cannon.af.mil/Home/Phone-Directory/",
         "notes": ""
       },
       {
@@ -84,22 +84,22 @@
       },
       {
         "categoryId": "finance",
-        "name": "",
-        "phone": "",
+        "name": "Finance",
+        "phone": "575-784-1161",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.cannon.af.mil/Home/Phone-Directory/",
         "notes": ""
       },
       {
         "categoryId": "legal",
-        "name": "",
-        "phone": "",
+        "name": "Legal Office",
+        "phone": "575-784-2211",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.cannon.af.mil/Home/Phone-Directory/",
         "notes": ""
       },
       {
@@ -114,12 +114,12 @@
       },
       {
         "categoryId": "mpf",
-        "name": "",
-        "phone": "",
+        "name": "Military Personnel Flight",
+        "phone": "575-784-4933",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.cannon.af.mil/Home/Phone-Directory/",
         "notes": ""
       },
       {
@@ -130,7 +130,7 @@
         "location": "Building 1408 224 D.L. Ingram Ave Cannon AFB, NM 88103",
         "hours": "",
         "url": "https://installations.militaryonesource.mil/military-installation/cannon-afb/military-and-family-support-center/family-advocacy-program",
-        "notes": "Located in medical facility. 224 W. D.L. Ingram Ave, Bldg. 1408 575-784-2474, 575-784-7348 Mon - Fri 7:30 a.m. - 4:30 p.m. Sat and Sun - closed Holidays - closed Domestic Abuse Victim Advocate (DAVA) 24/7 Hotline: 575-904-0800"
+        "notes": "Located in medical facility. 224 W. D.L. Ingram Ave, Bldg. 1408 575-784-2474, 575-784-7348 Mon - Fri 7:30 a.m. - 4:30 p.m. Sat and Sun - closed Holidays - closed Domestic Abuse Victim Advocate (DAVA) 24/7 Hotline: 575-904-0800 Base website lists 575-784-1108 for “Family Advocacy” (https://www.cannon.af.mil/Home/Phone-Directory/, read 2026-09-04)."
       },
       {
         "categoryId": "efmp",
@@ -144,12 +144,12 @@
       },
       {
         "categoryId": "childcare",
-        "name": "",
-        "phone": "",
+        "name": "Family Child Care",
+        "phone": "575-784-6560",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.cannon.af.mil/Home/Phone-Directory/",
         "notes": ""
       },
       {
@@ -164,22 +164,22 @@
       },
       {
         "categoryId": "military-onesource",
-        "name": "",
-        "phone": "",
+        "name": "Military OneSource",
+        "phone": "800-342-9647",
         "dsn": "",
-        "location": "",
-        "hours": "",
-        "url": "",
-        "notes": ""
+        "location": "Worldwide, by phone and online",
+        "hours": "24 hours a day, 7 days a week",
+        "url": "https://www.militaryonesource.mil/",
+        "notes": "Non-medical counselling, financial counselling, and referral to the right local agency. OCONUS and international dialling options are listed on the site."
       },
       {
         "categoryId": "equal-opportunity",
-        "name": "",
-        "phone": "",
+        "name": "Equal Opportunity",
+        "phone": "575-784-6364",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.cannon.af.mil/Home/Phone-Directory/",
         "notes": ""
       }
     ]

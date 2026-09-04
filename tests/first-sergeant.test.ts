@@ -196,10 +196,16 @@ describe('installations', () => {
       expect(populated.length, `${id} is verified with nothing in it`).toBeGreaterThan(0);
 
       // Every contact has to say where it came from, or it is untraceable.
+      // Two sources now feed these files -- MilitaryINSTALLATIONS for the
+      // programme pages, the installation's own site for the agencies Military
+      // OneSource does not publish -- so what is required is a citation on an
+      // official host, not one particular host.
       for (const contact of populated) {
-        expect(contact.url, `${id}/${contact.categoryId} has no source URL`).toContain(
-          'militaryonesource.mil',
-        );
+        expect(contact.url, `${id}/${contact.categoryId} has no source URL`).not.toBe('');
+        expect(
+          new URL(contact.url).hostname.endsWith('.mil'),
+          `${id}/${contact.categoryId} cites ${contact.url}`,
+        ).toBe(true);
       }
 
       const crisis = CATEGORIES.data.filter((c) => c.urgency === 'crisis');

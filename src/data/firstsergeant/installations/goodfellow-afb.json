@@ -1,11 +1,11 @@
 {
   "meta": {
-    "source": "MilitaryINSTALLATIONS — Goodfellow AFB",
-    "version": "1 (retrieved 2026-08-30)",
-    "verifiedDate": "2026-08-30",
+    "source": "MilitaryINSTALLATIONS — Goodfellow AFB; www.goodfellow.af.mil",
+    "version": "2 (MilitaryINSTALLATIONS retrieved 2026-08-30, base website read 2026-09-04)",
+    "verifiedDate": "2026-09-04",
     "sourceUrl": "https://installations.militaryonesource.mil/military-installation/goodfellow-afb",
     "status": "verified",
-    "notes": "Imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. Every contact carries the URL of the page it was read from. Nothing here was typed in or generated. Re-run the importer to refresh; the diff is the change. Agencies Military OneSource does not publish per installation — command post, mental health, chaplain, SARC, security forces, finance, MPF, EO — are present but empty, and the toolkit falls back to Military OneSource for those."
+    "notes": "Two sources, kept apart. The programme contacts (medical, family support, legal, housing, family advocacy, EFMP, child care, emergency relief) were imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. The agencies Military OneSource does not publish per installation were filled by scripts/import-base-directories.mjs from https://www.goodfellow.af.mil/, and Military OneSource itself is copied from national.json. Every contact carries the URL of the page it was read from; nothing here was typed in, inferred, or generated. Where both sources published a number the MilitaryINSTALLATIONS value stands and the base site’s is recorded in that contact’s notes rather than discarded. Still empty here, because no source read published one: command-post. Re-run either importer to refresh; the diff is the change."
   },
   "data": {
     "id": "goodfellow-afb",
@@ -24,42 +24,42 @@
       },
       {
         "categoryId": "mental-health",
-        "name": "",
-        "phone": "",
+        "name": "OME Mental Health",
+        "phone": "831-242-7013",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
-        "notes": ""
+        "url": "https://www.goodfellow.af.mil/units/17-trw-helping-agencies/",
+        "notes": "Area code 831 is not local to this installation. Transcribed as the page prints it; confirm before referring somebody to it."
       },
       {
         "categoryId": "chaplain",
-        "name": "",
-        "phone": "",
+        "name": "Chapel Offices",
+        "phone": "325-654-3424",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.goodfellow.af.mil/Phone-Numbers/",
         "notes": ""
       },
       {
         "categoryId": "sarc",
-        "name": "",
-        "phone": "",
+        "name": "SAPR Hotline",
+        "phone": "325-654-1570",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.goodfellow.af.mil/Phone-Numbers/",
         "notes": ""
       },
       {
         "categoryId": "security-forces",
-        "name": "",
-        "phone": "",
+        "name": "Law Enforcement Desk",
+        "phone": "325-654-3504",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.goodfellow.af.mil/Phone-Numbers/",
         "notes": ""
       },
       {
@@ -84,12 +84,12 @@
       },
       {
         "categoryId": "finance",
-        "name": "",
-        "phone": "",
+        "name": "Military Pay",
+        "phone": "325-654-5181",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.goodfellow.af.mil/Phone-Numbers/",
         "notes": ""
       },
       {
@@ -114,12 +114,12 @@
       },
       {
         "categoryId": "mpf",
-        "name": "",
-        "phone": "",
+        "name": "Military Personnel Flight",
+        "phone": "325-654-1801",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.goodfellow.af.mil/Phone-Numbers/",
         "notes": ""
       },
       {
@@ -130,7 +130,7 @@
         "location": "271 Ft. Richardson Ave Bldg 1007 17 MDOS/SGXW GAFB, TX 76908",
         "hours": "",
         "url": "https://installations.militaryonesource.mil/military-installation/goodfellow-afb/military-and-family-support-center/family-advocacy-program",
-        "notes": "Mon – Fri 7:30 a.m. – 4:30 p.m. Sat and Sun - closed Federal holidays - closed"
+        "notes": "Mon – Fri 7:30 a.m. – 4:30 p.m. Sat and Sun - closed Federal holidays - closed Base website lists 325-654-1600 for “Family Advocacy (FAP)” (https://www.goodfellow.af.mil/Phone-Numbers/, read 2026-09-04)."
       },
       {
         "categoryId": "efmp",
@@ -140,7 +140,7 @@
         "location": "171 Valiant Street, Building 145 GAFB, TX 76908-4402",
         "hours": "",
         "url": "https://installations.militaryonesource.mil/military-installation/goodfellow-afb/exceptional-family-member-program/exceptional-family-member-program",
-        "notes": "Monday, Wednesday, Thursday, Friday: 8:00 a.m. - 4:00 p.m. Tuesday: 08:00 - 3:30 p.m. Closed the third Thursday for training from 11:30 a.m. - 4 p.m. Closed Federal Holidays and Resiliency Days."
+        "notes": "Monday, Wednesday, Thursday, Friday: 8:00 a.m. - 4:00 p.m. Tuesday: 08:00 - 3:30 p.m. Closed the third Thursday for training from 11:30 a.m. - 4 p.m. Closed Federal Holidays and Resiliency Days. Base website lists 325-654-4703 for “EFMP Medical/Special Needs Coordinator” (https://www.goodfellow.af.mil/Phone-Numbers/, read 2026-09-04)."
       },
       {
         "categoryId": "childcare",
@@ -150,7 +150,7 @@
         "location": "205 Mitchell St Bldg 906, on-base GAFB, TX 76908",
         "hours": "",
         "url": "https://installations.militaryonesource.mil/military-installation/goodfellow-afb/child-and-youth-services/child-care",
-        "notes": "HOURS OF OPERATION Monday 6 am-5:30 pm Tuesday 6 am-5:30 pm Wednesday 6 am-5:30 pm Thursday 6 am-5:30 pm Friday 6 am-5:30 pm CLOSED ALL FEDERAL HOLIDAYS"
+        "notes": "HOURS OF OPERATION Monday 6 am-5:30 pm Tuesday 6 am-5:30 pm Wednesday 6 am-5:30 pm Thursday 6 am-5:30 pm Friday 6 am-5:30 pm CLOSED ALL FEDERAL HOLIDAYS Base website lists 325-654-1751 for “Family Child Care” (https://www.goodfellow.af.mil/units/17-trw-helping-agencies/, read 2026-09-04)."
       },
       {
         "categoryId": "emergency-relief",
@@ -160,26 +160,26 @@
         "location": "171 Valiant Street, Building 145 GAFB, TX 76908-4402",
         "hours": "",
         "url": "https://installations.militaryonesource.mil/military-installation/goodfellow-afb/military-and-family-support-center/financial-assistance",
-        "notes": "Monday, Wednesday, Thursday, Friday: 8:00 a.m. - 4:00 p.m. Tuesday: 08:00 - 3:30 p.m. Closed the third Thursday for training from 11:30 a.m. - 4 p.m. Closed Federal Holidays and Resiliency Days."
+        "notes": "Monday, Wednesday, Thursday, Friday: 8:00 a.m. - 4:00 p.m. Tuesday: 08:00 - 3:30 p.m. Closed the third Thursday for training from 11:30 a.m. - 4 p.m. Closed Federal Holidays and Resiliency Days. Base website lists 703-972-2650 for “Air Force Aid Society” (https://www.goodfellow.af.mil/Phone-Numbers/, read 2026-09-04)."
       },
       {
         "categoryId": "military-onesource",
-        "name": "",
-        "phone": "",
+        "name": "Military OneSource",
+        "phone": "800-342-9647",
         "dsn": "",
-        "location": "",
-        "hours": "",
-        "url": "",
-        "notes": ""
+        "location": "Worldwide, by phone and online",
+        "hours": "24 hours a day, 7 days a week",
+        "url": "https://www.militaryonesource.mil/",
+        "notes": "Non-medical counselling, financial counselling, and referral to the right local agency. OCONUS and international dialling options are listed on the site."
       },
       {
         "categoryId": "equal-opportunity",
-        "name": "",
-        "phone": "",
+        "name": "Equal Opportunity",
+        "phone": "325-654-3898",
         "dsn": "",
         "location": "",
         "hours": "",
-        "url": "",
+        "url": "https://www.goodfellow.af.mil/Phone-Numbers/",
         "notes": ""
       }
     ]

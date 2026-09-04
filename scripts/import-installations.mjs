@@ -22,10 +22,12 @@
  *   --all          every installation in the sitemap, not just Air Force
  *   --limit N      stop after N installations
  *   --delay MS     pause between requests (default 250)
+ *   --cache DIR    where landing pages are kept (default $TMPDIR/ops-check-good-mos)
  */
-import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { tmpdir } from 'node:os';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dataDir = join(root, 'src', 'data', 'firstsergeant');
@@ -44,11 +46,42 @@ const named = args.filter((a) => !a.startsWith('--') && !/^\d+$/.test(a));
 
 const DELAY = Number(value('delay', 250));
 const LIMIT = Number(value('limit', 0));
+const CACHE = value('cache', join(tmpdir(), 'ops-check-good-mos'));
 
-/** Air Force installations, by the shape of their slug. */
-const AIR_FORCE = /(afb|air-force|-ab$|joint-base)/i;
+/**
+ * Which installations are Air Force.
+ *
+ * Read off the page, not guessed from the slug. Every installation's landing
+ * page carries the branch banner the site renders for it -- ".../Branch of
+ * Service Images/MI_Branch_of_Service_AirForce.jpg" -- so the answer comes
+ * from the source rather than from the shape of a name. Guessing by name is
+ * what it used to do, and it quietly missed Osan, Hurlburt, the four RAF
+ * bases, the Air Force Academy and every Air National Guard wing, all of which
+ * are Air Force and none of which have "AFB" in their slug.
+ */
+const AIR_FORCE_BANNER = /MI_Branch_of_Service_AirForce\.jpg/i;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+mkdirSync(CACHE, { recursive: true });
+
+/**
+ * Landing pages, cached on disk.
+ *
+ * Deciding which of four hundred installations are Air Force means reading
+ * four hundred landing pages, and the same pages are then read again for their
+ * names. Caching them makes `--list` cost nothing on the second run and makes
+ * an interrupted import cheap to resume. Only successes are cached, so a
+ * resumed run retries what failed.
+ */
+async function getCached(url) {
+  const file = join(CACHE, `${url.replace(/[^a-z0-9]+/gi, '-').slice(-120)}.html`);
+  if (existsSync(file)) return readFileSync(file, 'utf8');
+  const html = await get(url);
+  writeFileSync(file, html);
+  await sleep(DELAY);
+  return html;
+}
 
 async function get(url) {
   const response = await fetch(url, {
@@ -168,26 +201,29 @@ async function installationSlugs() {
  * so reading it from there gets you "Health Care" as an installation name.
  * Falls back to title-casing the slug if the page cannot be read.
  */
-async function labelFor(slug) {
+async function landingFor(slug) {
+  let html = '';
   try {
-    const html = await get(`${ORIGIN}/military-installation/${slug}`);
-    const title = /<title>([^<]*)<\/title>/.exec(html)?.[1] ?? '';
-    const name = clean(title.split('|')[0] ?? '');
-    if (name.length > 1) return name;
+    html = await getCached(`${ORIGIN}/military-installation/${slug}`);
   } catch {
     /* Fall through to the slug. */
   }
-  return slug
+  const title = /<title>([^<]*)<\/title>/.exec(html)?.[1] ?? '';
+  const name = clean(title.split('|')[0] ?? '');
+  const fallback = slug
     .split('-')
     .map((w) => (w.length <= 3 ? w.toUpperCase() : w[0].toUpperCase() + w.slice(1)))
     .join(' ');
+  return {
+    label: name.length > 1 ? name : fallback,
+    airForce: AIR_FORCE_BANNER.test(html),
+  };
 }
 
 async function importInstallation(slug) {
   const contacts = [];
   let anyPage = false;
-  const label = await labelFor(slug);
-  await sleep(DELAY);
+  const { label } = await landingFor(slug);
 
   for (const category of categories) {
     for (const page of category.mosPages ?? []) {
@@ -287,7 +323,18 @@ async function main() {
   let slugs = named;
   if (slugs.length === 0) {
     const all = await installationSlugs();
-    slugs = flag('all') ? all : all.filter((s) => AIR_FORCE.test(s));
+    if (flag('all')) {
+      slugs = all;
+    } else {
+      // One landing page each, cached, so this is paid once and then free.
+      slugs = [];
+      for (const [index, slug] of all.entries()) {
+        process.stderr.write(`\rchecking branch ${index + 1}/${all.length}`);
+        const { airForce } = await landingFor(slug);
+        if (airForce) slugs.push(slug);
+      }
+      process.stderr.write('\n');
+    }
   }
   if (LIMIT > 0) slugs = slugs.slice(0, LIMIT);
 

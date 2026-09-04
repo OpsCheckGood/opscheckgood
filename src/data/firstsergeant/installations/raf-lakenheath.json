@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "source": "MilitaryINSTALLATIONS — RAF Lakenheath; www.lakenheath.af.mil",
+    "version": "2 (MilitaryINSTALLATIONS retrieved 2026-09-04, base website read 2026-09-04)",
+    "verifiedDate": "2026-09-04",
+    "sourceUrl": "https://installations.militaryonesource.mil/military-installation/raf-lakenheath",
+    "status": "verified",
+    "notes": "Two sources, kept apart. The programme contacts (medical, family support, legal, housing, family advocacy, EFMP, child care, emergency relief) were imported by scripts/import-installations.mjs from the official MilitaryINSTALLATIONS pages for this installation. The agencies Military OneSource does not publish per installation were filled by scripts/import-base-directories.mjs from https://www.lakenheath.af.mil/, and Military OneSource itself is copied from national.json. Every contact carries the URL of the page it was read from; nothing here was typed in, inferred, or generated. Where both sources published a number the MilitaryINSTALLATIONS value stands and the base site’s is recorded in that contact’s notes rather than discarded. Still empty here, because no source read published one: mental-health, chaplain, sarc, security-forces, finance, mpf, equal-opportunity. Re-run either importer to refresh; the diff is the change."
+  },
+  "data": {
+    "id": "raf-lakenheath",
+    "label": "RAF Lakenheath",
+    "example": false,
+    "contacts": [
+      {
+        "categoryId": "command-post",
+        "name": "Command Post",
+        "phone": "",
+        "dsn": "314-226-4800",
+        "location": "",
+        "hours": "",
+        "url": "https://www.lakenheath.af.mil/Liberty-Resources/",
+        "notes": ""
+      },
+      {
+        "categoryId": "mental-health",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "chaplain",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "sarc",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "security-forces",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "medical",
+        "name": "RAF Lakenheath Hospital",
+        "phone": "",
+        "dsn": "314-226-8010",
+        "location": "48 MDG Building 932 Brandon, Suffolk United Kingdom IP27 9PN",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/raf-lakenheath/health/health-care",
+        "notes": "Mon-Fri: 7:00 a.m. - 4:00 p.m. Sat, Sun & Holidays: Closed Emergency Services open 24/7"
+      },
+      {
+        "categoryId": "mfrc",
+        "name": "Military & Family Readiness Center",
+        "phone": "+44-1638-52-3847",
+        "dsn": "314-226-3847",
+        "location": "Building 950 RAF Lakenheath Brandon Suffolk United Kingdom IP27 9PN",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/raf-lakenheath/military-and-family-support-center/military-and-family-support-center",
+        "notes": "Monday-Friday 7:30 a.m. - 4:30 p.m. Thursdays 7:30 a.m. - 2:00 p.m. Closed Sat, Sun, Down Days, and Holidays *Loan Locker available during open hours."
+      },
+      {
+        "categoryId": "finance",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "legal",
+        "name": "LEGAL OFFICE SERVICES/JAG",
+        "phone": "011-44-1638-52-3553",
+        "dsn": "314-226-3553",
+        "location": "Richmond Road RAF Lakenheath Building 1082 RAF Lakenheath United Kingdom IP27 9PN",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/raf-lakenheath/legal/legal-assistance",
+        "notes": "Legal assistance, wills and living wills: Appointment Only - Tuesday 9 a.m. - 11 a.m. and Thursday 1 p.m. - 3 p.m. Notary and powers of attorney: Walk in Monday- Friday 8:30 a.m. -3:30 p.m. Claims assistance: https://claims.jag.af.mil British assistance: By appointment only 9:30 a.m. - 12 p.m. and 1 p.m. – 3 p.m."
+      },
+      {
+        "categoryId": "housing",
+        "name": "Housing Office",
+        "phone": "011-44-1638-52-2101",
+        "dsn": "314-226-2101",
+        "location": "Norwich Road RAF Lakenheath Bldg 429 Brandon, Suffolk United Kingdom IP27 9PN",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/raf-lakenheath/housing/housing",
+        "notes": "Current Walk-In Hours: Mon / Tues / Wed / Fri 0800 – 1130 and 1300 – 1530 Thurs: 1300 – 1530 US Holidays, Family Days, & UK Holidays: Phone Calls and emails accecpted - closed for walk-ins"
+      },
+      {
+        "categoryId": "mpf",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      },
+      {
+        "categoryId": "family-advocacy",
+        "name": "Family Advocacy Program",
+        "phone": "+44-1638-52-8070",
+        "dsn": "314-226-8070",
+        "location": "Bldg 922-(2nd Floor) RAF Lakenheath Hospital RAF Lakenheath United Kingdom IP27_9PN",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/raf-lakenheath/military-and-family-support-center/family-advocacy-program",
+        "notes": "Mon-Fri: 7:30 a.m. - 4:30 p.m. Sat, Sun & Holidays: Closed"
+      },
+      {
+        "categoryId": "efmp",
+        "name": "EFMP Family Support",
+        "phone": "+44-1638-52-3847",
+        "dsn": "314-226-3847",
+        "location": "RAF Lakenheath Military & Family Readiness Center Bldg 950 Unit 5187 APO AE United Kingdom 09461-0105",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/raf-lakenheath/exceptional-family-member-program/exceptional-family-member-program",
+        "notes": "Monday-Wednesday & Friday 7:30 a.m. - 4:30 p.m. Thursday 7:30 a.m. - 2:00 p.m. Closed Sat, Sun, Down Days, and Holidays"
+      },
+      {
+        "categoryId": "childcare",
+        "name": "Child Development Center-East",
+        "phone": "011-44-1638-52-3285",
+        "dsn": "314-226-3285",
+        "location": "Building 659 RAF Lakenheath United Kingdom IP27 9BU",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/raf-lakenheath/child-and-youth-services/child-care",
+        "notes": "Mon-Fri: 6:45 a.m. - 5:15 p.m. Sat, Sun & Holidays: Closed Family & Goal Days: Mission Essential Only"
+      },
+      {
+        "categoryId": "emergency-relief",
+        "name": "Personal Financial Management Services",
+        "phone": "011-44-1638-52-3847",
+        "dsn": "314-226-3847",
+        "location": "Military and Family Readiness Center Boston Drive Building 950 Brandon, Suffolk United Kingdom IP27 9PN",
+        "hours": "",
+        "url": "https://installations.militaryonesource.mil/military-installation/raf-lakenheath/military-and-family-support-center/financial-assistance",
+        "notes": "Mon, Tues, Wed, Fri: 7:30am-4:30 pm Thur: 7:30 am-2:00pm Closed Sat, Sun, U.S. Holidays and Goal Days"
+      },
+      {
+        "categoryId": "military-onesource",
+        "name": "Military OneSource",
+        "phone": "800-342-9647",
+        "dsn": "",
+        "location": "Worldwide, by phone and online",
+        "hours": "24 hours a day, 7 days a week",
+        "url": "https://www.militaryonesource.mil/",
+        "notes": "Non-medical counselling, financial counselling, and referral to the right local agency. OCONUS and international dialling options are listed on the site."
+      },
+      {
+        "categoryId": "equal-opportunity",
+        "name": "",
+        "phone": "",
+        "dsn": "",
+        "location": "",
+        "hours": "",
+        "url": "",
+        "notes": ""
+      }
+    ]
+  }
+}
