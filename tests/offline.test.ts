@@ -633,8 +633,20 @@ describeBuilt('single-file offline First Sergeant Toolkit', () => {
       { timeout: 15000, interval: 50 },
     );
 
-    // It says what it is before it says anything else.
-    expect(mount.textContent).toContain('Routing, not policy');
+    // The crisis line is the first thing on the page, before any routing. It
+    // has to be reachable with the network off and from a base where 988 does
+    // not dial, so the overseas routings ship with it rather than behind a link.
+    const intro = mount.textContent ?? '';
+    expect(intro).toContain('988');
+    expect(intro).toContain('press 1');
+    expect(intro).toContain('Veterans and Military Crisis Line');
+    expect(intro).toContain('838255');
+    expect(intro).toContain('PACOM');
+    expect(intro).toContain('EUCOM');
+
+    // The shipped template is not offered as somewhere you can be stationed.
+    expect(intro).not.toContain('NOT A REAL INSTALLATION');
+    expect(intro).not.toContain('No installation');
 
     // Open the situation a Shirt least wants to be looking up.
     const buttons = [...mount.querySelectorAll('button')];

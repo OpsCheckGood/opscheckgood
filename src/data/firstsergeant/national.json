@@ -1,14 +1,60 @@
 {
   "meta": {
     "source": "Military OneSource",
-    "version": "1 (retrieved 2026-08-30)",
-    "verifiedDate": "2026-08-30",
+    "version": "2",
+    "verifiedDate": "2026-09-04",
     "sourceUrl": "https://www.militaryonesource.mil/",
     "status": "verified",
-    "notes": "Worldwide resources, the same at every installation. The Military OneSource number was supplied by the maintainer in the brief for this tool and is published on militaryonesource.mil; it is recorded here rather than generated. Re-check it against the site when revisiting this file — it is the number the toolkit falls back to when nothing local is populated, so it is the single most important value in the project."
+    "notes": "Worldwide resources, the same at every installation. The Military OneSource number was supplied by the maintainer in the brief for this tool and is published on militaryonesource.mil; it is recorded here rather than generated. Re-check it against the site when revisiting this file — it is the number the toolkit falls back to when nothing local is populated, so it is the single most important value in the project. The Veterans and Military Crisis Line entry, including every overseas number, was read from veteranscrisisline.net on 2026-09-04 — the numbers, the \"press 1\", the text short code and the per-command overseas lines are transcribed from that page, not recalled."
   },
   "data": {
     "resources": [
+      {
+        "categoryId": "crisis-line",
+        "name": "Veterans and Military Crisis Line",
+        "phone": "988",
+        "phoneNote": "then press 1",
+        "text": "838255",
+        "dsn": "988",
+        "dsnNote": "on base, overseas",
+        "chatUrl": "https://www.veteranscrisisline.net/get-help-now/chat/",
+        "location": "Worldwide",
+        "hours": "24 hours a day, 7 days a week",
+        "url": "https://www.veteranscrisisline.net/",
+        "overseas": [
+          {
+            "command": "NORTHCOM",
+            "phone": "988",
+            "note": "then press 1"
+          },
+          {
+            "command": "PACOM",
+            "phone": "+1 844-702-5493",
+            "note": "off base; DSN 988 on base"
+          },
+          {
+            "command": "EUCOM",
+            "phone": "+1 844-702-5495",
+            "note": "off base; DSN 988 on base"
+          },
+          {
+            "command": "CENTCOM",
+            "phone": "+1 855-422-7719",
+            "note": "off base; DSN 988 on base"
+          },
+          {
+            "command": "AFRICOM",
+            "phone": "+1 888-482-6054",
+            "note": "off base; DSN 988 on base"
+          },
+          {
+            "command": "SOUTHCOM",
+            "phone": "+1 866-989-9599",
+            "note": "off base; DSN 988 on base"
+          }
+        ],
+        "notes": "Free and confidential, for anyone in the military community. You do not have to be enrolled in VA care and you do not have to be in crisis to call."
+      },
       {
         "categoryId": "military-onesource",
         "name": "Military OneSource",

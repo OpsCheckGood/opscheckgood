@@ -97,7 +97,7 @@ export default function FirstSergeantToolkit() {
 
   return (
     <div className="mx-auto flex max-w-[1400px] flex-col gap-4 px-3 sm:px-6 py-6">
-      <IntroPanel installationCount={usable.length} />
+      <CrisisPanel />
 
       <InstallationBar
         installation={installation}
@@ -192,23 +192,74 @@ export default function FirstSergeantToolkit() {
  * A directory that looks authoritative and is half-populated is worse than one
  * that says plainly what it does and does not know, so this is not dismissible.
  */
-function IntroPanel({ installationCount }: { installationCount: number }) {
+function CrisisPanel() {
+  const crisis = NATIONAL.data.find((r) => r.categoryId === 'crisis-line');
+  if (!crisis) return null;
   return (
-    <section className="panel p-4">
-      <h2 className="title m-0">Routing, not policy</h2>
-      <p className="m-0 mt-2 max-w-[80ch] text-[13px] leading-relaxed" style={{ color: 'var(--ink-muted)' }}>
-        This points you at the agency that owns a problem and shows where its details came
-        from. It does not decide anything, and it is not a substitute for current guidance
-        or your chain of command. In an emergency, use your installation's emergency
-        number.
-      </p>
-      {installationCount === 0 && (
-        <p className="m-0 mt-2 max-w-[80ch] text-[13px] leading-relaxed" style={{ color: 'var(--ink-muted)' }}>
-          No installation directories are populated yet, so every card falls back to
-          Military OneSource — which is worldwide, answers around the clock, and can route
-          to the right local agency itself.
+    <section
+      className="panel p-5"
+      style={{ borderColor: 'var(--bad-dim)', background: 'var(--bad-dim)' }}
+    >
+      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+        <h2 className="h2 m-0" style={{ color: 'var(--bad)' }}>
+          {crisis.phone}
+          {crisis.phoneNote ? (
+            <span className="ml-2" style={{ fontSize: 'var(--text-h2)', fontWeight: 600 }}>
+              {crisis.phoneNote}
+            </span>
+          ) : null}
+        </h2>
+        <p className="util m-0" style={{ color: 'var(--bad)' }}>
+          {crisis.name}
         </p>
-      )}
+      </div>
+
+      <p className="body m-0 mt-2 max-w-[70ch]" style={{ color: 'var(--ink)' }}>
+        {crisis.notes}
+      </p>
+
+      <dl className="m-0 mt-3 flex flex-wrap gap-x-8 gap-y-2 p-0">
+        {crisis.text ? <Row label="Text" value={crisis.text} /> : null}
+        {crisis.dsn ? <Row label="DSN" value={`${crisis.dsn}${crisis.dsnNote ? ` (${crisis.dsnNote})` : ''}`} /> : null}
+        {crisis.hours ? <Row label="Hours" value={crisis.hours} /> : null}
+      </dl>
+
+      {/* Overseas numbers are not a footnote here: this toolkit serves Osan,
+          Kadena, Yokota, Aviano and the RAF bases, where 988 does not dial. */}
+      {crisis.overseas?.length ? (
+        <details className="mt-3">
+          <summary className="util" style={{ cursor: 'pointer', color: 'var(--bad)' }}>
+            Calling from overseas
+          </summary>
+          <ul className="m-0 mt-2 flex list-none flex-col gap-1 p-0">
+            {crisis.overseas.map((o) => (
+              <li key={o.command} className="text-[12px]" style={{ color: 'var(--ink)' }}>
+                <strong>{o.command}</strong> — {o.phone}
+                {o.note ? ` (${o.note})` : ''}
+              </li>
+            ))}
+          </ul>
+        </details>
+      ) : null}
+
+      <p className="m-0 mt-3 text-[12px]">
+        {crisis.chatUrl ? (
+          <a href={crisis.chatUrl} target="_blank" rel="noreferrer noopener" style={{ color: 'var(--bad)' }}>
+            Chat online ↗
+          </a>
+        ) : null}
+        {crisis.url ? (
+          <a
+            href={crisis.url}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="ml-4"
+            style={{ color: 'var(--bad)' }}
+          >
+            Official source ↗
+          </a>
+        ) : null}
+      </p>
     </section>
   );
 }
@@ -243,8 +294,7 @@ function InstallationBar({
             maxWidth: '100%',
           }}
         >
-          <option value="">No installation — worldwide resources only</option>
-          {INSTALLATIONS.map((i) => (
+          {realInstallations().map((i) => (
             <option key={i.data.id} value={i.data.id}>
               {i.data.label}
             </option>

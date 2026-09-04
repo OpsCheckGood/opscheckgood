@@ -10,6 +10,15 @@
   "data": {
     "categories": [
       {
+        "id": "crisis-line",
+        "label": "Veterans and Military Crisis Line",
+        "urgency": "crisis",
+        "blurb": "Free, confidential crisis support for the military community, around the clock, worldwide.",
+        "mosPages": [],
+        "siteLabels": [],
+        "siteExcludeLabels": []
+      },
+      {
         "id": "command-post",
         "label": "Command Post",
         "urgency": "crisis",

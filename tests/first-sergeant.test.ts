@@ -240,19 +240,38 @@ describe('installations', () => {
 
   // The agencies the source cannot give us are named here rather than left as
   // a surprise: they are why the worldwide fallback is load-bearing.
+  //
+  // crisis-line and military-onesource are excluded: they are worldwide lines
+  // with one number each, so they are not per-installation gaps at all -- there
+  // is nothing for MilitaryINSTALLATIONS to have published.
+  const WORLDWIDE = new Set(['crisis-line', 'military-onesource']);
+
   it('records which crisis agencies Military OneSource does not publish', () => {
     const unpublished = CATEGORIES.data
       .filter((c) => c.urgency === 'crisis' && c.mosPages.length === 0)
       .map((c) => c.id)
+      .filter((id) => !WORLDWIDE.has(id))
       .sort();
     expect(unpublished).toEqual([
       'chaplain',
       'command-post',
       'mental-health',
-      'military-onesource',
       'sarc',
       'security-forces',
     ]);
+  });
+
+  it('carries the crisis line as a worldwide resource with its overseas routings', () => {
+    const crisis = NATIONAL.data.find((c) => c.categoryId === 'crisis-line');
+    expect(crisis, 'the crisis line must ship').toBeDefined();
+    expect(crisis!.phone).toBe('988');
+    expect(crisis!.phoneNote).toContain('press 1');
+    expect(crisis!.url).toContain('veteranscrisisline.net');
+    // Osan, Kadena, Yokota, Aviano and the RAF bases are in this directory, and
+    // 988 does not dial from any of them.
+    const commands = (crisis!.overseas ?? []).map((o) => o.command).sort();
+    expect(commands).toEqual(['AFRICOM', 'CENTCOM', 'EUCOM', 'NORTHCOM', 'PACOM', 'SOUTHCOM']);
+    for (const o of crisis!.overseas ?? []) expect(o.phone).not.toBe('');
   });
 });
 

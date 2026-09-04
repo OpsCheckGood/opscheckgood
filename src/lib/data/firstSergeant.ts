@@ -241,14 +241,27 @@ function normalizeContact(file: string, raw: unknown, what: string): Contact {
   if (!CATEGORY_IDS.has(categoryId)) {
     throw new DataFileError(file, `${what} names unknown category "${categoryId}"`);
   }
+  const overseasRaw = Array.isArray(o.overseas) ? o.overseas : [];
   return {
     categoryId,
     name: optional(o, 'name'),
     phone: optional(o, 'phone'),
+    phoneNote: optional(o, 'phoneNote'),
+    text: optional(o, 'text'),
     dsn: optional(o, 'dsn'),
+    dsnNote: optional(o, 'dsnNote'),
     location: optional(o, 'location'),
     hours: optional(o, 'hours'),
     url: optional(o, 'url'),
+    chatUrl: optional(o, 'chatUrl'),
+    overseas: overseasRaw.map((entry, i) => {
+      const e = obj(file, entry, `${what}.overseas[${i}]`);
+      return {
+        command: str(file, e, 'command', `${what}.overseas[${i}]`),
+        phone: str(file, e, 'phone', `${what}.overseas[${i}]`),
+        note: optional(e, 'note'),
+      };
+    }),
     notes: optional(o, 'notes'),
   };
 }

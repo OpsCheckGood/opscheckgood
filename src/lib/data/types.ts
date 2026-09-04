@@ -547,16 +547,37 @@ export interface AgencyCategory {
 }
 
 /** One agency's details at one installation. Every string may be empty in a stub. */
+/** One overseas routing for a worldwide line, by combatant command. */
+export interface OverseasNumber {
+  command: string;
+  phone: string;
+  note: string;
+}
+
 export interface Contact {
   categoryId: string;
   /** The local name, e.g. "Kadena Mental Health Clinic". */
   name: string;
   phone: string;
+  /** What to do after dialling, e.g. "then press 1". Rendered beside the number. */
+  phoneNote?: string;
+  /** SMS short code, where the service publishes one. */
+  text?: string;
   dsn: string;
+  /** Qualifier on the DSN, e.g. "on base, overseas". */
+  dsnNote?: string;
   location: string;
   hours: string;
   /** The official page these details were read from. */
   url: string;
+  /** A live chat the service publishes, where one exists. */
+  chatUrl?: string;
+  /**
+   * Per-command numbers for a worldwide line. Not a footnote: this toolkit
+   * serves Osan, Kadena, Yokota, Aviano and the RAF bases, where 988 does not
+   * dial.
+   */
+  overseas?: OverseasNumber[];
   notes: string;
 }
 
