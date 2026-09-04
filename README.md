@@ -1,6 +1,6 @@
 # Ops Check Good
 
-Free Air Force administrative tools. Total force, enlisted and officer.
+Free tools for Airmen. Total force, enlisted and officer.
 No accounts, no backend, no tracking, no ads.
 
 Everything runs in your browser. Nothing you type is uploaded, logged, or persisted
