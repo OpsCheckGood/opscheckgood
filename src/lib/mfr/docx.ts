@@ -26,6 +26,24 @@ import type { MemoDoc, MemoSpec, Para, Run } from './types';
 const WNS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 /** Signature block: 3.5in from the left margin, in twips. */
 const SIG_TWIPS = 5040;
+/**
+ * Top margin, in twips: 0.625in rather than the 1in the body uses.
+ *
+ * The letterhead is flowed text, so its first line cannot start above the top
+ * margin -- and the seal beside it is an anchored drawing pinned 0.5in from the
+ * page edge. At a 1in margin the text began at about 1.13in and sat across the
+ * seal's lower half, where the PDF and the preview both put it at 0.773in,
+ * centred on the seal.
+ *
+ * AFH 33-337 ch.14 pins the left, right and bottom margins at 1in and says
+ * nothing about the top, beyond letting you adjust it for balance, so this is
+ * within the standard. LETTERHEAD_LIFT is added back before the date, which
+ * means only the letterhead moves: the date, and everything under it, stays
+ * exactly where it was.
+ */
+const LETTERHEAD_TOP = 900;
+const LETTERHEAD_LIFT = 1440 - LETTERHEAD_TOP;
+
 /** Subject hanging indent, in twips. */
 const SUBJ_HANG = 1195;
 /** A quarter inch per sub-paragraph level, in twips. */
@@ -162,7 +180,10 @@ function memoBodyXml(doc: MemoDoc, spec: MemoSpec): string {
   let x = para((doc.seal ? sealRun() : '') + lhRun(doc.lh1, 12), { jc: 'center', after: 0 });
   x += para(lhRun(doc.lh2, 10.5), { jc: 'center', after: 0 });
   if (doc.lh3) x += para(lhRun(doc.lh3, 10.5), { jc: 'center', after: 0 });
-  x += para('', { after: 120 });
+  // The 27pt taken off the top margin is given back here, so the letterhead
+  // rises to meet the seal and everything from the date down stays exactly
+  // where it was. See LETTERHEAD_TOP.
+  x += para('', { after: 120 + LETTERHEAD_LIFT });
 
   x += para(run(spec.date, { font, sz: size }), { jc: 'right', after: 240 });
   x += para(run(`MEMORANDUM FOR  ${spec.memoFor || 'RECORD'}`, { font, sz: size }), { after: 240 });
@@ -260,7 +281,8 @@ export function buildDocx(doc: MemoDoc, spec: MemoSpec): Blob {
     'xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><w:body>' +
     memoBodyXml(doc, spec) +
     `<w:sectPr>${sectRef}<w:pgSz w:w="12240" w:h="15840"/>` +
-    '<w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="360" w:footer="360" w:gutter="0"/>' +
+    `<w:pgMar w:top="${LETTERHEAD_TOP}" w:right="1440" w:bottom="1440" w:left="1440" ` +
+    'w:header="360" w:footer="360" w:gutter="0"/>' +
     '</w:sectPr></w:body></w:document>';
 
   const contentTypes =

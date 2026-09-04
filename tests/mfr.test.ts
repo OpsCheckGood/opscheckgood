@@ -784,6 +784,24 @@ describe('Tongue and Quill conformance', () => {
     expect(longPdf).toContain('(3) Tj');
   });
 
+  it('lifts the letterhead so Word puts it where the PDF does', async () => {
+    // The letterhead is flowed text, so it cannot start above the top margin,
+    // while the seal beside it is anchored 0.5in from the page edge. A 1in top
+    // margin left the text sitting across the seal's lower half. The margin is
+    // cut to 0.625in and the difference given back before the date, so only the
+    // letterhead moves.
+    const xml = new TextDecoder('latin1').decode(
+      await bytesOf(buildDocx(rich, customSpec(rich, FIXED))),
+    );
+    expect(xml).toContain('w:pgMar w:top="900"');
+    // Left, right and bottom stay at 1in, which is what the handbook pins.
+    expect(xml).toContain('w:right="1440"');
+    expect(xml).toContain('w:bottom="1440"');
+    expect(xml).toContain('w:left="1440"');
+    // 120 twips of original spacing plus the 540 taken off the margin.
+    expect(xml).toContain('w:after="660"');
+  });
+
   it('places the closing elements the required number of lines apart', async () => {
     // Signature block five lines below the last line of text and 4.5in from the
     // page edge; attachments three lines below it; cc two lines below that.
