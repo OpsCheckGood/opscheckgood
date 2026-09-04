@@ -1,11 +1,11 @@
 {
   "meta": {
     "source": "Ops Check Good — First Sergeant reference index",
-    "version": "1",
-    "verifiedDate": "2026-08-30",
-    "sourceUrl": "",
+    "version": "2",
+    "verifiedDate": "2026-09-04",
+    "sourceUrl": "https://www.e-publishing.af.mil/",
     "status": "stub",
-    "notes": "An index of topics pointing at official publications. The topics are drafted; every publication, section and URL is DELIBERATELY EMPTY. Do not fill these in from memory — publication numbers and paragraph references are exactly the kind of value that comes out plausible and wrong. Read them off the current publication on e-Publishing, then set status=verified."
+    "notes": "An index of topics pointing at the publication that governs each one. Every publication name, date and URL below was read off the document itself: each PDF was fetched from e-Publishing and its number, title and date taken from its own first page, not from memory. 9 of 11 topics are cited. The two still empty are First Sergeant duties and family care plans: the pages they should point at were not found at the numbers tried (36-2113, 36-2618 and 36-2908 under af_a1), so they are left blank rather than guessed. Every \"section\" is empty on purpose. Naming the right publication only needed its cover page; naming a paragraph inside it needs the paragraph read, and an unread paragraph number is the one field here that would be plausible and wrong. Fill those in as the publications are read, and flip this to verified once the last two topics have a publication."
   },
   "data": {
     "references": [
@@ -19,37 +19,37 @@
       {
         "id": "leave",
         "topic": "Leave",
-        "publication": "",
+        "publication": "DAFI 36-3003, Military Leave Program, 26 February 2026",
         "section": "",
-        "url": ""
+        "url": "https://static.e-publishing.af.mil/production/1/af_a1/publication/dafi36-3003/dafi36-3003.pdf"
       },
       {
         "id": "promotions",
         "topic": "Enlisted promotions",
-        "publication": "",
+        "publication": "AFI 36-2502, Enlisted Airman Promotion and Demotion Programs, 2 July 2026",
         "section": "",
-        "url": ""
+        "url": "https://static.e-publishing.af.mil/production/1/af_a1/publication/afi36-2502/afi36-2502.pdf"
       },
       {
         "id": "administrative-actions",
         "topic": "Administrative actions",
-        "publication": "",
+        "publication": "DAFI 36-2907, Adverse Administrative Actions, 14 January 2026",
         "section": "",
-        "url": ""
+        "url": "https://static.e-publishing.af.mil/production/1/af_a1/publication/dafi36-2907/dafi36-2907.pdf"
       },
       {
         "id": "evaluations",
         "topic": "Evaluations",
-        "publication": "",
+        "publication": "AFI 36-2406, Officer and Enlisted Evaluation Systems (with AFGM2026-01, 7 August 2026)",
         "section": "",
-        "url": ""
+        "url": "https://static.e-publishing.af.mil/production/1/af_a1/publication/afi36-2406/afi36-2406.pdf"
       },
       {
         "id": "assignments",
         "topic": "Assignments",
-        "publication": "",
+        "publication": "DAFI 36-2110, Total Force Assignments, 9 August 2024, incorporating Change 2, 5 March 2026",
         "section": "",
-        "url": ""
+        "url": "https://static.e-publishing.af.mil/production/1/af_a1/publication/dafi36-2110/dafi36-2110.pdf"
       },
       {
         "id": "family-care-plans",
@@ -61,30 +61,30 @@
       {
         "id": "fitness",
         "topic": "Physical fitness",
-        "publication": "",
+        "publication": "AFMAN 36-2905, Air Force Physical Fitness Readiness Program, 24 March 2026",
         "section": "",
-        "url": ""
+        "url": "https://static.e-publishing.af.mil/production/1/af_a1/publication/afman36-2905/dafman36-2905.pdf"
       },
       {
         "id": "financial-responsibility",
         "topic": "Financial responsibility",
-        "publication": "",
+        "publication": "DAFI 36-2906, Personal Financial Responsibility, 23 August 2023, incorporating Change 1, 31 March 2025",
         "section": "",
-        "url": ""
+        "url": "https://static.e-publishing.af.mil/production/1/af_a1/publication/dafi36-2906/dafi36-2906.pdf"
       },
       {
         "id": "unfavorable-information",
         "topic": "Unfavorable information files",
-        "publication": "",
+        "publication": "DAFI 36-2907, Adverse Administrative Actions, 14 January 2026",
         "section": "",
-        "url": ""
+        "url": "https://static.e-publishing.af.mil/production/1/af_a1/publication/dafi36-2907/dafi36-2907.pdf"
       },
       {
         "id": "separations",
         "topic": "Separations",
-        "publication": "",
+        "publication": "DAFI 36-3211, Military Separations (with DAFGM2026-02, 18 February 2026)",
         "section": "",
-        "url": ""
+        "url": "https://static.e-publishing.af.mil/production/1/af_a1/publication/dafi36-3211/dafi36-3211.pdf"
       }
     ]
   }
