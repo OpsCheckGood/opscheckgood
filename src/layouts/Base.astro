@@ -17,7 +17,19 @@ interface Props {
 
 const {
   title,
-  description = 'Tools for Airmen.',
+  /*
+   * Deliberately descriptive rather than punchy.
+   *
+   * "Tools for Airmen." is the right thing to show a person and the wrong
+   * thing to show a URL categoriser: it names no subject, so a service with no
+   * entry for this domain has nothing to file it under and leaves it
+   * Uncategorised -- which is what a DoD filter blocks by default. This says
+   * what the site is for in terms a classifier can act on.
+   */
+  description = 'Free administrative and readiness tools for United States Air Force personnel: ' +
+    'physical fitness assessment scoring, performance statement and award bullet formatting, ' +
+    'official memorandum and letter of counseling generation, below-the-zone promotion dates, ' +
+    'and a First Sergeant helping-agency directory. Runs entirely in the browser.',
   brand,
   tagline,
 } = Astro.props;
