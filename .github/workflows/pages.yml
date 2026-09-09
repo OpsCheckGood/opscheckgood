@@ -1,0 +1,68 @@
+name: Deploy to GitHub Pages
+
+# Publishes the static build to https://opscheckgood.github.io/opscheckgood/.
+#
+# github.io is a long-established host that DoD web filters generally admit,
+# which a fresh domain is not until a categoriser has seen it. This mirror
+# exists so the tools can be reached from a government computer while the
+# main domain works its way through that process.
+#
+# Deploys straight from the workflow artifact: no gh-pages branch to keep in
+# sync, and no Jekyll pass to drop the `_astro/` directory. Pages must be set
+# to "GitHub Actions" as its source under Settings > Pages.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time; a newer push supersedes a queued one.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # The site is mounted under the repository name, so every internal link
+      # and asset URL has to carry that prefix.
+      - name: Build
+        run: npm run build
+        env:
+          PUBLIC_BASE: /opscheckgood/
+
+      # Hard constraint 1 applies to this mirror exactly as it does to the
+      # main site.
+      - name: Offline check
+        run: npm run verify:offline
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
