@@ -8,11 +8,16 @@ name: Deploy to GitHub Pages
 # main domain works its way through that process.
 #
 # Deploys straight from the workflow artifact: no gh-pages branch to keep in
-# sync, and no Jekyll pass to drop the `_astro/` directory. The configure step
-# enables Pages with "GitHub Actions" as its source on first run.
+# sync, and no Jekyll pass to drop the `_astro/` directory.
 #
-# The repository must be public. GitHub only serves Pages from a private
-# repository on a paid plan, and the deploy fails before a site exists.
+# Two one-time conditions, both checked in the repository settings, or the
+# configure step fails before anything is deployed:
+#   - The repository must be public. GitHub only serves Pages from a private
+#     repository on a paid plan.
+#   - Pages must be enabled with "GitHub Actions" as its source under
+#     Settings > Pages. The workflow token cannot create the site itself on a
+#     personal account, so `enablement` below only covers the case where it
+#     can.
 
 on:
   push:
