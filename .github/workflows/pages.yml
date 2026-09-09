@@ -7,17 +7,15 @@ name: Deploy to GitHub Pages
 # exists so the tools can be reached from a government computer while the
 # main domain works its way through that process.
 #
-# Deploys straight from the workflow artifact: no gh-pages branch to keep in
-# sync, and no Jekyll pass to drop the `_astro/` directory.
+# Publishes by pushing `dist/` to the `gh-pages` branch, the same way
+# AF-VCD/pdf-bullets does. GitHub enables Pages on its own when that branch
+# exists, which the artifact-based deploy could not do: the workflow token
+# is not allowed to create the Pages site on a personal account, so that
+# route needs a one-time change in the repository settings that is easy to
+# miss. This route needs none.
 #
-# Two one-time conditions, both checked in the repository settings, or the
-# configure step fails before anything is deployed:
-#   - The repository must be public. GitHub only serves Pages from a private
-#     repository on a paid plan.
-#   - Pages must be enabled with "GitHub Actions" as its source under
-#     Settings > Pages. The workflow token cannot create the site itself on a
-#     personal account, so `enablement` below only covers the case where it
-#     can.
+# The repository must be public. GitHub only serves Pages from a private
+# repository on a paid plan.
 
 on:
   push:
@@ -25,9 +23,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 # One deploy at a time; a newer push supersedes a queued one.
 concurrency:
@@ -35,7 +31,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -59,20 +55,18 @@ jobs:
       - name: Offline check
         run: npm run verify:offline
 
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true
-
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      # Pages runs Jekyll over a branch deploy unless told not to, and Jekyll
+      # drops every directory starting with an underscore, which is where
+      # Astro puts all of its assets.
+      - name: Push to gh-pages
+        run: |
+          touch dist/.nojekyll
+          cd dist
+          git init -q -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Deploy ${GITHUB_SHA::7} to GitHub Pages"
+          git push -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" gh-pages:gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
