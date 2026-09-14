@@ -1,0 +1,36 @@
+{
+  "meta": {
+    "source": "Curated from common award and evaluation package feedback",
+    "version": "1",
+    "verifiedDate": "2026-09-14",
+    "sourceUrl": "",
+    "status": "stub",
+    "notes": "Not Air Force reference data and not transcribed from an official source, so it stays marked stub. These are the openers reviewers most often send a bullet back for: they describe presence or responsibility rather than an action with a result. The Review panel flags a bullet whose first word after the dash is one of these and offers the alternatives listed. Extend freely; it is a data edit."
+  },
+  "data": [
+    { "word": "assisted", "why": "says you were there, not what you did", "try": ["led", "drove", "executed"] },
+    { "word": "helped", "why": "says you were there, not what you did", "try": ["led", "drove", "delivered"] },
+    { "word": "participated", "why": "presence, not action", "try": ["executed", "completed", "drove"] },
+    { "word": "supported", "why": "vague; name the action", "try": ["enabled", "sustained", "delivered"] },
+    { "word": "involved", "why": "presence, not action", "try": ["led", "directed", "executed"] },
+    { "word": "responsible", "why": "a duty description, not an accomplishment", "try": ["managed", "directed", "oversaw"] },
+    { "word": "worked", "why": "vague; name the action", "try": ["built", "repaired", "executed"] },
+    { "word": "attended", "why": "presence, not action", "try": ["completed", "earned", "briefed"] },
+    { "word": "utilized", "why": "wordy for \"used\", and rarely the real action", "try": ["applied", "leveraged", "deployed"] },
+    { "word": "used", "why": "rarely the real action", "try": ["applied", "leveraged", "deployed"] },
+    { "word": "ensured", "why": "vague; name what you did to ensure it", "try": ["enforced", "validated", "secured"] },
+    { "word": "served", "why": "a duty description, not an accomplishment", "try": ["led", "managed", "directed"] },
+    { "word": "provided", "why": "vague; name the action", "try": ["delivered", "trained", "briefed"] },
+    { "word": "performed", "why": "vague; name the action", "try": ["executed", "completed", "repaired"] },
+    { "word": "completed", "why": "weak when the task was routine; lead with impact", "try": ["executed", "delivered", "finished"] },
+    { "word": "contributed", "why": "says you were there, not what you did", "try": ["drove", "delivered", "built"] },
+    { "word": "tasked", "why": "passive; someone else acted", "try": ["led", "executed", "directed"] },
+    { "word": "selected", "why": "passive; someone else acted", "try": ["earned", "won", "chosen as"] },
+    { "word": "member", "why": "a role, not an action", "try": ["led", "drove", "executed"] },
+    { "word": "was", "why": "no action verb", "try": ["led", "drove", "delivered"] },
+    { "word": "were", "why": "no action verb", "try": ["led", "drove", "delivered"] },
+    { "word": "is", "why": "no action verb", "try": ["leads", "drives", "delivers"] },
+    { "word": "has", "why": "no action verb", "try": ["earned", "built", "holds"] },
+    { "word": "had", "why": "no action verb", "try": ["earned", "built", "held"] }
+  ]
+}

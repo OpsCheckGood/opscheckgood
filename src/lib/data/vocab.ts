@@ -1,8 +1,15 @@
 import { loadDataset } from './loader';
-import { DataFileError, type Dataset, type SynonymData, type VerbEntry } from './types';
+import {
+  DataFileError,
+  type Dataset,
+  type SynonymData,
+  type VerbEntry,
+  type WeakOpener,
+} from './types';
 
 import stopwordsRaw from '../../data/vocab/stopwords.json';
 import verbsRaw from '../../data/vocab/verbs.json';
+import weakOpenersRaw from '../../data/vocab/weak-openers.json';
 
 /**
  * Vocabulary datasets.
@@ -28,6 +35,21 @@ function normalizeVerbs(raw: unknown, _meta: unknown, file: string): VerbEntry[]
   });
 }
 
+function normalizeWeakOpeners(raw: unknown, _meta: unknown, file: string): WeakOpener[] {
+  if (!Array.isArray(raw)) throw new DataFileError(file, 'data must be an array of entries');
+  return raw.map((entry, i) => {
+    const e = entry as Partial<WeakOpener>;
+    if (typeof e !== 'object' || e === null || typeof e.word !== 'string' || e.word === '') {
+      throw new DataFileError(file, `entry ${i} must be {word, why, try}`);
+    }
+    return {
+      word: e.word.toLowerCase(),
+      why: typeof e.why === 'string' ? e.why : '',
+      try: Array.isArray(e.try) ? e.try.map(String) : [],
+    };
+  });
+}
+
 export const STOPWORDS: Dataset<ReadonlySet<string>> = loadDataset(
   'src/data/vocab/stopwords.json',
   stopwordsRaw,
@@ -38,6 +60,12 @@ export const VERBS: Dataset<VerbEntry[]> = loadDataset(
   'src/data/vocab/verbs.json',
   verbsRaw,
   normalizeVerbs,
+);
+
+export const WEAK_OPENERS: Dataset<WeakOpener[]> = loadDataset(
+  'src/data/vocab/weak-openers.json',
+  weakOpenersRaw,
+  normalizeWeakOpeners,
 );
 
 let synonymsPromise: Promise<Dataset<SynonymData>> | null = null;

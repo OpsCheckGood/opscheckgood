@@ -122,6 +122,13 @@ export interface VerbEntry {
   category?: string;
 }
 
+/** An opening word reviewers send bullets back for, with what to try instead. */
+export interface WeakOpener {
+  word: string;
+  why: string;
+  try: string[];
+}
+
 /** One meaning of a word: part of speech, definition, and its own synonyms. */
 export interface Sense {
   /** First letter of the part of speech: v, a or n. */

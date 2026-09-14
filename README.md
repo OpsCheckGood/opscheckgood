@@ -30,6 +30,27 @@ One editor, not five separate tools. Tools that keep these features on separate 
 end up having to warn that their shaping does not agree with their character count. Here
 every panel reads from one parsed document, so they cannot disagree.
 
+A bullet longer than one row is handled the way the form handles it. Paste the whole
+thing without pressing Enter: it is broken where the form will break it, every full row
+is shaped to flush, and the last row is left as typed. The half-spaces stay inside their
+rows, so the pasted paragraph wraps at the same places on the form. Pressing Enter still
+forces a break where you put it.
+
+Under the shaper sit two more boxes that read the same draft rather than asking for the
+bullet again:
+
+- **Review** — what a reviewer would say, as a list: words used more than once (grouped
+  with their inflections), bullets that open with a weak word instead of an action verb,
+  bullets with no number in them, and acronyms on neither approved list that the draft
+  does not spell out. Click a finding and the caret goes to it; click again for the next
+  occurrence. The weak-opener list is data (`src/data/vocab/weak-openers.json`).
+- **Definition & Synonyms** — the word under the caret, defined, with replacements
+  listed shortest first and the width each one adds or saves.
+
+**Import** reads a pdf-bullets save file: its bullets replace the draft and its
+abbreviation table joins your additions to the Common list, so nothing is retyped to
+switch tools. **Export** writes the same format, so the file goes the other way too.
+
 It carries two reference pages of its own:
 
 - **Abbreviations** (`/tools/bullet-bench/abbreviations/`) — both lists, searchable, with
@@ -42,9 +63,10 @@ It carries two reference pages of its own:
   open. Results are grouped by meaning, and every alternative shows its width in
   millimetres at the selected form's type size.
 
-**Built:** width shaping, width and character readouts, actionable failure diagnosis,
-abbreviation replacement, duplicate highlighting, acronym classification, click-a-word
-synonyms with definitions, draft persistence.
+**Built:** width shaping, multi-row bullets, width and character readouts, actionable
+failure diagnosis, abbreviation replacement, duplicate highlighting, the Review panel,
+acronym classification, click-a-word synonyms with definitions, pdf-bullets file import
+and export, draft persistence.
 
 ### PT calculator
 

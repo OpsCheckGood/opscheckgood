@@ -2,25 +2,34 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { FORMS, getForm, getField, isFormUsable } from '@/lib/data/forms';
 import { HQ_APPROVED, COMMON } from '@/lib/data/abbreviationSets';
 import { mergeAbbreviations, applyAbbreviations } from '@/lib/data/abbreviations';
-import { effectiveTable, loadOverrides, type Overrides } from '@/lib/data/abbreviationStore';
+import {
+  effectiveTable,
+  entryKey,
+  loadOverrides,
+  saveOverrides,
+  type Overrides,
+} from '@/lib/data/abbreviationStore';
+import { parsePdfBulletsFile, serializePdfBulletsFile } from '@/lib/data/pdfBulletsFile';
 import { loadBenchPrefs, saveBenchPrefs, DEFAULT_BENCH_PREFS } from '@/lib/settings';
 import { useMediaQuery, NARROW } from '@/lib/useMediaQuery';
-import { STOPWORDS } from '@/lib/data/vocab';
+import { STOPWORDS, WEAK_OPENERS } from '@/lib/data/vocab';
 import { loadFontMetrics } from '@/lib/metrics/registry';
 import { ensureFontFace } from '@/lib/metrics/fontface';
 import type { FontMetrics } from '@/lib/metrics/font';
 import { roundMm } from '@/lib/metrics/units';
+import type { ShapeStatus } from '@/lib/shape/optimizer';
 import {
-  shapeDocument,
-  unshapedStatus,
-  type ShapeResult,
-  type ShapeStatus,
-} from '@/lib/shape/optimizer';
+  bulletText,
+  displayRows,
+  rowStatuses,
+  shapeBullets,
+  type BulletResult,
+} from '@/lib/shape/bullet';
 import { diagnose } from '@/lib/shape/diagnose';
 import { SPACE_CHARS, countSpaces, unshape } from '@/lib/shape/spaces';
 import { splitLines } from '@/lib/text/tokenize';
 import { findDuplicates } from '@/lib/text/analyze';
-import { wrapToWidth } from '@/lib/text/wrap';
+import { reviewDraft, KIND_LABEL, type Finding, type Occurrence } from '@/lib/text/review';
 import {
   findSynonyms,
   findDefinition,
@@ -67,6 +76,13 @@ import type { SynonymData } from '@/lib/data/types';
  *   - a line is red when the optimizer could not land it: over the field even
  *     with every gap narrowed, or short of it by more than the underflow bound
  *     even with every gap widened. Short is a failure there, so it is here.
+ *
+ * One thing pdf-bullets does not do: a bullet too long for one row is broken
+ * where the form will break it and every full row is shaped, with the last
+ * row left as typed. See shape/bullet.ts. The other panels -- Review, and
+ * Definition & Synonyms -- are separate boxes that read the same draft. There
+ * is one text box on purpose: a second one to paste into would be a second
+ * copy, and the two would drift.
  */
 
 const DRAFT_KEY = 'ocg.bullet-bench.draft.v2';
@@ -94,10 +110,11 @@ const LINE_HEIGHT = 1.5;
 /** Enough empty box to invite typing; both boxes share it so they stay level. */
 const BOX_MIN_HEIGHT = 230;
 
-type StatusState = 'ok' | 'bad' | 'idle';
+type StatusState = 'ok' | 'warn' | 'bad' | 'idle';
 
 const STATE_COLOR: Record<StatusState, string> = {
   ok: 'var(--ok)',
+  warn: 'var(--warn)',
   bad: 'var(--bad)',
   idle: 'var(--ink-faint)',
 };
@@ -257,20 +274,22 @@ export default function BulletBench() {
       .join('\n');
   }, [text, abbreviate, suggestionTable]);
 
-  const results: ShapeResult[] = useMemo(() => {
+  const results: BulletResult[] = useMemo(() => {
     if (!font || targetMm <= 0 || sizePt <= 0) return [];
-    return shapeDocument(sourceText, font, { targetMm, sizePt });
+    return shapeBullets(sourceText, font, { targetMm, sizePt });
   }, [font, sourceText, targetMm, sizePt]);
 
   /** With Auto Space off, the output is the user's own spacing, normalized. */
   const outputLines = useMemo(
-    () => results.map((r) => (autoSpace ? r.text : unshape(r.text))),
+    () => results.map((b) => bulletText(b, autoSpace)),
     [results, autoSpace],
   );
 
   const lines = useMemo(() => splitLines(text), [text]);
   const active = Math.min(activeLine, Math.max(0, results.length - 1));
-  const activeResult = results[active];
+  const activeBullet = results[active];
+  /** The bullet as one row: the readouts describe that, wrapped or not. */
+  const activeResult = activeBullet?.whole;
   const activeText = outputLines[active] ?? '';
 
   const meanCharMm = useMemo(() => {
@@ -298,17 +317,46 @@ export default function BulletBench() {
   );
 
   /**
-   * The verdict per line. With Auto-Space off the output is the text as typed,
-   * so the verdict is about that text, exactly as pdf-bullets judges it with
-   * its optimizer switched off.
+   * The verdict per row of each bullet. With Auto-Space off the output is the
+   * text as typed, so the verdict is about that text, exactly as pdf-bullets
+   * judges it with its optimizer switched off.
    */
-  const lineStatuses = useMemo(
-    () => results.map((r) => (autoSpace ? r.status : unshapedStatus(r))),
+  const rowVerdicts: ShapeStatus[][] = useMemo(
+    () => results.map((b) => rowStatuses(b, autoSpace)),
     [results, autoSpace],
   );
-  const overLines = lineStatuses.filter((s) => s === 'too-long').length;
-  const shortLines = lineStatuses.filter((s) => s === 'too-short').length;
-  const liveLines = results.filter((r) => r.status !== 'empty').length;
+  const overLines = rowVerdicts.filter((rows) => rows.includes('too-long')).length;
+  const shortLines = rowVerdicts.filter((rows) => rows.includes('too-short')).length;
+  const wrappedLines = results.filter((b) => b.wrapped).length;
+  const liveLines = results.filter((b) => b.whole.status !== 'empty').length;
+
+  /** What a reviewer would say, as a list. Reads the draft, not the output. */
+  const findings = useMemo(
+    () =>
+      reviewDraft(text, {
+        stopwords: STOPWORDS.data,
+        hq: HQ_APPROVED.data,
+        common: COMMON.data,
+        weakOpeners: WEAK_OPENERS.data,
+      }),
+    [text],
+  );
+  /** Which occurrence of each finding the last click went to. */
+  const [visited, setVisited] = useState<Record<string, number>>({});
+
+  function jumpTo(finding: Finding) {
+    const key = `${finding.kind}:${finding.token}`;
+    const next = ((visited[key] ?? -1) + 1) % finding.occurrences.length;
+    setVisited({ ...visited, [key]: next });
+    const occurrence: Occurrence = finding.occurrences[next]!;
+    const el = inputRef.current;
+    if (!el) return;
+    el.focus();
+    el.setSelectionRange(occurrence.start, occurrence.end);
+    syncActiveLine(el);
+    const row = draftMirrorRef.current?.children[occurrence.line] as HTMLElement | undefined;
+    row?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }
 
   /**
    * Keeps each output bullet level with its draft line, the way pdf-bullets
@@ -339,7 +387,94 @@ export default function BulletBench() {
         ? `${activeResult.charCount} / ${maxChars}`
         : `${activeResult.charCount} ch`;
 
+  /** The active bullet, in the user's units: rows, and characters to cut or spare. */
+  const activeReadout = (() => {
+    if (!measurable || !activeBullet || !activeResult || activeResult.status === 'empty') return null;
+    if (activeBullet.wrapped) {
+      const overBy = activeResult.minWidthMm - targetMm;
+      const cut = meanCharMm > 0 ? Math.max(1, Math.round(overBy / meanCharMm)) : 0;
+      return `${activeBullet.rows.length} rows · cut ~${cut} characters for one row`;
+    }
+    return spare >= 0 ? `${charsSpare} characters remaining` : `${roundMm(-spare, 1)} mm over`;
+  })();
+
   const shapedText = outputLines.join('\n');
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  /**
+   * Reads a pdf-bullets save file: the bullets replace the draft, and its
+   * abbreviation table lands in the user's own additions to the Common list,
+   * so nothing has to be retyped to switch tools.
+   */
+  async function importFile(file: File) {
+    let note: string;
+    try {
+      const save = parsePdfBulletsFile(await file.text());
+      setText(save.text);
+      setSelection(null);
+      if (save.autoSpace !== null) setAutoSpace(save.autoSpace);
+
+      let added = 0;
+      if (save.abbreviations.length > 0) {
+        const current = overrides ?? loadOverrides();
+        const known = new Set(
+          [...COMMON.data.entries, ...current.common.custom].map(entryKey),
+        );
+        const custom = [...current.common.custom];
+        const disabled = new Set(current.common.disabled);
+        for (const entry of save.abbreviations) {
+          const key = entryKey(entry);
+          if (!known.has(key)) {
+            custom.push({ phrase: entry.phrase, abbr: entry.abbr });
+            known.add(key);
+            added += 1;
+          }
+          if (entry.enabled) disabled.delete(key);
+          else disabled.add(key);
+        }
+        const next: Overrides = {
+          ...current,
+          common: { custom, disabled: [...disabled] },
+        };
+        saveOverrides(next);
+        setOverrides(next);
+      }
+
+      const bullets = splitLines(save.text).filter((l) => l.trim() !== '').length;
+      note = `Imported ${bullets} bullet${bullets === 1 ? '' : 's'}`;
+      if (added > 0) note += `, ${added} abbreviation${added === 1 ? '' : 's'}`;
+      if (save.widthMm !== null && Math.abs(save.widthMm - targetMm) > 0.01) {
+        note += ` · file was ${roundMm(save.widthMm, 2)} mm, this form is ${roundMm(targetMm, 2)} mm`;
+      }
+    } catch (error: unknown) {
+      note = error instanceof Error ? error.message : 'Could not read that file.';
+    }
+    setCopyNote(note);
+    window.setTimeout(() => setCopyNote(null), 6000);
+  }
+
+  /** Writes the draft in pdf-bullets' own format, so its Import reads it. */
+  function exportFile() {
+    const raw = serializePdfBulletsFile({
+      text,
+      widthMm: targetMm > 0 ? targetMm : null,
+      autoSpace,
+      abbreviations: suggestionTable.entries.map((e) => ({
+        phrase: e.phrase,
+        abbr: e.abbr,
+        enabled: true,
+      })),
+    });
+    const url = URL.createObjectURL(new Blob([raw], { type: 'application/json' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'bullets.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
 
   async function copyOutput() {
     try {
@@ -521,14 +656,20 @@ export default function BulletBench() {
     ? 'idle'
     : overLines + shortLines > 0
       ? 'bad'
-      : 'ok';
+      : wrappedLines > 0
+        ? 'warn'
+        : 'ok';
 
   const statusText = !measurable
     ? 'LOADING'
     : liveLines === 0
       ? 'EMPTY'
-      : overLines + shortLines > 0
-        ? [overLines > 0 && `${overLines} OVER`, shortLines > 0 && `${shortLines} SHORT`]
+      : overLines + shortLines + wrappedLines > 0
+        ? [
+            overLines > 0 && `${overLines} OVER`,
+            shortLines > 0 && `${shortLines} SHORT`,
+            wrappedLines > 0 && `${wrappedLines} WRAP${wrappedLines === 1 ? 'S' : ''}`,
+          ]
             .filter(Boolean)
             .join(', ')
         : 'FITS';
@@ -601,21 +742,58 @@ export default function BulletBench() {
         <Field label="Status">
           <span className="flex items-center gap-3 py-2 text-[13px]">
             <span style={{ color: STATE_COLOR[statusState] }}>{statusText}</span>
-            {measurable && activeResult && activeResult.status !== 'empty' && (
+            {activeReadout && (
               <>
                 <span style={{ color: 'var(--rule-strong)' }}>|</span>
-                <span style={{ color: 'var(--ink-muted)' }}>
-                  {spare >= 0
-                    ? `${charsSpare} characters remaining`
-                    : `${roundMm(-spare, 1)} mm over`}
-                </span>
+                <span style={{ color: 'var(--ink-muted)' }}>{activeReadout}</span>
               </>
             )}
           </span>
         </Field>
 
-        <div className="ml-auto flex items-center gap-3">
+        <div className="ml-auto flex flex-wrap items-center gap-3">
           {copyNote && <span className="util">{copyNote}</span>}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json,application/json"
+            className="hidden"
+            aria-hidden
+            tabIndex={-1}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              e.target.value = '';
+              if (file) void importFile(file);
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="util border px-3 py-2.5"
+            title="Open a pdf-bullets save file (.json). Its bullets replace the draft; its abbreviations join your Common list."
+            style={{
+              background: 'var(--panel)',
+              borderColor: 'var(--rule-strong)',
+              color: 'var(--ink-muted)',
+              letterSpacing: '0.1em',
+            }}
+          >
+            Import
+          </button>
+          <button
+            type="button"
+            onClick={exportFile}
+            className="util border px-3 py-2.5"
+            title="Save the draft as a pdf-bullets file (.json)"
+            style={{
+              background: 'var(--panel)',
+              borderColor: 'var(--rule-strong)',
+              color: 'var(--ink-muted)',
+              letterSpacing: '0.1em',
+            }}
+          >
+            Export
+          </button>
           <button
             type="button"
             onClick={clearDraft}
@@ -788,8 +966,9 @@ export default function BulletBench() {
             {!measurable ? (
               <p className="util m-0">{font ? 'No target width' : 'Loading'}</p>
             ) : (
-              results.map((result, index) => {
+              results.map((bullet, index) => {
                 const level = { minHeight: lineHeights[index] };
+                const result = bullet.whole;
                 if (result.status === 'empty') {
                   return (
                     <div key={index} style={level}>
@@ -797,25 +976,35 @@ export default function BulletBench() {
                     </div>
                   );
                 }
-                const status = lineStatuses[index]!;
-                const bad = !landed(status);
-                const rows = wrapToWidth(outputLines[index]!, font!, sizePt, targetMm);
+                const statuses = rowVerdicts[index]!;
+                const bad = statuses.some((s) => !landed(s));
+                const rows = displayRows(bullet, autoSpace, font!, { targetMm, sizePt });
+                // Auto-Space off can draw more rows than were judged; then the
+                // verdict is the bullet's, not the row's.
+                const rowBad = (r: number) =>
+                  rows.length === statuses.length ? !landed(statuses[r]!) : bad;
+                const title = !font
+                  ? undefined
+                  : bullet.wrapped && autoSpace
+                    ? `Takes ${rows.length} rows on the form. ${
+                        diagnose(result, { font, sizePt, abbreviations: suggestionTable })
+                          ?.message ?? ''
+                      }`.replace("Can't reach flush. ", 'For one row: ')
+                    : !bad
+                      ? undefined
+                      : autoSpace
+                        ? (diagnose(result, { font, sizePt, abbreviations: suggestionTable })
+                            ?.message ?? undefined)
+                        : `Auto-Space is off. As typed, this line is ${roundMm(
+                            Math.abs(result.naturalWidthMm - result.targetMm),
+                            1,
+                          )}mm ${statuses.includes('too-long') ? 'over' : 'short'}.`;
                 return (
                   <div
                     key={index}
-                    title={
-                      !bad || !font
-                        ? undefined
-                        : autoSpace
-                          ? (diagnose(result, { font, sizePt, abbreviations: suggestionTable })
-                              ?.message ?? undefined)
-                          : `Auto-Space is off. As typed, this line is ${roundMm(
-                              Math.abs(result.naturalWidthMm - result.targetMm),
-                              1,
-                            )}mm ${status === 'too-long' ? 'over' : 'short'}.`
-                    }
+                    title={title}
                     onMouseDown={() => setActiveLine(index)}
-                    style={{ ...level, color: bad ? 'var(--bad)' : 'var(--ink)' }}
+                    style={level}
                   >
                     {rows.map((row, r) => (
                       <div
@@ -823,7 +1012,10 @@ export default function BulletBench() {
                         // At true width the row is already broken by our own
                         // metrics and must not be re-wrapped. Reflowed, it has
                         // to wrap or it runs off the phone.
-                        style={{ whiteSpace: narrow ? 'pre-wrap' : 'pre' }}
+                        style={{
+                          whiteSpace: narrow ? 'pre-wrap' : 'pre',
+                          color: rowBad(r) ? 'var(--bad)' : 'var(--ink)',
+                        }}
                       >
                         {row}
                       </div>
@@ -859,6 +1051,69 @@ export default function BulletBench() {
           </div>
         </section>
       </div>
+
+      {/* ---- Review ------------------------------------------------------ */}
+      {/*
+        Its own box, reading the same draft. Every finding is a place in the
+        draft; clicking one puts the caret there, and clicking again walks to
+        the next occurrence. The fix happens in the draft, and the shaper
+        follows -- there is nothing to paste back.
+      */}
+      <section className="panel p-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-3">
+          <h2 className="title m-0">Review</h2>
+          <span className="util">
+            {liveLines === 0
+              ? 'Nothing to review'
+              : findings.length === 0
+                ? 'Nothing flagged'
+                : `${findings.length} finding${findings.length === 1 ? '' : 's'}`}
+          </span>
+        </div>
+        <p className="m-0 mt-1 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
+          Repeated words, weak openers, bullets with no number, and acronyms on neither
+          list. Click a finding to go to it in the draft.
+        </p>
+        {findings.length > 0 && (
+          <ul className="m-0 mt-3 flex list-none flex-col gap-1.5 p-0">
+            {findings.map((finding) => (
+              <li key={`${finding.kind}:${finding.token}:${finding.occurrences[0]!.start}`}>
+                <button
+                  type="button"
+                  onClick={() => jumpTo(finding)}
+                  className="flex w-full flex-wrap items-baseline gap-x-3 gap-y-1 border px-3 py-2 text-left text-[12px]"
+                  style={{
+                    background: 'var(--panel-sunk)',
+                    borderColor: 'var(--rule)',
+                    color: 'var(--ink)',
+                  }}
+                >
+                  <span
+                    className="util shrink-0"
+                    style={{
+                      color: finding.kind === 'no-number' ? 'var(--ink-faint)' : 'var(--warn)',
+                      minWidth: '7.5em',
+                    }}
+                  >
+                    {KIND_LABEL[finding.kind]}
+                  </span>
+                  <span className="tabular shrink-0" style={{ color: 'var(--ink-faint)' }}>
+                    line {finding.occurrences[0]!.line + 1}
+                    {finding.occurrences.length > 1 ? ` +${finding.occurrences.length - 1}` : ''}
+                  </span>
+                  <span style={{ fontWeight: 600 }}>{finding.token}</span>
+                  <span style={{ color: 'var(--ink-muted)' }}>{finding.message}</span>
+                  {finding.suggestions.length > 0 && (
+                    <span style={{ color: 'var(--ink-muted)' }}>
+                      Try: {finding.suggestions.join(', ')}
+                    </span>
+                  )}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       {/* ---- Synonyms ---------------------------------------------------- */}
       <section className="panel p-4">

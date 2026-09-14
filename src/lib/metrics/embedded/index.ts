@@ -2,6 +2,11 @@
 
 /** Fonts available for measurement, keyed by their /public path. */
 export const EMBEDDED_FONTS = {
+  '/fonts/LiberationMono-Regular.ttf': {
+    slug: 'LiberationMono-Regular',
+    byteLength: 319624,
+    load: () => import('./LiberationMono-Regular'),
+  },
   '/fonts/LiberationSans-Regular.ttf': {
     slug: 'LiberationSans-Regular',
     byteLength: 410820,

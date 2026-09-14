@@ -160,39 +160,10 @@ export function shapeLine(
   const plain = unshape(line);
   const words = tokenize(plain);
 
-  const build = (status: ShapeStatus, text: string): ShapeResult => {
-    const widthMm = width(text);
-    const normalWords = words.length > 0 ? words : [''];
-    return {
-      status,
-      text,
-      widthMm,
-      targetMm: options.targetMm,
-      deltaMm: widthMm - target,
-      fillRatio: options.targetMm > 0 ? widthMm / options.targetMm : 0,
-      charCount: [...text].length,
-      gapCount: Math.max(0, normalWords.length - 1),
-      naturalWidthMm: width(plain),
-      minWidthMm: width(joinAll(words, SPACE_CHARS.SIX_PER_EM)),
-      maxWidthMm: width(joinAll(words, SPACE_CHARS.THREE_PER_EM)),
-    };
-  };
+  const build = (status: ShapeStatus, text: string): ShapeResult =>
+    describe(status, text, plain, words, width, options.targetMm);
 
-  if (words.length === 0) {
-    return {
-      status: 'empty',
-      text: '',
-      widthMm: 0,
-      targetMm: options.targetMm,
-      deltaMm: -target,
-      fillRatio: 0,
-      charCount: 0,
-      gapCount: 0,
-      naturalWidthMm: 0,
-      minWidthMm: 0,
-      maxWidthMm: 0,
-    };
-  }
+  if (words.length === 0) return emptyResult(options.targetMm);
 
   const initialOverflow = width(plain) - target;
   if (initialOverflow === 0) return build('at-target', plain);
@@ -258,6 +229,69 @@ export function shapeLine(
   function settle(text: string): ShapeResult {
     return build(text === plain ? 'at-target' : 'shaped', text);
   }
+}
+
+/** The readout for `text`, a spacing of `plain`, against the target. */
+function describe(
+  status: ShapeStatus,
+  text: string,
+  plain: string,
+  words: readonly string[],
+  width: (text: string) => number,
+  targetMm: number,
+): ShapeResult {
+  const widthMm = width(text);
+  const normalWords = words.length > 0 ? words : [''];
+  return {
+    status,
+    text,
+    widthMm,
+    targetMm,
+    deltaMm: widthMm - effectiveTargetMm(targetMm),
+    fillRatio: targetMm > 0 ? widthMm / targetMm : 0,
+    charCount: [...text].length,
+    gapCount: Math.max(0, normalWords.length - 1),
+    naturalWidthMm: width(plain),
+    minWidthMm: width(joinAll(words, SPACE_CHARS.SIX_PER_EM)),
+    maxWidthMm: width(joinAll(words, SPACE_CHARS.THREE_PER_EM)),
+  };
+}
+
+function emptyResult(targetMm: number): ShapeResult {
+  return {
+    status: 'empty',
+    text: '',
+    widthMm: 0,
+    targetMm,
+    deltaMm: -effectiveTargetMm(targetMm),
+    fillRatio: 0,
+    charCount: 0,
+    gapCount: 0,
+    naturalWidthMm: 0,
+    minWidthMm: 0,
+    maxWidthMm: 0,
+  };
+}
+
+/**
+ * The readout for a line left exactly as typed, with no spacing work.
+ *
+ * The last row of a bullet that wraps is not shaped: on the form it ends
+ * wherever the words end, and widening it would only put wide spaces in a row
+ * nobody expects to be flush. It still needs the same readout as every other
+ * row, so this measures it and reports over or not over -- never short.
+ */
+export function measureLine(
+  line: string,
+  font: FontMetrics,
+  options: ShapeOptions,
+): ShapeResult {
+  const width = (text: string) => font.widthMm(text, options.sizePt, false);
+  const plain = unshape(line);
+  const words = tokenize(plain);
+  if (words.length === 0) return emptyResult(options.targetMm);
+  const over = width(plain) > effectiveTargetMm(options.targetMm);
+  return describe(over ? 'too-long' : 'at-target', plain, plain, words, width, options.targetMm);
 }
 
 /** First gap stays a normal space; see the note on the leading dash above. */
