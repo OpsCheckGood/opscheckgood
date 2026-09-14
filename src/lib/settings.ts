@@ -27,7 +27,7 @@ export interface BenchPrefs {
 export const DEFAULT_BENCH_PREFS: BenchPrefs = {
   autoSpace: true,
   abbreviate: true,
-  showDuplicates: false,
+  showDuplicates: true,
   formId: '',
   fieldId: '',
 };
