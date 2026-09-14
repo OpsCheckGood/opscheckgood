@@ -78,6 +78,19 @@ describe('bench preferences', () => {
 
   it('ignores junk rather than throwing', () => {
     expect(parseBenchPrefs('not json')).toEqual(DEFAULT_BENCH_PREFS);
+  });
+
+  // Duplicate highlighting defaulted off and was written back on every visit,
+  // so an old stored "off" is nobody's choice. It yields to the new default
+  // once; a value saved since then is a choice and is kept.
+  it('applies the duplicates default once to preferences stored before it', () => {
+    expect(parseBenchPrefs(JSON.stringify({ showDuplicates: false })).showDuplicates).toBe(true);
+    expect(
+      parseBenchPrefs(JSON.stringify({ showDuplicates: false, duplicatesDefaulted: true }))
+        .showDuplicates,
+    ).toBe(false);
+    saveBenchPrefs({ ...DEFAULT_BENCH_PREFS, showDuplicates: false });
+    expect(loadBenchPrefs().showDuplicates).toBe(false);
     expect(parseBenchPrefs('{"autoSpace":"yes"}')).toEqual(DEFAULT_BENCH_PREFS);
     expect(parseBenchPrefs(null)).toEqual(DEFAULT_BENCH_PREFS);
   });

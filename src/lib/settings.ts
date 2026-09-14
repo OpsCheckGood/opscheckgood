@@ -58,12 +58,18 @@ function writeRaw(key: string, value: string): void {
 export function parseBenchPrefs(raw: string | null): BenchPrefs {
   if (!raw) return { ...DEFAULT_BENCH_PREFS };
   try {
-    const parsed = JSON.parse(raw) as Partial<BenchPrefs>;
+    const parsed = JSON.parse(raw) as Partial<BenchPrefs> & { duplicatesDefaulted?: boolean };
+    // Duplicate highlighting used to default off, and every visit wrote the
+    // preference back, so everyone who had ever opened the bench carried an
+    // "off" nobody chose. The marker says the stored value post-dates the
+    // change; without it the new default wins once, after which a deliberate
+    // "off" is kept like any other preference.
+    const duplicatesChosen = parsed.duplicatesDefaulted === true;
     return {
       autoSpace: typeof parsed.autoSpace === 'boolean' ? parsed.autoSpace : DEFAULT_BENCH_PREFS.autoSpace,
       abbreviate: typeof parsed.abbreviate === 'boolean' ? parsed.abbreviate : DEFAULT_BENCH_PREFS.abbreviate,
       showDuplicates:
-        typeof parsed.showDuplicates === 'boolean'
+        duplicatesChosen && typeof parsed.showDuplicates === 'boolean'
           ? parsed.showDuplicates
           : DEFAULT_BENCH_PREFS.showDuplicates,
       formId: typeof parsed.formId === 'string' ? parsed.formId : '',
@@ -79,7 +85,7 @@ export function loadBenchPrefs(): BenchPrefs {
 }
 
 export function saveBenchPrefs(prefs: BenchPrefs): void {
-  writeRaw(BENCH_PREFS_KEY, JSON.stringify(prefs));
+  writeRaw(BENCH_PREFS_KEY, JSON.stringify({ ...prefs, duplicatesDefaulted: true }));
 }
 
 export function loadTheme(): Theme | null {

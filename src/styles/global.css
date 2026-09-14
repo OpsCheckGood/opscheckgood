@@ -64,6 +64,20 @@
   --mark-dim: #fef3c7;
 
   /*
+   * Highlighter colours for repeated words in the Bullet Bench draft: one per
+   * distinct word, every occurrence of that word in the same one. Pastels a
+   * black serif stays readable on; the dark set are the same hues dimmed.
+   */
+  --hl-a: #fef08a;
+  --hl-b: #bbf7d0;
+  --hl-c: #bfdbfe;
+  --hl-d: #fbcfe8;
+  --hl-e: #fed7aa;
+  --hl-f: #ddd6fe;
+  --hl-g: #99f6e4;
+  --hl-h: #fecaca;
+
+  /*
    * Type scale.
    *
    * The site used to live entirely between 10.5px and 15px, which is why it
@@ -115,6 +129,15 @@
 
   --mark: #e3b341;
   --mark-dim: #2b220d;
+
+  --hl-a: #4d4a15;
+  --hl-b: #14402a;
+  --hl-c: #1b3557;
+  --hl-d: #4a1d3a;
+  --hl-e: #4a2a12;
+  --hl-f: #2f2a5a;
+  --hl-g: #123f3a;
+  --hl-h: #4a1c1c;
 }
 
 html {

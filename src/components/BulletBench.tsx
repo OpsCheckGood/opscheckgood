@@ -311,6 +311,21 @@ export default function BulletBench() {
     [text],
   );
 
+  /**
+   * One highlighter colour per repeated word, keyed by every form of it, so
+   * the draft marks and the Review list agree. Eight colours cycle; the list
+   * is ordered most-repeated first, so the words that matter most are the
+   * ones least likely to share a colour.
+   */
+  const duplicateColour = useMemo(() => {
+    const map = new Map<string, string>();
+    duplicates.forEach((entry, i) => {
+      const token = `var(--hl-${HIGHLIGHT_KEYS[i % HIGHLIGHT_KEYS.length]})`;
+      for (const form of entry.forms) map.set(form, token);
+    });
+    return map;
+  }, [duplicates]);
+
   /** Irregular whitespace the optimizer will collapse on the way out. */
   const needsNormalizing = useMemo(
     () => lines.some((l) => /\t| {2,}/.test(l) || l !== l.trim()),
@@ -961,7 +976,7 @@ export default function BulletBench() {
                     {line === '' ? (
                       '\u00a0'
                     ) : showDuplicates ? (
-                      <DuplicateMarks text={line} words={duplicates} />
+                      <DuplicateMarks text={line} colours={duplicateColour} />
                     ) : (
                       line
                     )}
@@ -1174,7 +1189,19 @@ export default function BulletBench() {
                     line {finding.occurrences[0]!.line + 1}
                     {finding.occurrences.length > 1 ? ` +${finding.occurrences.length - 1}` : ''}
                   </span>
-                  <span style={{ fontWeight: 600 }}>{finding.token}</span>
+                  <span
+                    style={{
+                      fontWeight: 600,
+                      background:
+                        finding.kind === 'repeat'
+                          ? duplicateColour.get(finding.token.split(' / ')[0]!.toLowerCase())
+                          : undefined,
+                      padding: finding.kind === 'repeat' ? '0 4px' : undefined,
+                      borderRadius: 2,
+                    }}
+                  >
+                    {finding.token}
+                  </span>
                   <span style={{ color: 'var(--ink-muted)' }}>{finding.message}</span>
                   {finding.suggestions.length > 0 && (
                     <span style={{ color: 'var(--ink-muted)' }}>
@@ -1382,35 +1409,31 @@ function Toggle({
   );
 }
 
+/** The highlighter palette, as token suffixes: --hl-a through --hl-h. */
+const HIGHLIGHT_KEYS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
+
+/**
+ * Highlighter marks behind the draft. Every occurrence of a repeated word
+ * gets that word's colour, inflections included, so a glance shows which
+ * words are the same word.
+ */
 function DuplicateMarks({
   text,
-  words,
+  colours,
 }: {
   text: string;
-  words: { forms: string[]; related: boolean }[];
+  colours: ReadonlyMap<string, string>;
 }) {
-  if (words.length === 0) return <>{text}</>;
-
-  const lookup = new Map<string, boolean>();
-  for (const entry of words) {
-    for (const form of entry.forms) lookup.set(form, entry.related);
-  }
+  if (colours.size === 0) return <>{text}</>;
 
   const parts = text.split(/([A-Za-z][A-Za-z'’-]*)/g);
   return (
     <>
       {parts.map((part, i) => {
-        const related = lookup.get(part.toLowerCase());
-        if (related === undefined) return part;
+        const colour = colours.get(part.toLowerCase());
+        if (colour === undefined) return part;
         return (
-          <span
-            key={i}
-            style={{
-              // Softer for inflections (led/leads) than for a literal repeat.
-              background: related ? 'var(--warn-dim)' : 'var(--bad-dim)',
-              boxShadow: `inset 0 -1px 0 ${related ? 'var(--warn)' : 'var(--bad)'}`,
-            }}
-          >
+          <span key={i} style={{ background: colour, borderRadius: 2 }}>
             {part}
           </span>
         );
