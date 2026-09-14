@@ -1,27 +1,45 @@
 ---
 import Base from '../layouts/Base.astro';
-import { tools } from '../lib/site-nav';
+import { tools, firstSergeant } from '../lib/site-nav';
+
+// Numbered in build order, the toolkit after the tools.
+const pad = (n: number) => String(n).padStart(2, '0');
+const cards = tools.filter((t) => t.ready);
+const arrow =
+  '<svg class="arrow" viewBox="0 0 30 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 9h27M19 1l9 8-9 8"/></svg>';
 ---
 
 <Base title="Ops Check Good">
-  <div class="mx-auto max-w-[1000px] px-3 sm:px-6 pt-10 pb-4 sm:pb-10">
-    <h1 class="display m-0">Tools for Airmen.</h1>
-
-    <p class="lede m-0 mt-5">Free to use.</p>
-
+  <div class="mx-auto max-w-[1480px] px-4 sm:px-8 pt-16 sm:pt-28 pb-8 sm:pb-12">
+    <h1 class="display m-0">Ops Check Good</h1>
+    <div class="display-rule" aria-hidden="true"></div>
   </div>
 
-  <ul class="mx-auto m-0 grid max-w-[1000px] list-none gap-3 px-3 sm:px-6 pb-12 p-0 sm:grid-cols-2">
+  <ul
+    class="mx-auto m-0 grid max-w-[1480px] list-none gap-4 px-4 sm:px-8 p-0"
+    style="grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));"
+  >
     {
-      tools.map((tool) => (
-        <li class="panel card p-5 sm:p-6">
-          <a href={tool.href} class="h2 no-underline block">
+      cards.map((tool, i) => (
+        <li class="tool-card card">
+          <span class="util">{pad(i + 1)}</span>
+          <a href={tool.href} class="h2 no-underline block" title={tool.tagline}>
             {tool.name}
           </a>
-          <p class="util m-0 mt-1.5" style="color: var(--accent);">{tool.tagline}</p>
-          <p class="body m-0 mt-4">{tool.blurb}</p>
+          <Fragment set:html={arrow} />
         </li>
       ))
     }
   </ul>
+
+  <div class="mx-auto max-w-[1480px] px-4 sm:px-8 pt-10 pb-16">
+    <p class="util m-0 mb-4">Toolkits</p>
+    <div class="tool-card tool-card--wide card">
+      <span class="util">{pad(cards.length + 1)}</span>
+      <a href={firstSergeant.href} class="h2 no-underline block" title={firstSergeant.tagline}>
+        First Sergeant
+      </a>
+      <Fragment set:html={arrow} />
+    </div>
+  </div>
 </Base>

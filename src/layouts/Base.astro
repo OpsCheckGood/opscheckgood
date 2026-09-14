@@ -45,26 +45,16 @@ const year = new Date().getFullYear();
 // page, so it sits at the end of the list rather than inside it.
 const menuTools = [...tools, firstSergeant].filter((tool) => tool.ready);
 
-// Tools listed in the footer, alongside the reference pages a reader might
-// want. Same source as the menu, so nothing here 404s.
-const footerTools = menuTools;
-
 // Site-level pages. On a phone the header nav is hidden and the tab bar has no
 // room for these, so the footer is the only way to reach Settings: it is not
 // decoration.
 const footerSite = [
-  { name: 'All tools', href: home },
+  { name: 'Tools', href: home },
   { name: firstSergeant.name, href: firstSergeant.href },
   { name: settings.name, href: settings.href },
 ];
 
-// External references, for checking the shipped data against its source. Plain
-// links a reader chooses to follow; the page never requests them, so hard
-// constraint 1 is untouched.
-const footerReference = [
-  { label: 'AFPC Acronyms', href: 'https://www.afpc.af.mil/Career-Management/Acronyms/' },
-  { label: 'AF e-Publishing', href: 'https://www.e-publishing.af.mil/' },
-];
+
 
 // The phone tab bar. Five is the most a tab bar can hold before the labels
 // stop being readable, so these are the tools people actually open; the rest
@@ -102,8 +92,8 @@ const nav = [
       separates "a website in a browser" from "an app". Two values so the bar
       follows the theme.
     -->
-    <meta name="theme-color" content="#f1f4f8" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0a0b0c" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f2f1ed" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#121314" media="(prefers-color-scheme: dark)" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Ops Check Good" />
@@ -138,53 +128,39 @@ const nav = [
     </a>
 
     <header
-      class="app-bar flex flex-wrap items-center gap-x-6 gap-y-2 border-b px-3 sm:px-6 py-3 sm:py-4"
+      class="app-bar flex flex-wrap items-center gap-x-6 gap-y-2 border-b px-4 sm:px-8 py-4 sm:py-5"
       style="border-color: var(--rule);"
     >
       {/*
         On a tool page the tool is the heading and the site is the label above
-        it, rather than both competing on one line at the same size. That is
-        the whole hierarchy fix in miniature: one thing leads.
+        it, rather than both competing on one line at the same size. On the
+        home page the site is the only thing here.
       */}
       <div class="min-w-0">
-        <a
-          href={home}
-          class="no-underline block"
-          style={
-            brand
-              ? 'font-size: 10.5px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-faint);'
-              : 'font-size: 17px; font-weight: 700; letter-spacing: 0.16em; color: var(--ink);'
-          }
-        >
-          OPS CHECK GOOD
-        </a>
         {
-          brand && (
-            <div class="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
-              <span
-                style="font-size: var(--text-h1); font-weight: 700; letter-spacing: -0.01em; color: var(--ink); line-height: 1.15;"
-              >
-                {brand}
-              </span>
-              {tagline && <span class="util desktop-only">{tagline}</span>}
-            </div>
+          brand ? (
+            <>
+              <a href={home} class="util no-underline block">
+                Ops Check Good
+              </a>
+              <div class="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+                <span class="wordmark" style="font-size: 24px;">{brand}</span>
+                {tagline && <span class="util desktop-only">{tagline}</span>}
+              </div>
+            </>
+          ) : (
+            <a href={home} class="wordmark no-underline block" style="font-size: 24px;">
+              Ops Check Good
+            </a>
           )
         }
       </div>
 
-      <nav class="ml-auto flex flex-wrap items-center gap-x-7 gap-y-2" aria-label="Site">
+      <nav class="ml-auto flex flex-wrap items-center gap-x-8 gap-y-2" aria-label="Site">
         <span class="desktop-only contents">
         {
           nav.map((item) =>
-            !item.ready ? (
-              <span
-                class="util"
-                title="Not built yet"
-                style="letter-spacing: 0.13em; opacity: 0.5;"
-              >
-                {item.label}
-              </span>
-            ) : item.menu ? (
+            item.menu ? (
               /*
                 The label stays a real link to the tools index, so a click or a
                 keyboard Enter goes somewhere sensible; the panel is an
@@ -193,13 +169,8 @@ const nav = [
                 JavaScript.
               */
               <div class="nav-menu">
-                <a
-                  href={item.href}
-                  class="util no-underline nav-menu-label"
-                  style="color: var(--ink-muted); letter-spacing: 0.13em;"
-                >
+                <a href={item.href} class="nav-link nav-menu-label">
                   {item.label}
-                  <span class="nav-menu-caret" aria-hidden="true"></span>
                 </a>
                 <div class="nav-menu-panel">
                   <ul class="nav-menu-list">
@@ -215,24 +186,21 @@ const nav = [
                 </div>
               </div>
             ) : (
-              <a
-                href={item.href}
-                class="util no-underline"
-                style="color: var(--ink-muted); letter-spacing: 0.13em;"
-              >
+              <a href={item.href} class="nav-link">
                 {item.label}
               </a>
             ),
           )
         }
         </span>
-        <button
-          id="theme-toggle"
-          type="button"
-          class="util border px-2 py-1"
-          style="background: var(--panel); border-color: var(--rule-strong); letter-spacing: 0.13em;"
-        >
-          Theme
+        <button id="theme-toggle" type="button" class="theme-toggle" aria-label="Switch to dark mode">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path data-icon="moon" d="M20.5 14.3A8.5 8.5 0 0 1 9.7 3.5a8.5 8.5 0 1 0 10.8 10.8z" />
+            <g data-icon="sun" style="display: none;">
+              <circle cx="12" cy="12" r="4.2" />
+              <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none" />
+            </g>
+          </svg>
         </button>
       </nav>
     </header>
@@ -253,101 +221,33 @@ const nav = [
 
     <footer class="site-footer">
       <div
-        class="mx-auto grid max-w-[1560px] gap-x-8 gap-y-9 px-3 sm:px-6 py-10 sm:grid-cols-2 lg:grid-cols-4"
+        class="mx-auto flex max-w-[1480px] flex-wrap items-baseline justify-between gap-x-8 gap-y-3 px-4 sm:px-8 py-6"
       >
-        <div>
-          <a
-            href={home}
-            class="no-underline"
-            style="font-size: 14px; font-weight: 700; letter-spacing: 0.16em; color: var(--ink);"
-          >
-            OPS CHECK GOOD
-          </a>
-          <p class="body m-0 mt-2 max-w-[34ch]">
-            Free tools for Airmen. Total force, enlisted and officer.
-          </p>
-          <p class="m-0 mt-3 max-w-[34ch]" style="font-size: var(--text-small); color: var(--ink-muted);">
-            Everything runs in the browser. Nothing you type leaves the device.
-          </p>
-        </div>
-
-        <nav aria-labelledby="footer-tools-heading">
-          <h2 id="footer-tools-heading" class="util m-0">Tools</h2>
-          <ul class="m-0 mt-3 list-none space-y-2 p-0">
-            {
-              footerTools.map((item) => (
-                <li>
-                  <a
-                    href={item.href}
-                    class="footer-link"
-                  >
-                    {item.name}
-                  </a>
-                </li>
-              ))
-            }
-          </ul>
+        <p class="util m-0" style="color: var(--ink);">Built for Airmen, by Airmen.</p>
+        <nav class="flex flex-wrap items-baseline gap-x-6 gap-y-2" aria-label="Site links">
+          {
+            footerSite.map((item) => (
+              <a href={item.href} class="footer-link">
+                {item.name}
+              </a>
+            ))
+          }
         </nav>
-
-        <nav aria-labelledby="footer-site-heading">
-          <h2 id="footer-site-heading" class="util m-0">Site</h2>
-          <ul class="m-0 mt-3 list-none space-y-2 p-0">
-            {
-              footerSite.map((item) => (
-                <li>
-                  <a
-                    href={item.href}
-                    class="footer-link"
-                  >
-                    {item.name}
-                  </a>
-                </li>
-              ))
-            }
-          </ul>
-        </nav>
-
-        <nav aria-labelledby="footer-reference-heading">
-          <h2 id="footer-reference-heading" class="util m-0">Reference</h2>
-          <ul class="m-0 mt-3 list-none space-y-2 p-0">
-            {
-              footerReference.map((item) => (
-                <li>
-                  <a
-                    href={item.href}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    class="footer-link"
-                  >
-                    {item.label} <span aria-hidden="true" style="color: var(--ink-faint);">↗</span>
-                  </a>
-                </li>
-              ))
-            }
-          </ul>
-        </nav>
+        <p class="util m-0" style="color: var(--ink);">
+          Ops Check Good <span aria-hidden="true">&nbsp;//&nbsp;</span> Est. 2024
+        </p>
       </div>
 
-      {/*
-        One closing bar rather than three stacked rules: the copyright, the line
-        about who built it and the disclaimer are all fine print, and separating
-        them with borders gave the quietest part of the page the most chrome.
-      */}
       <div class="site-footer-legal">
-        <div class="mx-auto flex max-w-[1560px] flex-wrap items-baseline gap-x-6 gap-y-2 px-3 sm:px-6 py-5">
-          <p class="util m-0" style="letter-spacing: 0.08em;">
-            &copy; {year} Ops Check Good
-          </p>
-          <p class="m-0" style="font-size: var(--text-small); color: var(--ink-muted);">
-            Built for Airmen, by Airmen.
-          </p>
+        <div class="mx-auto max-w-[1480px] px-4 sm:px-8 pb-6">
           <p
-            class="m-0 mt-1 basis-full max-w-[80ch] leading-relaxed"
+            class="m-0 max-w-[80ch] leading-relaxed"
             style="font-size: var(--text-micro); color: var(--ink-faint);"
           >
             Unofficial personal project. Not affiliated with, endorsed by, or produced by the
             United States Air Force or the Department of Defense. Official guidance governs;
             check current instructions and your chain of command before relying on anything here.
+            &copy; {year} Ops Check Good.
           </p>
         </div>
       </div>
@@ -364,10 +264,13 @@ const nav = [
           return root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
         }
         function label() {
-          // Names the action, not the state: pressing it gives you the other one.
-          var next = current() === 'dark' ? 'Light' : 'Dark';
-          button.textContent = next;
-          button.setAttribute('aria-label', 'Switch to ' + next.toLowerCase() + ' mode');
+          // Shows the mode pressing it gives you: a moon in the light, a sun in the dark.
+          var dark = current() === 'dark';
+          var moon = button.querySelector('[data-icon="moon"]');
+          var sun = button.querySelector('[data-icon="sun"]');
+          if (moon) moon.style.display = dark ? 'none' : '';
+          if (sun) sun.style.display = dark ? '' : 'none';
+          button.setAttribute('aria-label', 'Switch to ' + (dark ? 'light' : 'dark') + ' mode');
         }
 
         button.addEventListener('click', function () {

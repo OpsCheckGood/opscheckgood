@@ -88,12 +88,14 @@ import type { SynonymData } from '@/lib/data/types';
 
 const DRAFT_KEY = 'ocg.bullet-bench.draft.v2';
 
+// Every line lands within the field, and no word repeats across them: the
+// sample is the first thing a visitor sees, and it should not be a rainbow.
 const SAMPLE = [
-  '- Type or paste your bullets here, one bullet per line, and the shaped version appears in the box on the right as you type',
-  '- Spacing is adjusted using U+2004 and U+2006 Unicode spaces, so it survives a copy-paste into the PDF form field',
-  '- A bullet that cannot be squeezed onto one line stays red; hover over it to see roughly how many characters to trim',
-  '- Both boxes are the real width of the form field, so a line that wraps here is a line that will wrap on the form itself',
-  '- Your draft is saved in this browser alone. Nothing you type is ever uploaded, logged, tracked, or sent anywhere else',
+  '- Type or paste your bullets here, one per row, and the shaped version appears in the pane on the right as it is typed',
+  '- Spacing is adjusted with U+2004 and U+2006 Unicode characters, so it survives a copy-paste into the PDF text field',
+  '- A statement that cannot be squeezed onto a single line stays red; hover over it to see roughly how much needs to go',
+  '- Both boxes are the true width of the block, so whatever wraps in this editor breaks the same way on the real form',
+  '- Everything you write is saved in this browser alone. Nothing is ever uploaded, logged, tracked, or sent anywhere else',
 ].join('\n');
 
 /**

@@ -25,36 +25,52 @@
   --font-mono:
     ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
     'Roboto Mono', monospace;
+  /*
+   * The display face: heavy, condensed, set in capitals. Resolved from the
+   * system so nothing is fetched (hard constraint 1): Bahnschrift on Windows,
+   * Arial Narrow where it exists, Roboto Condensed on Android, then whatever
+   * heavy sans the machine has, condensed by font-stretch where it can be.
+   */
+  --font-display:
+    'Bahnschrift', 'Arial Narrow', 'Roboto Condensed', 'Helvetica Neue', 'Segoe UI',
+    Arial, sans-serif;
 }
 
 :root {
   color-scheme: light;
 
-  --ground: #f1f4f8;
-  --panel: #ffffff;
+  /*
+   * Paper and ink. One off-white ground, panels drawn on it with a hairline
+   * rather than lifted off it in white, and no colour in the chrome at all:
+   * the only colours on a page are the three states a value can be in. The
+   * white surface survives for the boxes you type into.
+   */
+  --ground: #f2f1ed;
+  --panel: #f2f1ed;
   --panel-sunk: #ffffff;
-  --panel-raised: #f8fafc;
+  --panel-raised: #eae9e4;
 
-  --ink: #0f172a;
-  --ink-muted: #475569;
-  --ink-faint: #8a95a5;
+  --ink: #15181c;
+  --ink-muted: #4a4e54;
+  --ink-faint: #7d8187;
 
-  --rule: #e3e8ef;
-  --rule-strong: #cbd5e1;
+  --rule: #c9c8c2;
+  --rule-strong: #9d9c96;
 
   --ok: #15803d;
-  --ok-dim: #dcfce7;
+  --ok-dim: #dcf5e3;
   --warn: #a16207;
-  --warn-dim: #fef3c7;
+  --warn-dim: #f8efcf;
   --bad: #b91c1c;
-  --bad-dim: #fee2e2;
+  --bad-dim: #f9dede;
 
-  /* Structure and interaction. `dim` is the tint behind a computed readout. */
-  --accent: #2563eb;
-  --accent-strong: #1d4ed8;
-  --accent-dim: #eff6ff;
-  --focus: #2563eb;
-  --control: #2563eb;
+  /* Structure and interaction are ink, not a colour. `dim` is a tint behind a
+     computed readout or under a hovered row. */
+  --accent: #15181c;
+  --accent-strong: #000000;
+  --accent-dim: #e6e5df;
+  --focus: #15181c;
+  --control: #15181c;
 
   /*
    * The row you scored, on a scoring chart. Gold, as in the source PDF.
@@ -88,7 +104,7 @@
    * The display size is fluid so a phone gets a headline that fits its column
    * rather than a desktop headline crammed into it.
    */
-  --text-display: clamp(28px, 7vw, 40px);
+  --text-display: clamp(52px, 9.5vw, 128px);
   --text-h1: 21px;
   --text-h2: 15px;
   --text-body: 13.5px;
@@ -102,17 +118,17 @@
 :root[data-theme='dark'] {
   color-scheme: dark;
 
-  --ground: #0a0b0c;
-  --panel: #0f1011;
-  --panel-sunk: #0c0d0e;
-  --panel-raised: #16181a;
+  --ground: #121314;
+  --panel: #121314;
+  --panel-sunk: #1a1b1d;
+  --panel-raised: #1f2023;
 
-  --ink: #d9d8d6;
-  --ink-muted: #8e9296;
-  --ink-faint: #6d7276;
+  --ink: #ebe9e4;
+  --ink-muted: #a3a29d;
+  --ink-faint: #74746f;
 
-  --rule: #24262a;
-  --rule-strong: #34373c;
+  --rule: #34353a;
+  --rule-strong: #55565c;
 
   --ok: #6ec77a;
   --ok-dim: #14231a;
@@ -121,11 +137,11 @@
   --bad: #cf6058;
   --bad-dim: #2a1715;
 
-  --accent: #6ea8f0;
-  --accent-strong: #8fbcf5;
-  --accent-dim: #111c2c;
-  --focus: #4f8fc0;
-  --control: #3f7fbf;
+  --accent: #ebe9e4;
+  --accent-strong: #ffffff;
+  --accent-dim: #26272b;
+  --focus: #ebe9e4;
+  --control: #ebe9e4;
 
   --mark: #e3b341;
   --mark-dim: #2b220d;
@@ -169,24 +185,48 @@ body {
  * competing with the values it is labelling.
  */
 .util {
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.09em;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-faint);
 }
 
 /*
- * The one big thing on a page. Tight leading and a hair of negative tracking:
- * at this size the default spacing reads loose and web-templatey.
+ * The one big thing on a page: the display face, in capitals, set solid.
+ * font-stretch narrows the faces that have a condensed axis and is ignored
+ * by the rest.
  */
 .display {
+  font-family: var(--font-display);
+  font-stretch: condensed;
   font-size: var(--text-display);
-  font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
+  font-weight: 800;
+  line-height: 0.92;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
   color: var(--ink);
   text-wrap: balance;
+}
+
+/* The short rule under a display heading: the one ornament on the page. */
+.display-rule {
+  width: 64px;
+  height: 2px;
+  margin-top: 28px;
+  background: var(--ink);
+}
+
+/* A wordmark: the display face at reading size. */
+.wordmark {
+  font-family: var(--font-display);
+  font-stretch: condensed;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink);
+  line-height: 1;
 }
 
 /* The sentence under a display heading. Long-form, not chrome. */
@@ -197,13 +237,17 @@ body {
   max-width: 54ch;
 }
 
-/* A heading inside the page: a tool name on a card, a footer column. */
+/* A heading inside the page: a tool name on a card. */
 .h2 {
-  font-size: var(--text-h1);
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
+  font-family: var(--font-display);
+  font-stretch: condensed;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: 0;
+  text-transform: uppercase;
   color: var(--ink);
+  text-wrap: balance;
 }
 
 /* Ordinary reading text. */
@@ -213,13 +257,14 @@ body {
   color: var(--ink-muted);
 }
 
-/* Panel titles: same treatment, one step up, and in the accent. */
+/* Panel titles: the label treatment, one step up, in ink. */
 .title {
+  font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--ink);
 }
 
 .util-value {
@@ -239,7 +284,45 @@ body {
 .panel {
   background: var(--panel);
   border: 1px solid var(--rule);
-  border-radius: 8px;
+  border-radius: 0;
+}
+
+/*
+ * A tool on the home page: a number, a name, an arrow, inside a hairline.
+ * The card is the link (see .card); the arrow is where the eye lands.
+ */
+.tool-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 22px;
+  min-height: 240px;
+  padding: 26px 28px;
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  transition: border-color 120ms ease, background 120ms ease;
+}
+
+.tool-card:hover,
+.tool-card:focus-within {
+  border-color: var(--ink);
+  background: var(--panel-raised);
+}
+
+.tool-card--wide {
+  min-height: 0;
+  flex-direction: row;
+  align-items: center;
+  gap: 28px;
+  padding: 26px 28px;
+}
+
+.tool-card .arrow {
+  display: block;
+  width: 30px;
+  height: 18px;
+  color: var(--ink);
 }
 
 /*
@@ -277,7 +360,7 @@ body {
 select,
 button,
 input[type='text'] {
-  border-radius: 6px;
+  border-radius: 0;
   font-family: inherit;
 }
 
@@ -447,7 +530,7 @@ body {
  * ------------------------------------------------------------------------ */
 
 .site-footer {
-  margin-top: 2.5rem;
+  margin-top: 3rem;
   border-top: 1px solid var(--rule);
   background: var(--panel);
 }
@@ -455,7 +538,10 @@ body {
 /* The footer's link colour lives here rather than inline, so hover has
    something to change without an !important fight with a style attribute. */
 .footer-link {
-  font-size: var(--text-small);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--ink-muted);
   text-decoration: none;
 }
@@ -467,7 +553,41 @@ body {
 }
 
 .site-footer-legal {
-  border-top: 1px solid var(--rule);
+  border-top: 0;
+}
+
+/* The header link and its theme toggle share the label treatment. */
+.nav-link {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.theme-toggle svg {
+  width: 18px;
+  height: 18px;
 }
 
 
@@ -533,8 +653,13 @@ body {
   }
 
   .tabbar a[aria-current='page'] {
-    color: var(--accent);
-    border-top-color: var(--accent);
+    color: var(--ink);
+    border-top-color: var(--ink);
+  }
+
+  .tool-card {
+    min-height: 0;
+    padding: 22px 20px;
   }
 
   /* The top bar stays put, so the tool you are in is always named. */
