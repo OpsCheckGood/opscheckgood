@@ -70,6 +70,14 @@ const TOOLS = [
     outFile: 'mfr-generator-offline.html',
   },
   {
+    name: 'Decoration Writer',
+    wordmark: 'DECORATION WRITER',
+    tagline: 'Fit the certificate, not the counter.',
+    entry: 'src/offline-entry-decoration.tsx',
+    rootId: 'decoration-writer-root',
+    outFile: 'decoration-writer-offline.html',
+  },
+  {
     name: 'First Sergeant Toolkit',
     wordmark: 'FIRST SERGEANT',
     tagline: 'Where do I send them?',

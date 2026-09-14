@@ -155,6 +155,45 @@ describeBuilt('single-file offline build', () => {
 
 
 /**
+ * The Decoration Writer's offline copy: the tool that exists to refuse input
+ * must actually be able to measure from disk, which means the monospace font
+ * parsed and the column count came out of it.
+ */
+describeBuilt('decoration writer offline build', () => {
+  const decorationFile = join(dist, 'decoration-writer-offline.html');
+
+  it('mounts and measures the certificate with no network available', async () => {
+    expect(existsSync(decorationFile)).toBe(true);
+    const html = readFileSync(decorationFile, 'utf8');
+    const { JSDOM } = await import('jsdom');
+    const dom = new JSDOM(html, {
+      runScripts: 'dangerously',
+      pretendToBeVisual: true,
+      url: 'file:///decoration-writer-offline.html',
+    });
+    const denied: string[] = [];
+    dom.window.fetch = ((input: unknown) => {
+      denied.push(String(input));
+      return Promise.reject(new Error('network disabled'));
+    }) as typeof fetch;
+    const root = dom.window.document.getElementById('decoration-writer-root')!;
+    await vi.waitFor(
+      () => {
+        expect(root.querySelector('textarea')).not.toBeNull();
+        // "74 columns" can only be printed once the embedded font has parsed.
+        expect(root.textContent).toMatch(/74 columns/);
+      },
+      { timeout: 45000, interval: 100 },
+    );
+    const text = root.textContent ?? '';
+    expect(text).toContain('/ 1350 chars');
+    expect(text).toContain('Copy citation');
+    expect(denied, `page attempted network requests: ${denied.join(', ')}`).toEqual([]);
+    dom.window.close();
+  }, 90000);
+});
+
+/**
  * Nothing published names the author or the repository.
  *
  * The site is run anonymously, so a stray link to the GitHub organisation
@@ -197,6 +236,7 @@ describeBuilt('hosted build', () => {
     expect(existsSync(join(dist, 'tools', 'pt-calculator', 'index.html'))).toBe(true);
     expect(existsSync(join(dist, 'tools', 'btz-calculator', 'index.html'))).toBe(true);
     expect(existsSync(join(dist, 'tools', 'mfr', 'index.html'))).toBe(true);
+    expect(existsSync(join(dist, 'tools', 'decoration-writer', 'index.html'))).toBe(true);
     expect(existsSync(join(dist, 'first-sergeant', 'index.html'))).toBe(true);
   });
 
@@ -208,6 +248,7 @@ describeBuilt('hosted build', () => {
     const chunks = readdirSync(join(dist, '_astro')).filter((f) => f.endsWith('.js'));
     expect(chunks.some((c) => c.startsWith('LiberationSerif'))).toBe(true);
     expect(chunks.some((c) => c.startsWith('LiberationSans'))).toBe(true);
+    expect(chunks.some((c) => c.startsWith('LiberationMono'))).toBe(true);
   });
 });
 

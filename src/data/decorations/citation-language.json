@@ -1,0 +1,128 @@
+{
+  "meta": {
+    "source": "DAFMAN 36-2806, Military Awards: Criteria and Procedures, Attachment 5",
+    "version": "AFMAN 36-2806, 10 June 2019",
+    "verifiedDate": "2026-09-14",
+    "sourceUrl": "https://static.e-publishing.af.mil/production/1/af_a1/publication/dafman36-2806/dafman36_2806.pdf",
+    "status": "stub",
+    "notes": "Transcribed from Attachment 5 of AFMAN 36-2806 dated 10 June 2019, the last copy of the manual that could be read outside a .mil network. The current DAFMAN 36-2806 keeps the same paragraph numbers (the myDecs Reimagined template cites A5.2.7, A5.2.10 and A5.2.11 for the same three decorations, and A5.1.10 and A5.1.14 for numbers and abbreviations), but the wording has not been read against it, so this file stays a stub. The 2019 manual names the Air Force Commendation and Achievement Medals; the labels here use the Air and Space names the template uses. The Space Force closing ('United States Space Force') is an assumption, not a transcription. Short titles follow A5.1.6: spell out the full grade in the opening sentence, then use the short title. Chaplain titles (A5.1.6) are not handled."
+  },
+  "data": {
+    "services": [
+      { "id": "usaf", "label": "Air Force", "text": "United States Air Force" },
+      { "id": "ussf", "label": "Space Force", "text": "United States Space Force" }
+    ],
+    "pronouns": [
+      { "id": "he", "label": "he / him", "reflexive": "himself", "possessive": "his" },
+      { "id": "she", "label": "she / her", "reflexive": "herself", "possessive": "her" },
+      { "id": "they", "label": "they / them", "reflexive": "themselves", "possessive": "their" }
+    ],
+    "grades": [
+      { "id": "ab", "abbr": "AB", "full": "Airman Basic", "short": "Airman", "service": "usaf" },
+      { "id": "amn", "abbr": "Amn", "full": "Airman", "short": "Airman", "service": "usaf" },
+      { "id": "a1c", "abbr": "A1C", "full": "Airman First Class", "short": "Airman", "service": "usaf" },
+      { "id": "sra", "abbr": "SrA", "full": "Senior Airman", "short": "Airman", "service": "usaf" },
+      { "id": "ssgt", "abbr": "SSgt", "full": "Staff Sergeant", "short": "Sergeant", "service": "both" },
+      { "id": "tsgt", "abbr": "TSgt", "full": "Technical Sergeant", "short": "Sergeant", "service": "both" },
+      { "id": "msgt", "abbr": "MSgt", "full": "Master Sergeant", "short": "Sergeant", "service": "both" },
+      { "id": "smsgt", "abbr": "SMSgt", "full": "Senior Master Sergeant", "short": "Sergeant", "service": "both" },
+      { "id": "cmsgt", "abbr": "CMSgt", "full": "Chief Master Sergeant", "short": "Chief", "service": "both" },
+      { "id": "spc1", "abbr": "Spc1", "full": "Specialist 1", "short": "Specialist", "service": "ussf" },
+      { "id": "spc2", "abbr": "Spc2", "full": "Specialist 2", "short": "Specialist", "service": "ussf" },
+      { "id": "spc3", "abbr": "Spc3", "full": "Specialist 3", "short": "Specialist", "service": "ussf" },
+      { "id": "spc4", "abbr": "Spc4", "full": "Specialist 4", "short": "Specialist", "service": "ussf" },
+      { "id": "sgt", "abbr": "Sgt", "full": "Sergeant", "short": "Sergeant", "service": "ussf" },
+      { "id": "2lt", "abbr": "2d Lt", "full": "Second Lieutenant", "short": "Lieutenant", "service": "both" },
+      { "id": "1lt", "abbr": "1st Lt", "full": "First Lieutenant", "short": "Lieutenant", "service": "both" },
+      { "id": "capt", "abbr": "Capt", "full": "Captain", "short": "Captain", "service": "both" },
+      { "id": "maj", "abbr": "Maj", "full": "Major", "short": "Major", "service": "both" },
+      { "id": "ltcol", "abbr": "Lt Col", "full": "Lieutenant Colonel", "short": "Colonel", "service": "both" },
+      { "id": "col", "abbr": "Col", "full": "Colonel", "short": "Colonel", "service": "both" },
+      { "id": "briggen", "abbr": "Brig Gen", "full": "Brigadier General", "short": "General", "service": "both" },
+      { "id": "majgen", "abbr": "Maj Gen", "full": "Major General", "short": "General", "service": "both" },
+      { "id": "ltgen", "abbr": "Lt Gen", "full": "Lieutenant General", "short": "General", "service": "both" },
+      { "id": "gen", "abbr": "Gen", "full": "General", "short": "General", "service": "both" }
+    ],
+    "opening": {
+      "pattern": "{rank} {name} distinguished {reflexive} {basis} {assignment}{period}.",
+      "assignments": [
+        { "id": "as", "label": "as (duty title)", "text": "as {place}" },
+        { "id": "while", "label": "while assigned to", "text": "while assigned to {place}" },
+        { "id": "near", "label": "at or near", "text": "at or near {place}" }
+      ],
+      "periods": [
+        { "id": "range", "label": "from … to …", "text": ", from {start} to {end}" },
+        { "id": "on", "label": "on (date)", "text": " on {date}" },
+        { "id": "none", "label": "no date", "text": "" }
+      ]
+    },
+    "awards": [
+      {
+        "id": "msm",
+        "label": "Meritorious Service Medal",
+        "ref": "A5.2.7",
+        "bases": [
+          { "id": "service", "label": "outstanding service", "text": "in the performance of outstanding service to the United States" },
+          { "id": "achievement", "label": "outstanding achievement", "text": "by outstanding achievement" }
+        ],
+        "closings": [
+          { "id": "standard", "label": "Standard", "text": "The singularly distinctive accomplishments of {shortRank} {surname} reflect great credit upon {reflexive} and the {service}." },
+          { "id": "retirement", "label": "Retirement", "text": "The singularly distinctive accomplishments of {shortRank} {surname} culminate a {longAnd}distinguished career in the service of {possessive} country and reflect great credit upon {reflexive} and the {service}." },
+          { "id": "separation", "label": "Separation", "text": "The singularly distinctive accomplishments of {shortRank} {surname} while serving {possessive} country reflect great credit upon {reflexive} and the {service}." },
+          { "id": "posthumous", "label": "Posthumous", "text": "The singularly distinctive accomplishments of {shortRank} {surname} in the dedication of {possessive} service to {possessive} country reflect great credit upon {reflexive} and the {service}." }
+        ]
+      },
+      {
+        "id": "ascom",
+        "label": "Air and Space Commendation Medal",
+        "ref": "A5.2.10",
+        "bases": [
+          { "id": "service", "label": "meritorious service", "text": "by meritorious service" },
+          { "id": "achievement", "label": "outstanding achievement", "text": "by outstanding achievement" },
+          { "id": "heroism", "label": "an act of heroism", "text": "by an act of heroism" }
+        ],
+        "closings": [
+          { "id": "standard", "label": "Standard", "text": "The distinctive accomplishments of {shortRank} {surname} reflect credit upon {reflexive} and the {service}." },
+          { "id": "heroism", "label": "Heroism", "text": "By {possessive} prompt action and humanitarian regard for {possessive} fellowman, {shortRank} {surname} has reflected credit upon {reflexive} and the {service}." },
+          { "id": "retirement", "label": "Retirement", "text": "The distinctive accomplishments of {shortRank} {surname} culminate a {longAnd}distinguished career in the service of {possessive} country and reflect credit upon {reflexive} and the {service}." },
+          { "id": "separation", "label": "Separation", "text": "The distinctive accomplishments of {shortRank} {surname} while serving {possessive} country reflect credit upon {reflexive} and the {service}." },
+          { "id": "posthumous", "label": "Posthumous", "text": "The distinctive accomplishments of {shortRank} {surname} in the dedication of {possessive} service to {possessive} country reflect credit upon {reflexive} and the {service}." }
+        ]
+      },
+      {
+        "id": "asam",
+        "label": "Air and Space Achievement Medal",
+        "ref": "A5.2.11",
+        "bases": [
+          { "id": "service", "label": "meritorious service", "text": "by meritorious service" },
+          { "id": "achievement", "label": "outstanding achievement", "text": "by outstanding achievement" }
+        ],
+        "closings": [
+          { "id": "standard", "label": "Standard", "text": "The distinctive accomplishments of {shortRank} {surname} reflect credit upon {reflexive} and the {service}." }
+        ]
+      },
+      {
+        "id": "lom",
+        "label": "Legion of Merit",
+        "ref": "A5.2.2",
+        "bases": [
+          { "id": "service", "label": "exceptionally meritorious conduct", "text": "by exceptionally meritorious conduct in the performance of outstanding service to the United States" }
+        ],
+        "closings": [
+          { "id": "standard", "label": "Standard", "text": "The singularly distinctive accomplishments of {shortRank} {surname} reflect great credit upon {reflexive} and the {service}." },
+          { "id": "leadership", "label": "Leadership", "text": "The superior initiative, outstanding leadership, and personal endeavor displayed by {shortRank} {surname} reflect great credit upon {reflexive} and the {service}." },
+          { "id": "retirement", "label": "Retirement", "text": "The singularly distinctive accomplishments of {shortRank} {surname} culminate a {longAnd}distinguished career in the service of {possessive} country and reflect great credit upon {reflexive} and the {service}." },
+          { "id": "posthumous", "label": "Posthumous", "text": "The singularly distinctive accomplishments of {shortRank} {surname} in the dedication of {possessive} service to {possessive} country reflect great credit upon {reflexive} and the {service}." }
+        ]
+      }
+    ],
+    "rules": [
+      { "ref": "A5.1.4", "text": "The inclusive period stays on one line." },
+      { "ref": "A5.1.5", "text": "\"long and\" in a retirement closing is for 30 or more years of service." },
+      { "ref": "A5.1.6", "text": "No abbreviations other than Jr., Sr., II, III after the name; spell out the grade in the opening sentence, then use the short title. Code names such as RED FLAG are fine. Never split the member's name across two lines." },
+      { "ref": "A5.1.7", "text": "Numeric unit designators read 3rd Aerospace Wing, 4th Mission Support Group." },
+      { "ref": "A5.1.10", "text": "Numbers through nine are spelled out unless space is limited." },
+      { "ref": "A5.1.14", "text": "Only abbreviations and acronyms on the approved DAF list." }
+    ]
+  }
+}

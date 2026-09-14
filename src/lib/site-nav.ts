@@ -75,6 +75,17 @@ export const tools: Tool[] = [
       'reprimand to Tongue-and-Quill format, with an editable letterhead, and exports a PDF or ' +
       'an editable Word document.',
   },
+  {
+    name: 'Decoration Writer',
+    short: 'Decoration',
+    tagline: 'Fit the certificate, not the counter.',
+    href: `${base}/tools/decoration-writer/`,
+    ready: true,
+    blurb:
+      'Drafts a decoration citation that fits the myDecs certificate: wrapped exactly as the ' +
+      'certificate wraps it, held to the lines it prints rather than the 1350-character ' +
+      'counter, with the awards manual\'s opening and closing sentences built in.',
+  },
 ];
 
 /**

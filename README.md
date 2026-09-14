@@ -158,6 +158,42 @@ live preview, where you can read it before you sign anything.
 cc / distribution, indorsements, CUI banner and designation indicator, live preview,
 PDF, Word, print view, local draft persistence.
 
+### Decoration Writer
+
+Drafts a decoration citation that fits the certificate. myDecs enforces one number, 1350
+characters, and then prints the citation into a fixed box in a monospace face. The box is
+what binds: word wrap leaves the end of every line partly empty, so the same 1350
+characters take a different number of lines depending on where the words fall, and a
+citation the field accepted can come back from the print shop missing its last line.
+
+So the writer does no shaping at all. No half spaces, no substitutions: the citation is
+wrapped exactly as typed, at the column count the box allows, and the editor refuses the
+keystroke that would start a line the certificate cannot print. A paste that overflows is
+trimmed to fit and the cut text is shown, not dropped. The certificate preview is drawn
+from the same wrapped lines the limit was computed from, so it cannot disagree with the
+count.
+
+Guided mode builds the opening and closing sentences from the awards manual's Attachment
+5 (grade spelled out in the opening, short title thereafter, the retirement, separation,
+posthumous and heroism closings where the manual gives them) and leaves only the
+narrative free. Free mode is one box for the whole citation under the same limit. A review
+panel flags what the manual's rules would bounce and what the wrap has done: a name or the
+inclusive period split across two lines, a lone numeral, a run of capitals that had better
+be on the approved abbreviation list, a curly quote that will not survive the trip.
+
+The certificate geometry is `src/data/decorations/mydecs-certificate.json` and it is a
+`stub` with working figures: the 1350-character cap and Courier New 11 point come from a
+unit decoration guide, and the box was measured off a unit's myDecs Reimagined template
+rather than a certificate myDecs itself printed. The tool says so on its face, and a
+**Calibrate** panel takes the two counts anyone holding a real certificate can make: the
+characters on its fullest line and the lines the box holds. The sentence wording is
+`citation-language.json`, transcribed from the 10 June 2019 AFMAN 36-2806, whose paragraph
+numbers the current DAFMAN keeps; it stays `stub` until read against the current edition.
+
+**Built:** guided and free modes, line-and-character limit enforced at the keystroke,
+paste trimming, certificate preview in the certificate's face, rule review, calibration,
+copy, local draft persistence.
+
 ---
 
 ## Status

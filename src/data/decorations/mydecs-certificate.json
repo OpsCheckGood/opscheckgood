@@ -1,0 +1,25 @@
+{
+  "meta": {
+    "source": "myDecs decoration certificate (AF Form 2228B)",
+    "version": "myDecs Reimagined, 2024",
+    "verifiedDate": "2026-09-14",
+    "sourceUrl": "https://www.e-publishing.af.mil/",
+    "status": "stub",
+    "notes": "WORKING FIGURES, not an authority. myDecs caps the citation field at 1350 characters and renders it on the certificate in Courier New at 11 point; both figures come from a unit decoration guide (airforcehub.com, 'myDecs Reimagined'), not from the system's own documentation. The box geometry was measured off the Nellis AFB myDecs Reimagined citation template (a Word document printed to PDF that reproduces AF Form 2228B): the drawn citation box is 488.6 pt wide by 250.3 pt tall between its inner edges, which is 172.4 mm; at 6.6 pt per Courier New character that is 74 columns, and at Courier New's 12.46 pt line pitch it is 20 lines. Neither number has been checked against a certificate myDecs itself produced. To promote to verified: take a real myDecs certificate, count the characters on its fullest line and the number of lines the box holds, set columns and lines to those counts, then set status=verified. We ship Liberation Mono, which is metrically identical to Courier New and redistributable under the SIL Open Font License."
+  },
+  "data": {
+    "id": "mydecs",
+    "label": "myDecs certificate",
+    "font": {
+      "family": "Courier New (Liberation Mono metrics)",
+      "sizePt": 11,
+      "file": "/fonts/LiberationMono-Regular.ttf"
+    },
+    "maxChars": 1350,
+    "box": {
+      "widthMm": 172.4,
+      "columns": null,
+      "lines": 20
+    }
+  }
+}
