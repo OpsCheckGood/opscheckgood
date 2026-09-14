@@ -201,6 +201,30 @@ numbers the current DAFMAN keeps; it stays `stub` until read against the current
 paste trimming, certificate preview in the certificate's face, rule review, calibration,
 copy, local draft persistence.
 
+### Promotion Script Builder
+
+Names in, run of show out. The ceremony, the promotee, the key personnel, the family and
+the distinguished visitors go into a form; the emcee's script comes out in three
+sections: the opening, the charge when the new grade enters a tier that has one, and the
+closing. Lines marked » are stage cues and are not read aloud.
+
+It descends from a fillable PDF one squadron built for itself, with the squadron taken
+out. The unit and the nickname the emcee uses for everyone from it are fields, and every
+role is optional: leave the first sergeant, the chief, a spouse or a stripe tacker blank
+and those lines are simply not generated, rather than printed with a hole. The charge
+reader defaults to the chief and then to the presiding official. Pronouns drive the verb
+agreement. Distinguished visitors are a list, not three slots.
+
+The NCO and SNCO charges live in `src/data/promotion/ceremony.json`, along with which
+grade opens each tier, so a Staff Sergeant hears the NCO charge and a Master Sergeant the
+SNCO charge while a new Senior Master Sergeant hears neither. The file is a `stub`: the
+charges were transcribed from the squadron's PDF and have not been read back against the
+published text. The script wording itself is ceremony convention, not regulation, and is
+meant to be copied and edited.
+
+**Built:** live script, print view with a section per page (save as PDF from the print
+dialog), plain-text copy, optional charge, local draft persistence.
+
 ---
 
 ## Status

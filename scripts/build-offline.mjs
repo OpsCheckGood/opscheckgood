@@ -78,6 +78,14 @@ const TOOLS = [
     outFile: 'decoration-writer-offline.html',
   },
   {
+    name: 'Promotion Script Builder',
+    wordmark: 'PROMOTION SCRIPT',
+    tagline: 'Names in. Run of show out.',
+    entry: 'src/offline-entry-promotion-script.tsx',
+    rootId: 'promotion-script-root',
+    outFile: 'promotion-script-offline.html',
+  },
+  {
     name: 'First Sergeant Toolkit',
     wordmark: 'FIRST SERGEANT',
     tagline: 'Where do I send them?',

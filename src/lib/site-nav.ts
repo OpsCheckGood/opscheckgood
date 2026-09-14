@@ -86,6 +86,17 @@ export const tools: Tool[] = [
       'certificate wraps it, held to the lines it prints rather than the 1350-character ' +
       'counter, with the awards manual\'s opening and closing sentences built in.',
   },
+  {
+    name: 'Promotion Script Builder',
+    short: 'Promotion',
+    tagline: 'Names in. Run of show out.',
+    href: `${base}/tools/promotion-script/`,
+    ready: true,
+    blurb:
+      'Builds an enlisted promotion ceremony run of show for any unit: the opening, the NCO or ' +
+      'SNCO charge when the new grade calls for one, and the closing. Every role is optional and ' +
+      'a blank one simply has no lines. Print it a section per page or copy the text.',
+  },
 ];
 
 /**

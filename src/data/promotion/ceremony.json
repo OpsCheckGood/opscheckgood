@@ -1,0 +1,66 @@
+{
+  "meta": {
+    "source": "Air Force enlisted promotion ceremony: NCO and SNCO charges",
+    "version": "2023 charges",
+    "verifiedDate": "2026-09-14",
+    "sourceUrl": "https://www.af.mil/",
+    "status": "stub",
+    "notes": "The two charges were transcribed from the maintainer's own 82 RS Promotion Script Builder PDF, which carried them verbatim, and have not been read back against the Air Force's published text. The junior enlisted tier has no formal charge; the builder says so rather than inventing one. A charge is read when the new grade is the first in its tier (Staff Sergeant for the NCO charge, Master Sergeant for the SNCO charge), which is the convention the PDF followed. The script wording itself is ceremony convention, not regulation, and is meant to be edited."
+  },
+  "data": {
+    "grades": [
+      { "id": "ab", "abbr": "AB", "full": "Airman Basic", "tier": "junior" },
+      { "id": "amn", "abbr": "Amn", "full": "Airman", "tier": "junior" },
+      { "id": "a1c", "abbr": "A1C", "full": "Airman First Class", "tier": "junior" },
+      { "id": "sra", "abbr": "SrA", "full": "Senior Airman", "tier": "junior" },
+      { "id": "ssgt", "abbr": "SSgt", "full": "Staff Sergeant", "tier": "nco" },
+      { "id": "tsgt", "abbr": "TSgt", "full": "Technical Sergeant", "tier": "nco" },
+      { "id": "msgt", "abbr": "MSgt", "full": "Master Sergeant", "tier": "snco" },
+      { "id": "smsgt", "abbr": "SMSgt", "full": "Senior Master Sergeant", "tier": "snco" },
+      { "id": "cmsgt", "abbr": "CMSgt", "full": "Chief Master Sergeant", "tier": "snco" }
+    ],
+    "tiers": [
+      { "id": "junior", "label": "Junior enlisted", "corps": null, "chargeId": null },
+      { "id": "nco", "label": "Noncommissioned Officer", "corps": "the Noncommissioned Officer Corps", "chargeId": "nco" },
+      { "id": "snco", "label": "Senior Noncommissioned Officer", "corps": "the Senior Noncommissioned Officer Corps", "chargeId": "snco" }
+    ],
+    "charges": [
+      {
+        "id": "nco",
+        "title": "Noncommissioned Officer Charge",
+        "standFor": "All past and present NCOs, please stand at attention for the reading:",
+        "paragraphs": [
+          "Noncommissioned Officers are the backbone of the United States Air Force and bear the profound responsibility of structural integrity of the enterprise. The Noncommissioned Officer ranks of Staff Sergeant and Technical Sergeant mark a transition of leadership in duties and responsibilities.",
+          "In addition to fulfilling the responsibilities of Junior Enlisted Airmen, as a Noncommissioned Officer you are charged with the following duties:",
+          "You are charged with increasing your knowledge, skills, and abilities to be ready for whatever is required of you. Become an expert in your profession and display a willingness and flexibility to do what the mission demands.",
+          "You are charged with leading by example to promote physical and mental readiness within your teams. Exercise our warrior ethos and prepare your Airmen to fight whenever duty calls.",
+          "You are charged to take an active role in the lives and careers of those you are privileged to lead. Seek to integrate and utilize the talents of your team, ensuring unity of purpose and action in defense of our Nation.",
+          "You are charged to serve as a blueprint of leadership by exemplifying self-discipline, proactively seeking opportunities for growth and advancing your Airmen's capabilities.",
+          "You are charged to aggressively execute the intent and priorities of your chain of command, while developing company grade officers to build expertise and leadership fundamentals. Seek guidance when needed and offer solutions to problems within your purview.",
+          "You are charged to embrace our Core Values and strictly adhere to Air Force expectations and standards, ensuring that your actions and those of your team are in full compliance to best foster an environment of trust, mutual respect, shared understanding, and unit cohesion.",
+          "You are charged to strive for excellence, demonstrating the highest standards of character, competence, professionalism, and discipline. In all aspects of your duty continually assess to improve your own performance and that of your team.",
+          "Your role as a Noncommissioned Officer is pivotal in equipping and readying our fighting formations. In accepting these responsibilities, you pledge your dedication to the United States Air Force and its enduring mission for our Nation to Fly, Fight and Win - Airpower anytime, anywhere!",
+          "Do you accept this charge?"
+        ]
+      },
+      {
+        "id": "snco",
+        "title": "Senior Noncommissioned Officer Charge",
+        "standFor": "All past and present Senior NCOs, please stand at attention for the reading:",
+        "paragraphs": [
+          "Senior Noncommissioned Officers bear the profound responsibility of guiding our Air Force toward a brighter future while preserving the rich legacy of our past. The Senior Noncommissioned Officer ranks of Master Sergeant, Senior Master Sergeant, and Chief Master Sergeant mark the pinnacle of leadership in our enlisted corps. As a Senior Noncommissioned Officer, you are entrusted with the highest levels of leadership, responsibility, and expertise.",
+          "In addition to fulfilling the responsibilities of Junior Enlisted Airmen and Noncommissioned Officers, you are charged with the following duties:",
+          "You are charged with integrating the talents, skills, and abilities of your subordinates with other teams to accomplish our mission with excellence while maintaining flexibility in execution. Be the bridge that connects our force, ensuring unity in purpose and action.",
+          "You are charged with effectively communicating across the chain of command, translating orders into actionable tasks and advocating for your Airmen and their families.",
+          "You are charged with the development of self, others, ideas, and organizations. Capitalize on Joint, Interagency, Interorganizational and Multinational development opportunities, building partnership capacity in defense of our Nation.",
+          "You are charged with demonstrating the principles of self-discipline and independent action through continued education, training, and career broadening. In all facets showcase a willingness to do what the mission demands.",
+          "You are charged with fulfilling a unique and critical role in officer development at the squadron, group, wing and higher headquarter levels. Utilize your extensive experience and expertise in supporting and advising officers to successfully lead Airmen of all ranks and backgrounds.",
+          "You are charged with honoring our heritage while also serving as a leader for the next generation. Embrace our Core Values while modeling a comprehensive knowledge of Air Force foundational competencies.",
+          "You are charged with cultivating a professional climate and culture within your teams, enforcing high standards and combined focus on mission execution. Clarify leadership orders, expectations, and swiftly correct behaviors that detract from good order and discipline.",
+          "Your role as a Senior Noncommissioned Officer is pivotal in shaping the future of our force. In accepting these responsibilities, you pledge your dedication to the United States Air Force and its enduring mission for our Nation to Fly, Fight and Win - Airpower anytime, anywhere!",
+          "Do you accept this charge?"
+        ]
+      }
+    ]
+  }
+}

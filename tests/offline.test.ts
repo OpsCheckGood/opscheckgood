@@ -237,6 +237,8 @@ describeBuilt('hosted build', () => {
     expect(existsSync(join(dist, 'tools', 'btz-calculator', 'index.html'))).toBe(true);
     expect(existsSync(join(dist, 'tools', 'mfr', 'index.html'))).toBe(true);
     expect(existsSync(join(dist, 'tools', 'decoration-writer', 'index.html'))).toBe(true);
+    expect(existsSync(join(dist, 'tools', 'promotion-script', 'index.html'))).toBe(true);
+    expect(existsSync(join(dist, 'promotion-script-offline.html'))).toBe(true);
     expect(existsSync(join(dist, 'first-sergeant', 'index.html'))).toBe(true);
   });
 
