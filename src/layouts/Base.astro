@@ -220,11 +220,19 @@ const nav = [
     </nav>
 
     <footer class="site-footer">
+      {/*
+        Three columns: who built it, the mark in the centre, the site links.
+        On a phone they stack, centred.
+      */}
       <div
-        class="mx-auto flex max-w-[1480px] flex-wrap items-baseline justify-between gap-x-8 gap-y-3 px-4 sm:px-8 py-6"
+        class="mx-auto grid max-w-[1480px] items-baseline gap-x-8 gap-y-3 px-4 sm:px-8 py-6 text-center sm:grid-cols-3 sm:text-left"
       >
         <p class="util m-0" style="color: var(--ink);">Built for Airmen, by Airmen.</p>
-        <nav class="flex flex-wrap items-baseline gap-x-6 gap-y-2" aria-label="Site links">
+        <p class="util m-0 sm:text-center" style="color: var(--ink);">&copy; {year} Ops Check Good</p>
+        <nav
+          class="flex flex-wrap items-baseline justify-center gap-x-6 gap-y-2 sm:justify-end"
+          aria-label="Site links"
+        >
           {
             footerSite.map((item) => (
               <a href={item.href} class="footer-link">
@@ -233,21 +241,13 @@ const nav = [
             ))
           }
         </nav>
-        <p class="util m-0" style="color: var(--ink);">
-          Ops Check Good <span aria-hidden="true">&nbsp;//&nbsp;</span> Est. 2024
-        </p>
       </div>
 
       <div class="site-footer-legal">
-        <div class="mx-auto max-w-[1480px] px-4 sm:px-8 pb-6">
-          <p
-            class="m-0 max-w-[80ch] leading-relaxed"
-            style="font-size: var(--text-micro); color: var(--ink-faint);"
-          >
-            Unofficial personal project. Not affiliated with, endorsed by, or produced by the
-            United States Air Force or the Department of Defense. Official guidance governs;
-            check current instructions and your chain of command before relying on anything here.
-            &copy; {year} Ops Check Good.
+        <div class="mx-auto max-w-[1480px] px-4 sm:px-8 pb-6 text-center sm:text-left">
+          <p class="m-0 leading-relaxed" style="font-size: var(--text-micro); color: var(--ink-faint);">
+            Unofficial. Not affiliated with or endorsed by the U.S. Air Force or the Department
+            of War. Official guidance governs.
           </p>
         </div>
       </div>

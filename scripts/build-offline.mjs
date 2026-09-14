@@ -167,9 +167,8 @@ function shell(tool, js) {
 </header>
 <main id="${tool.rootId}"></main>
 <footer class="mx-auto max-w-[1400px] px-3 py-6 text-[11px] leading-relaxed" style="color: var(--ink-faint);">
-<p class="m-0">Unofficial personal project. Not affiliated with, endorsed by, or produced by the
-United States Air Force or the Department of Defense. Official guidance governs; check current
-instructions and your chain of command before relying on anything here.</p>
+<p class="m-0">Unofficial. Not affiliated with or endorsed by the U.S. Air Force or the
+Department of War. Official guidance governs.</p>
 <p class="m-0 mt-1">This file is completely self-contained. It makes no network requests and
 nothing you type leaves this device.</p>
 </footer>

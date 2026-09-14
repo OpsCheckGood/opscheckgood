@@ -15,10 +15,8 @@ const arrow =
     <div class="display-rule" aria-hidden="true"></div>
   </div>
 
-  <ul
-    class="mx-auto m-0 grid max-w-[1480px] list-none gap-4 px-4 sm:px-8 p-0"
-    style="grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));"
-  >
+  {/* Three across on a desktop: six tools make an even 3x2. Two on a tablet, one on a phone. */}
+  <ul class="mx-auto m-0 grid max-w-[1480px] list-none gap-4 px-4 sm:px-8 p-0 sm:grid-cols-2 lg:grid-cols-3">
     {
       cards.map((tool, i) => (
         <li class="tool-card card">

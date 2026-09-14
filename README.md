@@ -6,8 +6,8 @@ No accounts, no backend, no tracking, no ads.
 Everything runs in your browser. Nothing you type is uploaded, logged, or persisted
 anywhere but your own device.
 
-**Unofficial personal project.** Not affiliated with, endorsed by, or produced by the
-United States Air Force or the Department of Defense. Official guidance governs.
+**Unofficial.** Not affiliated with or endorsed by the U.S. Air Force or the Department of
+War. Official guidance governs.
 
 **This is not open source.** The site is free to use; the source is not licensed for
 reuse, redistribution, or derivative works. See [Licence](#licence). The repository is

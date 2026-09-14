@@ -91,7 +91,7 @@ describeBuilt('single-file offline build', () => {
   });
 
   it('states the unofficial-project disclaimer', () => {
-    expect(html).toContain('Unofficial personal project');
+    expect(html).toContain('Department of War');
     expect(html).toContain('Official guidance governs');
   });
 
@@ -339,7 +339,7 @@ describeBuilt('single-file offline PT calculator', () => {
   });
 
   it('states the unofficial-project disclaimer', () => {
-    expect(html).toContain('Unofficial personal project');
+    expect(html).toContain('Department of War');
     expect(html).toContain('Official guidance governs');
   });
 
@@ -553,7 +553,7 @@ describeBuilt('single-file offline BTZ calculator', () => {
   });
 
   it('states the unofficial-project disclaimer', () => {
-    expect(html).toContain('Unofficial personal project');
+    expect(html).toContain('Department of War');
     expect(html).toContain('Official guidance governs');
   });
 
@@ -650,7 +650,7 @@ describeBuilt('single-file offline First Sergeant Toolkit', () => {
   });
 
   it('states the unofficial-project disclaimer', () => {
-    expect(html).toContain('Unofficial personal project');
+    expect(html).toContain('Department of War');
     expect(html).toContain('Official guidance governs');
   });
 
@@ -739,7 +739,7 @@ describeBuilt('single-file offline MFR generator', () => {
   });
 
   it('states the unofficial-project disclaimer', () => {
-    expect(html).toContain('Unofficial personal project');
+    expect(html).toContain('Department of War');
     expect(html).toContain('Official guidance governs');
   });
 
