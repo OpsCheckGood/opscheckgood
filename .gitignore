@@ -9,3 +9,6 @@ dist/
 
 # Working notes for the maintainer, not part of the published project.
 CLAUDE.md
+
+# Real forms dropped into the working directory for inspection. Never committed.
+/*.pdf

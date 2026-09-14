@@ -1,11 +1,11 @@
 {
   "meta": {
-    "source": "AF Form 911, Enlisted Performance Report (MSgt thru CMSgt)",
-    "version": "TBD",
-    "verifiedDate": "2026-08-30",
+    "source": "AF Form 911, Enlisted Performance Report (MSgt thru CMSgt) (20150731, V2)",
+    "version": "20150731",
+    "verifiedDate": "2026-09-14",
     "sourceUrl": "https://www.e-publishing.af.mil/",
-    "status": "stub",
-    "notes": "PROVISIONAL. widthMm and the type size have NOT been read from this form's XFA stream, so this file stays status=stub and the UI keeps its unverified banner. Treat 202.321 mm as a working figure to measure against, not as an authority. To promote to verified: open the official PDF from the source URL, read the field geometry out of its XFA stream, confirm or correct widthMm and font, then set status=verified and verifiedDate. Font: the form is believed to set Times New Roman at 12pt, also unconfirmed. We ship Liberation Serif, which is metrically identical to Times New Roman and redistributable under the SIL Open Font License."
+    "status": "verified",
+    "notes": "Read from the form's own XFA template by src/lib/pdf (tests/fixtures/forms/af911-20150731-blank.pdf), which opens the e-Publishing PDF with its empty user password and reads each <field> box, <font> and <margin>. tests/data-integrity.test.ts re-reads that fixture and fails if any value here drifts from it. widthMm is the width text can occupy: the field box less any side insets, and none of these blocks has one, so it is the box width pdf-bullets also uses. heightMm is the field box; lines stays null until the row count Acrobat lays out in it has been measured against a real print. Times New Roman is the form's face; we ship Liberation Serif, which is metrically identical and redistributable under the SIL Open Font License."
   },
   "data": {
     "id": "af911",
@@ -22,7 +22,8 @@
         "constraint": "width",
         "widthMm": 202.321,
         "maxChars": null,
-        "lines": null
+        "lines": null,
+        "heightMm": 19.97
       },
       {
         "id": "IIIComments",
@@ -30,7 +31,8 @@
         "constraint": "width",
         "widthMm": 202.321,
         "maxChars": null,
-        "lines": null
+        "lines": null,
+        "heightMm": 41.011
       },
       {
         "id": "IVComments",
@@ -38,7 +40,8 @@
         "constraint": "width",
         "widthMm": 202.321,
         "maxChars": null,
-        "lines": null
+        "lines": null,
+        "heightMm": 9.861
       },
       {
         "id": "VIIComments",
@@ -46,7 +49,8 @@
         "constraint": "width",
         "widthMm": 202.321,
         "maxChars": null,
-        "lines": null
+        "lines": null,
+        "heightMm": 9.696
       },
       {
         "id": "VIIIComments",
@@ -54,7 +58,8 @@
         "constraint": "width",
         "widthMm": 202.321,
         "maxChars": null,
-        "lines": null
+        "lines": null,
+        "heightMm": 5.275
       },
       {
         "id": "IXComments",
@@ -62,7 +67,8 @@
         "constraint": "width",
         "widthMm": 202.321,
         "maxChars": null,
-        "lines": null
+        "lines": null,
+        "heightMm": 5.275
       }
     ]
   }

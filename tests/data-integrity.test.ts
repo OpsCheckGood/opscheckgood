@@ -8,6 +8,7 @@ import { STOPWORDS, VERBS } from '@/lib/data/vocab';
 import { HQ_APPROVED, COMMON } from '@/lib/data/abbreviationSets';
 import { normalizeAbbreviations } from '@/lib/data/abbreviations';
 import { embeddedFontPaths } from '@/lib/metrics/registry';
+import { readForm } from '@/lib/pdf/form';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const dataDir = join(root, 'src', 'data');
@@ -105,22 +106,41 @@ describe('form definitions', () => {
     },
   );
 
-  // The AF forms carry a working width figure: enough to measure against, not
-  // enough to call verified. So they are usable AND still stub, and the banner
-  // stays up until someone reads the real XFA stream.
-  it('has the AF forms populated but still marked unverified', () => {
-    for (const id of ['af1206', 'af910', 'af911']) {
+  // The AF forms are verified the only way that means anything: the values in
+  // the data file are re-read from the form's own PDF every time the tests
+  // run. The fixtures are the e-Publishing files, encrypted as shipped.
+  const FORM_FIXTURES: Record<string, string> = {
+    af1206: 'af1206-20170802-blank.pdf',
+    af910: 'af910-20151130-blank.pdf',
+    af911: 'af911-20150731-blank.pdf',
+  };
+
+  it.each(Object.entries(FORM_FIXTURES))(
+    '%s matches the field geometry read from %s',
+    async (id, fixtureName) => {
       const form = FORMS.find((f) => f.data.id === id)!;
       expect(isFormUsable(form.data)).toBe(true);
-      expect(form.isStub).toBe(true);
-      expect(form.meta.status).toBe('stub');
+      expect(form.isStub).toBe(false);
+      expect(form.meta.status).toBe('verified');
       expect(form.meta.sourceUrl).toContain('e-publishing.af.mil');
+
+      const bytes = new Uint8Array(readFileSync(join(root, 'tests', 'fixtures', 'forms', fixtureName)));
+      const read = await readForm(bytes);
+      expect(read.edition).toBe(form.meta.version);
+      const raw = JSON.parse(readFileSync(join(root, 'src', 'data', 'forms', `${id}.json`), 'utf8'));
+
       for (const field of form.data.fields) {
+        const xfa = read.fields.find((f) => f.name === field.id);
+        expect(xfa, `field ${field.id} exists on the form`).toBeDefined();
         expect(field.constraint).toBe('width');
-        expect(field.widthMm).toBeCloseTo(202.321, 3);
+        expect(field.widthMm, `${field.id} width`).toBeCloseTo(xfa!.usableWidthMm!, 6);
+        expect(xfa!.typeface).toBe('Times New Roman');
+        expect(xfa!.sizePt).toBeCloseTo(form.data.font.sizePt, 6);
+        const rawField = raw.data.fields.find((f: { id: string }) => f.id === field.id);
+        expect(rawField.heightMm, `${field.id} height`).toBeCloseTo(xfa!.heightMm!, 6);
       }
-    }
-  });
+    },
+  );
 
   it('defaults to the 1206, not the synthetic sandbox', () => {
     expect(usableForms()[0]!.data.id).toBe('af1206');

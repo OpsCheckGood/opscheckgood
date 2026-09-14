@@ -10,6 +10,7 @@ import {
   type Overrides,
 } from '@/lib/data/abbreviationStore';
 import { parsePdfBulletsFile, serializePdfBulletsFile } from '@/lib/data/pdfBulletsFile';
+import { readForm, bulletFields } from '@/lib/pdf/form';
 import { loadBenchPrefs, saveBenchPrefs, DEFAULT_BENCH_PREFS } from '@/lib/settings';
 import { useMediaQuery, NARROW } from '@/lib/useMediaQuery';
 import { STOPWORDS, WEAK_OPENERS } from '@/lib/data/vocab';
@@ -454,6 +455,51 @@ export default function BulletBench() {
     window.setTimeout(() => setCopyNote(null), 6000);
   }
 
+  const formInputRef = useRef<HTMLInputElement>(null);
+
+  /**
+   * Opens a form PDF: the 1206 someone was sent, or a 910 with comments in
+   * it. The form is identified from its own XFA data, the matching definition
+   * is selected, and the bullets in its first filled block go into the draft.
+   * The widths come from the data file, which the tests hold equal to what the
+   * form says; the file only tells us which form it is and what it holds.
+   */
+  async function openFormFile(file: File) {
+    let note: string;
+    try {
+      const form = await readForm(new Uint8Array(await file.arrayBuffer()));
+      const number = form.formNumber?.replace(/^DAF/, 'AF') ?? null;
+      const known = number
+        ? FORMS.find((f) => `AF FORM ${f.data.id.replace(/^af/, '')}` === number)
+        : undefined;
+      const blocks = bulletFields(form);
+      const filled = blocks.find((b) => b.value !== null);
+
+      if (known) {
+        setFormId(known.data.id);
+        const field = filled && getField(known.data, filled.name) ? filled.name : undefined;
+        if (field) setFieldId(field);
+      }
+      if (filled) {
+        setText(filled.value!);
+        setSelection(null);
+      }
+
+      const what = form.formNumber ?? 'a form this tool does not know';
+      const edition = form.edition ? ` (${form.edition})` : '';
+      note = filled
+        ? `Read ${what}${edition}: ${splitLines(filled.value!).filter((l) => l.trim() !== '').length} bullets from ${filled.name}`
+        : `Read ${what}${edition}: no bullets in it`;
+      if (!known && blocks[0]?.widthMm) {
+        note += ` · its block is ${roundMm(blocks[0].widthMm, 2)} mm; this tool has no definition for it yet`;
+      }
+    } catch (error: unknown) {
+      note = error instanceof Error ? error.message : 'Could not read that PDF.';
+    }
+    setCopyNote(note);
+    window.setTimeout(() => setCopyNote(null), 8000);
+  }
+
   /** Writes the draft in pdf-bullets' own format, so its Import reads it. */
   function exportFile() {
     const raw = serializePdfBulletsFile({
@@ -766,6 +812,33 @@ export default function BulletBench() {
               if (file) void importFile(file);
             }}
           />
+          <input
+            ref={formInputRef}
+            type="file"
+            accept=".pdf,application/pdf"
+            className="hidden"
+            aria-hidden
+            tabIndex={-1}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              e.target.value = '';
+              if (file) void openFormFile(file);
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => formInputRef.current?.click()}
+            className="util border px-3 py-2.5"
+            title="Open an AF form PDF (1206, 910, 911). The form is recognised from its own data and the bullets already in it go into the draft. The file never leaves this browser."
+            style={{
+              background: 'var(--panel)',
+              borderColor: 'var(--rule-strong)',
+              color: 'var(--ink-muted)',
+              letterSpacing: '0.1em',
+            }}
+          >
+            Open Form
+          </button>
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}

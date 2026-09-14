@@ -47,9 +47,16 @@ bullet again:
 - **Definition & Synonyms** — the word under the caret, defined, with replacements
   listed shortest first and the width each one adds or saves.
 
-**Import** reads a pdf-bullets save file: its bullets replace the draft and its
+**Open Form** reads an AF form PDF -- the 1206 someone sent you, a 910 with comments in
+it -- recognises which form it is from its own XFA data, selects it, and puts the
+bullets already in it into the draft. The file is read in the browser and never leaves
+it. **Import** reads a pdf-bullets save file: its bullets replace the draft and its
 abbreviation table joins your additions to the Common list, so nothing is retyped to
 switch tools. **Export** writes the same format, so the file goes the other way too.
+
+The 1206, 910 and 911 definitions are verified against the forms themselves: every field
+width in `src/data/forms` is re-read from the official PDF by the test suite. See
+[To populate a form](#to-populate-a-form).
 
 It carries two reference pages of its own:
 
@@ -65,8 +72,8 @@ It carries two reference pages of its own:
 
 **Built:** width shaping, multi-row bullets, width and character readouts, actionable
 failure diagnosis, abbreviation replacement, duplicate highlighting, the Review panel,
-acronym classification, click-a-word synonyms with definitions, pdf-bullets file import
-and export, draft persistence.
+acronym classification, click-a-word synonyms with definitions, form PDF reading,
+pdf-bullets file import and export, draft persistence.
 
 ### PT calculator
 
@@ -391,12 +398,27 @@ do.
 
 ### To populate a form
 
-1. Open the official PDF and read its XFA stream for the field widths, font family, and
-   point size. Do not estimate them.
-2. Fill in `src/data/forms/<form>.json`, set `meta.status` to `verified`, and set
-   `verifiedDate` to the date you checked.
-3. Add the font `.ttf` to `public/fonts` and run `npm run embed:fonts`.
-4. `npm run test` — the data-integrity suite will tell you what is still missing.
+The field geometry is read from the form's own PDF, not typed in. `src/lib/pdf` is a
+small reader -- cross-reference tables and streams, object streams, Flate, and the
+standard security handler with the empty user password every e-Publishing form ships
+with -- that pulls the XFA `template` packet out and reads each `<field>` box, `<font>`
+and `<margin>`. The blank forms sit in `tests/fixtures/forms`, and the data-integrity
+suite re-reads them on every run and fails if a width, height, face or size in
+`src/data/forms` drifts from what the form says. That is what `verified` means here.
+
+To add or update a form:
+
+1. Put the official PDF from e-Publishing in `tests/fixtures/forms`, named
+   `<form>-<edition>-blank.pdf`.
+2. Add or update `src/data/forms/<form>.json` with the widths and heights the reader
+   reports (a failing test prints them), set `meta.version` to the edition date,
+   `meta.status` to `verified`, and `verifiedDate` to the date you checked.
+3. Add the pair to `FORM_FIXTURES` in `tests/data-integrity.test.ts`.
+4. If the form uses a face not yet shipped, add the `.ttf` to `public/fonts` and run
+   `npm run embed:fonts`.
+
+The same reader is behind the bench's **Open Form** button, which recognises a 1206,
+910 or 911 from its own data and lifts the bullets already typed into it.
 
 Adding a new form is a data edit plus one line in `src/lib/data/forms.ts`. If it ever
 requires changing a component, the abstraction is wrong.
