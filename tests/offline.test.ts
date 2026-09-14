@@ -835,14 +835,15 @@ describeBuilt('single-file offline MFR generator', () => {
 });
 
 /**
- * The field boxes draw at the form's true width (765px for a 202.321mm line)
- * and scale down to fit their column. The scale must be computed against the
- * container's *content* box: clientWidth includes padding, and using it raw
- * left the inner box ~24px too wide, which overflow:hidden then clipped --
- * every line cut off mid-word at the right edge.
+ * The field boxes are pdf-bullets' boxes: the field width plus one millimetre
+ * (203.321mm, 768.5px at CSS's fixed 96dpi), border-box, a 1.1px border and
+ * no padding. They are never scaled down -- scaling shrank the type and the
+ * spacing with it, which is exactly what people compared against pdf-bullets
+ * and found different -- and the type is Times New Roman at 12pt with kerning
+ * off, the way pdf-bullets draws it.
  */
-describeBuilt('field boxes scale to fit rather than clip', () => {
-  it('never renders wider than the space available', async () => {
+describeBuilt('field boxes are drawn at the form\'s exact width, unscaled', () => {
+  it('draws both boxes at 203.321mm with no padding and no scale transform', async () => {
     const { JSDOM } = await import('jsdom');
     const dom = new JSDOM(readFileSync(offlineFile, 'utf8'), {
       runScripts: 'dangerously',
@@ -851,45 +852,31 @@ describeBuilt('field boxes scale to fit rather than clip', () => {
     });
     const w = dom.window;
 
-    // jsdom performs no layout, so supply a realistic column and padding.
-    const COLUMN = 722;
-    const PADDING = 12;
-    Object.defineProperty(w.HTMLElement.prototype, 'clientWidth', {
-      value: COLUMN,
-      configurable: true,
-    });
-    const realComputed = w.getComputedStyle.bind(w);
-    w.getComputedStyle = ((el: Element) => {
-      const style = realComputed(el as HTMLElement);
-      return new Proxy(style, {
-        get(target, key) {
-          if (key === 'paddingLeft' || key === 'paddingRight') return `${PADDING}px`;
-          return Reflect.get(target, key);
-        },
-      });
-    }) as typeof w.getComputedStyle;
-
     const root = w.document.getElementById('bullet-bench-root')!;
     await vi.waitFor(
       () => {
-        expect(root.textContent).toMatch(/[  ]/);
+        expect(root.textContent).toMatch(/[\u2004\u2006]/);
       },
       { timeout: 45000, interval: 100 },
     );
     await new Promise((resolve) => setTimeout(resolve, 200));
 
-    const boxes = [...root.querySelectorAll('div')].filter((el) =>
-      (el as HTMLElement).style.transform?.includes('scale'),
-    );
-    expect(boxes.length).toBeGreaterThan(0);
+    const divs = [...root.querySelectorAll('div')] as HTMLElement[];
+    expect(divs.filter((el) => el.style.transform?.includes('scale'))).toHaveLength(0);
 
-    const available = COLUMN - PADDING * 2;
+    const expected = ((202.321 + 1) / 25.4) * 96;
+    const boxes = divs.filter(
+      (el) => Math.abs(parseFloat(el.style.width) - expected) < 0.01,
+    );
+    expect(boxes, 'draft and output boxes').toHaveLength(2);
     for (const box of boxes) {
-      const el = box as HTMLElement;
-      const scale = Number(/scale\(([\d.]+)\)/.exec(el.style.transform)?.[1] ?? 1);
-      const width = parseFloat(el.style.width);
-      expect(width).toBeGreaterThan(available); // true form width, not reflowed
-      expect(width * scale).toBeLessThanOrEqual(available + 0.5);
+      expect(box.style.boxSizing).toBe('border-box');
+      expect(box.style.border).toMatch(/^1.1px solid/);
+      expect(box.style.padding).toBe('0px');
+      expect(box.style.fontFamily).toMatch(/^["']Times New Roman["']/);
+      expect(box.style.fontSize).toBe('12pt');
+      expect(box.style.lineHeight).toBe('1.5');
+      expect(box.style.fontKerning).toBe('none');
     }
     dom.window.close();
   }, 90000);

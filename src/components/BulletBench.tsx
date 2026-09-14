@@ -10,7 +10,12 @@ import { loadFontMetrics } from '@/lib/metrics/registry';
 import { ensureFontFace } from '@/lib/metrics/fontface';
 import type { FontMetrics } from '@/lib/metrics/font';
 import { roundMm } from '@/lib/metrics/units';
-import { shapeDocument, type ShapeResult } from '@/lib/shape/optimizer';
+import {
+  shapeDocument,
+  unshapedStatus,
+  type ShapeResult,
+  type ShapeStatus,
+} from '@/lib/shape/optimizer';
 import { diagnose } from '@/lib/shape/diagnose';
 import { SPACE_CHARS, countSpaces, unshape } from '@/lib/shape/spaces';
 import { splitLines } from '@/lib/text/tokenize';
@@ -41,6 +46,27 @@ import type { SynonymData } from '@/lib/data/types';
  *
  * Every readout follows the caret: the line you are editing is the line the
  * requirement, status, preview and checks all describe.
+ *
+ * ## The boxes are pdf-bullets' boxes
+ *
+ * The draft and the output are drawn the way github.com/AF-VCD/pdf-bullets
+ * draws them, because that is the tool people already trust and the point is
+ * for a bullet to look and behave identically here:
+ *
+ *   - each box is the field width plus one millimetre, with a 1.1px border
+ *     and no padding, so text starts at the box edge and a line that reaches
+ *     the field width reaches the box edge;
+ *   - the type is Times New Roman at the form's size, 1.5 line height, with
+ *     kerning off -- the measurement is unkerned, and a kerned drawing would
+ *     sit a fraction narrower than the verdict says;
+ *   - the boxes are never scaled down. Scaling shrank the type and the spacing
+ *     with it, which is exactly what people compared against pdf-bullets and
+ *     found different. When two boxes do not fit beside each other they stack;
+ *   - each output bullet is at least as tall as its draft line, so the two
+ *     boxes read across line for line;
+ *   - a line is red when the optimizer could not land it: over the field even
+ *     with every gap narrowed, or short of it by more than the underflow bound
+ *     even with every gap widened. Short is a failure there, so it is here.
  */
 
 const DRAFT_KEY = 'ocg.bullet-bench.draft.v2';
@@ -54,13 +80,19 @@ const SAMPLE = [
 ].join('\n');
 
 /**
- * A line fits when it is not wider than the field at the narrowest spacing.
- * Falling short of flush is not a fit failure -- the statement still occupies
- * one line, it just does not reach the right margin.
+ * pdf-bullets' verdict: the line landed. Anything else is red there -- over
+ * the field with every gap narrowed, or short of it by more than the underflow
+ * bound with every gap widened -- and so it is red here.
  */
-function fits(result: ShapeResult): boolean {
-  return result.status !== 'too-long';
+function landed(status: ShapeStatus): boolean {
+  return status === 'at-target' || status === 'shaped';
 }
+
+/** Bulma's body line height, which is what pdf-bullets' boxes inherit. */
+const LINE_HEIGHT = 1.5;
+
+/** Enough empty box to invite typing; both boxes share it so they stay level. */
+const BOX_MIN_HEIGHT = 230;
 
 type StatusState = 'ok' | 'bad' | 'idle';
 
@@ -104,8 +136,11 @@ export default function BulletBench() {
 
   const narrow = useMediaQuery(NARROW);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
+  /** In-flow twin of the textarea: sizes it, carries the marks, measures lines. */
+  const draftMirrorRef = useRef<HTMLDivElement>(null);
   const mirrorRef = useRef<HTMLTextAreaElement>(null);
+  /** Rendered height of each draft line, so the output can sit level with it. */
+  const [lineHeights, setLineHeights] = useState<number[]>([]);
 
   useEffect(() => {
     if (!getField(form.data, fieldId)) setFieldId(form.data.fields[0]!.id);
@@ -262,8 +297,40 @@ export default function BulletBench() {
     [lines],
   );
 
-  const overLines = results.filter((r) => r.status !== 'empty' && !fits(r)).length;
+  /**
+   * The verdict per line. With Auto-Space off the output is the text as typed,
+   * so the verdict is about that text, exactly as pdf-bullets judges it with
+   * its optimizer switched off.
+   */
+  const lineStatuses = useMemo(
+    () => results.map((r) => (autoSpace ? r.status : unshapedStatus(r))),
+    [results, autoSpace],
+  );
+  const overLines = lineStatuses.filter((s) => s === 'too-long').length;
+  const shortLines = lineStatuses.filter((s) => s === 'too-short').length;
   const liveLines = results.filter((r) => r.status !== 'empty').length;
+
+  /**
+   * Keeps each output bullet level with its draft line, the way pdf-bullets
+   * gives every output bullet the height of its input block. Measured off the
+   * mirror rather than the textarea, which has no per-line elements.
+   */
+  useEffect(() => {
+    const mirror = draftMirrorRef.current;
+    if (!mirror) return;
+    const measure = () => {
+      const next = [...mirror.children].map((el) => (el as HTMLElement).offsetHeight);
+      setLineHeights((prev) =>
+        prev.length === next.length && prev.every((h, i) => h === next[i]) ? prev : next,
+      );
+    };
+    measure();
+    // Absent in jsdom and older browsers; the panes still render without it.
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(mirror);
+    return () => observer.disconnect();
+  }, [lines, showDuplicates, cssFamily, narrow]);
 
   const counterText =
     !activeResult || activeResult.status === 'empty'
@@ -422,24 +489,37 @@ export default function BulletBench() {
     });
   }
 
-  const editorType = {
-    fontFamily: 'var(--font-sans)',
-    fontSize: '13px',
-    lineHeight: '20px',
-  } as const;
-
+  /**
+   * pdf-bullets' type, exactly: Times New Roman at the form's size, kerning
+   * off, geometric precision. The installed Times New Roman is preferred so
+   * the drawing matches pdf-bullets glyph for glyph on the machines people
+   * compare on; the bundled Liberation Serif, which shares its metrics, stands
+   * in where Times is not installed. Measurement never depends on either --
+   * it reads the bundled font file.
+   */
   const previewType = {
     fontFamily: cssFamily
-      ? `'${cssFamily}', 'Times New Roman', Times, serif`
+      ? `'Times New Roman', '${cssFamily}', Times, serif`
       : `'Times New Roman', Times, serif`,
     fontSize: `${sizePt}pt`,
-    lineHeight: 1.3,
-    fontKerning: 'normal' as const,
+    lineHeight: LINE_HEIGHT,
+    fontKerning: 'none' as const,
+    textRendering: 'geometricPrecision' as const,
+  };
+
+  /**
+   * A pane takes its width from the box inside it. Two fit side by side on a
+   * wide screen and stack otherwise; on a phone each takes the full row.
+   */
+  const paneStyle = {
+    flex: narrow ? '1 1 100%' : '1 1 auto',
+    maxWidth: '100%',
+    overflowX: 'auto' as const,
   };
 
   const statusState: StatusState = !measurable
     ? 'idle'
-    : overLines > 0
+    : overLines + shortLines > 0
       ? 'bad'
       : 'ok';
 
@@ -447,12 +527,14 @@ export default function BulletBench() {
     ? 'LOADING'
     : liveLines === 0
       ? 'EMPTY'
-      : overLines > 0
-        ? `${overLines} OF ${liveLines} OVER`
+      : overLines + shortLines > 0
+        ? [overLines > 0 && `${overLines} OVER`, shortLines > 0 && `${shortLines} SHORT`]
+            .filter(Boolean)
+            .join(', ')
         : 'FITS';
 
   return (
-    <div className="mx-auto flex max-w-[1560px] flex-col gap-4 px-3 py-4 sm:px-6 sm:py-5">
+    <div className="mx-auto flex max-w-[1700px] flex-col gap-4 px-3 py-4 sm:px-6 sm:py-5">
       {/* ---- Configuration bar ------------------------------------------ */}
       <div className="flex flex-wrap items-end gap-x-8 gap-y-3">
         <Field label="Form / Document">
@@ -577,14 +659,14 @@ export default function BulletBench() {
 
       {/* ---- Workspace --------------------------------------------------- */}
       {/*
-        min-w-0 on the columns is load-bearing. A grid track defaults to a
-        minimum of min-content, and each pane contains a fixed 764px field box,
-        so without it the tracks refuse to shrink below that and the workspace
-        overflows past the config bar and the panel beneath it.
+        Two panes that sit beside each other when both fit at the field's true
+        width and stack when they do not -- pdf-bullets' layout. Never scaled:
+        the boxes are the form's real size or they are nothing. On a screen too
+        narrow for even one, the pane scrolls sideways rather than clipping.
       */}
-      <div className="grid items-stretch gap-3 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
+      <div className="flex flex-wrap items-start gap-3">
         {/* Draft */}
-        <section className="panel flex min-w-0 flex-col p-4">
+        <section className="panel flex min-w-0 flex-col p-4" style={paneStyle}>
           <div className="mb-3 flex items-start justify-between gap-4">
             <div>
               <h2 className="title m-0">Draft</h2>
@@ -602,24 +684,38 @@ export default function BulletBench() {
             be read across: the draft wraps where the form wraps, the output
             does not, and the difference is the point.
           */}
-          <FieldBox
-            widthMm={targetMm}
-            type={previewType}
-            over={false}
-            minHeight={230}
-            neutral
-            reflow={narrow}
-          >
+          <FieldBox widthMm={targetMm} type={previewType} minHeight={BOX_MIN_HEIGHT} reflow={narrow}>
             <div className="relative">
-              {/* Duplicate highlighting sits behind a transparent textarea;
-                  identical type and padding keep the marks on the glyphs. */}
+              {/*
+                The mirror is the in-flow element and the textarea is laid over
+                it, so the box grows with the draft instead of scrolling inside
+                itself. The mirror also carries the duplicate marks behind the
+                transparent textarea -- identical type keeps them on the glyphs
+                -- and gives each line an element whose height can be read.
+              */}
               <div
-                ref={overlayRef}
+                ref={draftMirrorRef}
                 aria-hidden
-                className="pointer-events-none absolute inset-0 overflow-hidden whitespace-pre-wrap break-words"
-                style={{ ...previewType, color: 'transparent' }}
+                className="pointer-events-none"
+                style={{
+                  ...previewType,
+                  whiteSpace: 'pre-wrap',
+                  overflowWrap: 'break-word',
+                  color: 'transparent',
+                  minHeight: BOX_MIN_HEIGHT,
+                }}
               >
-                {showDuplicates ? <DuplicateMarks text={text} words={duplicates} /> : null}
+                {lines.map((line, i) => (
+                  <div key={i}>
+                    {line === '' ? (
+                      '\u00a0'
+                    ) : showDuplicates ? (
+                      <DuplicateMarks text={line} words={duplicates} />
+                    ) : (
+                      line
+                    )}
+                  </div>
+                ))}
               </div>
               <textarea
                 ref={inputRef}
@@ -629,16 +725,11 @@ export default function BulletBench() {
                   syncActiveLine(e.currentTarget);
                 }}
                 onSelect={(e) => syncActiveLine(e.currentTarget)}
-                onScroll={(e) => {
-                  if (overlayRef.current) {
-                    overlayRef.current.scrollTop = e.currentTarget.scrollTop;
-                  }
-                }}
                 spellCheck
                 aria-label="Draft"
                 placeholder="Paste or type your statement."
-                className="relative block w-full resize-none border-0 bg-transparent p-0 outline-none"
-                style={{ ...previewType, minHeight: 206, color: 'var(--ink)' }}
+                className="absolute inset-0 block h-full w-full resize-none overflow-hidden border-0 bg-transparent p-0 outline-none"
+                style={{ ...previewType, color: 'var(--ink)' }}
               />
             </div>
           </FieldBox>
@@ -668,13 +759,8 @@ export default function BulletBench() {
           </div>
         </section>
 
-        {/* Direction */}
-        <div className="hidden items-center justify-center lg:flex" aria-hidden>
-          <span style={{ color: 'var(--ink-faint)', fontSize: '16px' }}>&rarr;</span>
-        </div>
-
         {/* Output */}
-        <section className="panel flex min-w-0 flex-col p-4">
+        <section className="panel flex min-w-0 flex-col p-4" style={paneStyle}>
           <div className="mb-3 flex items-start justify-between gap-4">
             <div>
               <h2 className="title m-0">Output</h2>
@@ -698,31 +784,38 @@ export default function BulletBench() {
             widening -- visibly pushed a fitting line onto a second row. What
             you see here is now what the form does.
           */}
-          <FieldBox
-            widthMm={targetMm}
-            type={previewType}
-            over={statusState === 'bad'}
-            minHeight={230}
-            reflow={narrow}
-          >
+          <FieldBox widthMm={targetMm} type={previewType} minHeight={BOX_MIN_HEIGHT} reflow={narrow}>
             {!measurable ? (
               <p className="util m-0">{font ? 'No target width' : 'Loading'}</p>
             ) : (
               results.map((result, index) => {
-                if (result.status === 'empty') return <div key={index}>&nbsp;</div>;
-                const bad = !fits(result);
+                const level = { minHeight: lineHeights[index] };
+                if (result.status === 'empty') {
+                  return (
+                    <div key={index} style={level}>
+                      &nbsp;
+                    </div>
+                  );
+                }
+                const status = lineStatuses[index]!;
+                const bad = !landed(status);
                 const rows = wrapToWidth(outputLines[index]!, font!, sizePt, targetMm);
                 return (
                   <div
                     key={index}
                     title={
-                      bad && font
-                        ? (diagnose(result, { font, sizePt, abbreviations: suggestionTable })
-                            ?.message ?? undefined)
-                        : undefined
+                      !bad || !font
+                        ? undefined
+                        : autoSpace
+                          ? (diagnose(result, { font, sizePt, abbreviations: suggestionTable })
+                              ?.message ?? undefined)
+                          : `Auto-Space is off. As typed, this line is ${roundMm(
+                              Math.abs(result.naturalWidthMm - result.targetMm),
+                              1,
+                            )}mm ${status === 'too-long' ? 'over' : 'short'}.`
                     }
                     onMouseDown={() => setActiveLine(index)}
-                    style={{ color: bad ? 'var(--bad)' : 'var(--ink)' }}
+                    style={{ ...level, color: bad ? 'var(--bad)' : 'var(--ink)' }}
                   >
                     {rows.map((row, r) => (
                       <div
@@ -879,109 +972,53 @@ export default function BulletBench() {
 }
 
 /**
- * Draws its children at the field's true width, scaled down to fit the column.
+ * pdf-bullets' box: the field width plus one millimetre, border-box, with a
+ * 1.1px border and no padding, so the text starts at the box edge.
  *
  * CSS `mm` is a fixed 96dpi unit, so the field is always the same pixel width
- * regardless of window size. Scaling keeps that geometry intact rather than
- * reflowing it; line breaks are computed from font metrics, so the scale factor
- * cannot move them.
+ * regardless of window size, and the box is drawn at that width or not at
+ * all. It is never scaled: scaling shrinks the type and the spacing with it,
+ * and the whole point of the box is that what you see is the form's size.
  */
 function FieldBox({
   widthMm,
   type,
-  over,
   minHeight,
-  neutral = false,
   /**
    * Reflow instead of drawing at the field's true width.
    *
-   * On a phone the true width scales to roughly half, which is six-point type.
-   * Reflowing gives up the "wraps here means wraps on the form" property in
-   * exchange for text you can read; the status readout still carries the
-   * verdict, and it never depended on the drawing.
+   * On a phone the field is wider than the screen. Reflowing gives up the
+   * "wraps here means wraps on the form" property in exchange for text you can
+   * read; the status readout still carries the verdict, and it never depended
+   * on the drawing.
    */
   reflow = false,
   children,
 }: {
   widthMm: number;
   type: React.CSSProperties;
-  over: boolean;
   minHeight: number;
-  /** Draft box: no pass/fail colour, since it is not a verdict. */
-  neutral?: boolean;
   reflow?: boolean;
   children: React.ReactNode;
 }) {
-  const outer = useRef<HTMLDivElement>(null);
-  const inner = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
-  const [height, setHeight] = useState<number | undefined>(undefined);
-  const widthPx = widthMm > 0 ? (widthMm / 25.4) * 96 : 0;
-
-  useEffect(() => {
-    const outerEl = outer.current;
-    const innerEl = inner.current;
-    if (!outerEl || !innerEl || widthPx <= 0 || reflow) {
-      setScale(1);
-      setHeight(undefined);
-      return;
-    }
-    const update = () => {
-      // clientWidth includes padding, but the scaled box sits inside it. Using
-      // it raw computed the scale against ~24px more room than exists, and the
-      // overflow was silently clipped -- lines cut off mid-word at the edge.
-      const styles = getComputedStyle(outerEl);
-      const available =
-        outerEl.clientWidth -
-        (parseFloat(styles.paddingLeft) || 0) -
-        (parseFloat(styles.paddingRight) || 0);
-
-      // Before layout, or while hidden, the element measures zero. Keep the
-      // last good scale rather than assuming 1, which is what clips.
-      if (!(available > 0)) return;
-
-      const next = Math.min(1, available / widthPx);
-      setScale(next);
-      setHeight(innerEl.offsetHeight * next);
-    };
-    update();
-    // Absent in jsdom and older browsers; the pane still renders without it.
-    if (typeof ResizeObserver === 'undefined') {
-      window.addEventListener('resize', update);
-      return () => window.removeEventListener('resize', update);
-    }
-    const observer = new ResizeObserver(update);
-    observer.observe(outerEl);
-    observer.observe(innerEl);
-    return () => observer.disconnect();
-  }, [widthPx, reflow]);
-
+  const trueWidth = widthMm > 0 && !reflow;
   return (
     <div
-      ref={outer}
-      className="flex-1 overflow-hidden rounded-[4px] border p-3"
       style={{
+        ...type,
+        boxSizing: 'border-box',
+        width: trueWidth ? ((widthMm + 1) / 25.4) * 96 : '100%',
+        border: '1.1px solid var(--ink)',
+        padding: 0,
         background: 'var(--panel-sunk)',
-        borderColor: neutral ? 'var(--rule)' : over ? 'var(--bad)' : 'var(--ok)',
         minHeight,
-        height: height === undefined ? undefined : Math.max(minHeight, height + 24),
+        // Reflowed rows must be allowed to wrap; at true width they are
+        // pre-wrapped by our own metrics and must not be re-wrapped.
+        whiteSpace: reflow ? 'pre-wrap' : undefined,
+        overflowWrap: reflow ? 'break-word' : undefined,
       }}
     >
-      <div
-        ref={inner}
-        style={{
-          ...type,
-          width: reflow ? '100%' : widthPx > 0 ? widthPx : '100%',
-          transform: reflow ? undefined : `scale(${scale})`,
-          transformOrigin: 'top left',
-          // Reflowed rows must be allowed to wrap; at true width they are
-          // pre-wrapped by our own metrics and must not be re-wrapped.
-          whiteSpace: reflow ? 'pre-wrap' : undefined,
-          overflowWrap: reflow ? 'break-word' : undefined,
-        }}
-      >
-        {children}
-      </div>
+      {children}
     </div>
   );
 }

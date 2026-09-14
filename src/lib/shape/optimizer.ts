@@ -266,6 +266,23 @@ function joinAll(words: readonly string[], space: string): string {
   return words[0] + SPACE_CHARS.NORMAL + words.slice(1).join(space);
 }
 
+/**
+ * The verdict with the optimizer switched off.
+ *
+ * pdf-bullets still colours a line when optimisation is disabled: the text as
+ * typed has to sit within the same window -- not over the field, and not more
+ * than the underflow bound short of it. Read from the natural width so the
+ * answer is about the user's own spacing, not the shaped text they are not
+ * seeing.
+ */
+export function unshapedStatus(result: ShapeResult): ShapeStatus {
+  if (result.status === 'empty') return 'empty';
+  const overflow = result.naturalWidthMm - effectiveTargetMm(result.targetMm);
+  if (overflow > 0) return 'too-long';
+  if (overflow < MAX_UNDERFLOW_MM) return 'too-short';
+  return 'at-target';
+}
+
 /** Shapes every line of a document, preserving blank lines and order. */
 export function shapeDocument(
   text: string,
