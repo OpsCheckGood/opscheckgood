@@ -111,16 +111,16 @@ export default function PromotionScriptBuilder() {
           </div>
           <div className="flex flex-wrap items-end gap-x-6 gap-y-4">
             <Field label="Unit" htmlFor="ps-unit">
-              <TextBox id="ps-unit" value={input.unit} onChange={(unit) => update({ unit })} width="12rem" placeholder="82d Reconnaissance Squadron" />
+              <TextBox id="ps-unit" value={input.unit} onChange={(unit) => update({ unit })} width="12rem" placeholder="Squadron, group or wing" />
             </Field>
             <Field label="Team / nickname" htmlFor="ps-team">
-              <TextBox id="ps-team" value={input.team} onChange={(team) => update({ team })} width="12rem" placeholder="Team 8-Deuce" />
+              <TextBox id="ps-team" value={input.team} onChange={(team) => update({ team })} width="12rem" placeholder="How the emcee refers to the unit" />
             </Field>
             <Field label="Date" htmlFor="ps-date">
-              <TextBox id="ps-date" value={input.date} onChange={(date) => update({ date })} width="11rem" placeholder="31 October 2025" />
+              <TextBox id="ps-date" value={input.date} onChange={(date) => update({ date })} width="11rem" placeholder="Day Month Year" />
             </Field>
             <Field label="Time" htmlFor="ps-time">
-              <TextBox id="ps-time" value={input.time} onChange={(time) => update({ time })} width="6rem" placeholder="1230" />
+              <TextBox id="ps-time" value={input.time} onChange={(time) => update({ time })} width="6rem" placeholder="Local time" />
             </Field>
             <Field label="Greeting" htmlFor="ps-greeting">
               <Select id="ps-greeting" value={input.greeting} onChange={(greeting) => update({ greeting })} width="10rem" options={GREETINGS.map((g) => ({ value: g, label: g }))} />
@@ -139,7 +139,7 @@ export default function PromotionScriptBuilder() {
           </div>
           <div className="flex flex-wrap items-end gap-x-6 gap-y-4">
             <Field label="Full name (as announced)" htmlFor="ps-name">
-              <TextBox id="ps-name" value={input.promoteeName} onChange={(promoteeName) => update({ promoteeName })} width="16rem" placeholder="John D. Kugelman" />
+              <TextBox id="ps-name" value={input.promoteeName} onChange={(promoteeName) => update({ promoteeName })} width="16rem" placeholder="First M. Last" />
             </Field>
             <Field label="Pronouns" htmlFor="ps-pronouns">
               <Select id="ps-pronouns" value={input.pronounId} onChange={(pronounId) => update({ pronounId })} width="9rem" options={PRONOUNS.map((p) => ({ value: p.id, label: p.label }))} />
@@ -169,31 +169,31 @@ export default function PromotionScriptBuilder() {
           </div>
           <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
             <Field label="Emcee (rank + name)" htmlFor="ps-emcee">
-              <TextBox id="ps-emcee" value={input.emcee} onChange={(emcee) => update({ emcee })} width="100%" placeholder="SSgt Kidman" />
+              <TextBox id="ps-emcee" value={input.emcee} onChange={(emcee) => update({ emcee })} width="100%" placeholder="Rank and last name" />
             </Field>
             <Field label="Presiding official / commander" htmlFor="ps-presiding">
-              <TextBox id="ps-presiding" value={input.presiding} onChange={(presiding) => update({ presiding })} width="100%" placeholder="Colonel Ellsworth" />
+              <TextBox id="ps-presiding" value={input.presiding} onChange={(presiding) => update({ presiding })} width="100%" placeholder="Rank and last name" />
             </Field>
             <Field label="Senior enlisted leader / chief" htmlFor="ps-chief">
-              <TextBox id="ps-chief" value={input.seniorEnlisted} onChange={(seniorEnlisted) => update({ seniorEnlisted })} width="100%" placeholder="Chief Master Sergeant Holt" />
+              <TextBox id="ps-chief" value={input.seniorEnlisted} onChange={(seniorEnlisted) => update({ seniorEnlisted })} width="100%" placeholder="Rank and last name" />
             </Field>
             <Field label="First sergeant" htmlFor="ps-shirt">
-              <TextBox id="ps-shirt" value={input.firstSergeant} onChange={(firstSergeant) => update({ firstSergeant })} width="100%" placeholder="First Sergeant Diaz" />
+              <TextBox id="ps-shirt" value={input.firstSergeant} onChange={(firstSergeant) => update({ firstSergeant })} width="100%" placeholder="Rank and last name" />
             </Field>
             <Field label="Remarks about the member (rank + name)" htmlFor="ps-remarks">
-              <TextBox id="ps-remarks" value={input.remarksBy} onChange={(remarksBy) => update({ remarksBy })} width="100%" placeholder="Senior Master Sergeant Stewart" />
+              <TextBox id="ps-remarks" value={input.remarksBy} onChange={(remarksBy) => update({ remarksBy })} width="100%" placeholder="Rank and last name" />
             </Field>
             <Field label="Charge reader (blank = chief, then presiding official)" htmlFor="ps-reader">
-              <TextBox id="ps-reader" value={input.chargeReader} onChange={(chargeReader) => update({ chargeReader })} width="100%" placeholder="Senior Master Sergeant Berkshire" />
+              <TextBox id="ps-reader" value={input.chargeReader} onChange={(chargeReader) => update({ chargeReader })} width="100%" placeholder="Rank and last name" />
             </Field>
             <Field label="Stripe tacker 1 (e.g. supervisor)" htmlFor="ps-tack1">
-              <TextBox id="ps-tack1" value={input.tackers[0] ?? ''} onChange={(v) => update({ tackers: [v, input.tackers[1] ?? ''] })} width="100%" placeholder="Senior Master Sergeant Stewart" />
+              <TextBox id="ps-tack1" value={input.tackers[0] ?? ''} onChange={(v) => update({ tackers: [v, input.tackers[1] ?? ''] })} width="100%" placeholder="Rank and last name" />
             </Field>
             <Field label="Stripe tacker 2 (e.g. spouse)" htmlFor="ps-tack2">
-              <TextBox id="ps-tack2" value={input.tackers[1] ?? ''} onChange={(v) => update({ tackers: [input.tackers[0] ?? '', v] })} width="100%" placeholder="Mrs. Kugelman" />
+              <TextBox id="ps-tack2" value={input.tackers[1] ?? ''} onChange={(v) => update({ tackers: [input.tackers[0] ?? '', v] })} width="100%" placeholder="Name as announced" />
             </Field>
             <Field label="Refreshments location" htmlFor="ps-refresh">
-              <TextBox id="ps-refresh" value={input.refreshments} onChange={(refreshments) => update({ refreshments })} width="100%" placeholder="small break room" />
+              <TextBox id="ps-refresh" value={input.refreshments} onChange={(refreshments) => update({ refreshments })} width="100%" placeholder="Where refreshments are" />
             </Field>
           </div>
         </section>
@@ -208,10 +208,10 @@ export default function PromotionScriptBuilder() {
               <TextBox id="ps-sprel" value={input.spouseRelation} onChange={(spouseRelation) => update({ spouseRelation })} width="100%" placeholder="Wife, Husband, Spouse, Partner" />
             </Field>
             <Field label="Spouse name" htmlFor="ps-spname">
-              <TextBox id="ps-spname" value={input.spouseName} onChange={(spouseName) => update({ spouseName })} width="100%" placeholder="Jane" />
+              <TextBox id="ps-spname" value={input.spouseName} onChange={(spouseName) => update({ spouseName })} width="100%" placeholder="Name" />
             </Field>
             <Field label="Children (names)" htmlFor="ps-kids">
-              <TextBox id="ps-kids" value={input.children} onChange={(children) => update({ children })} width="100%" placeholder="Sam and Lily" />
+              <TextBox id="ps-kids" value={input.children} onChange={(children) => update({ children })} width="100%" placeholder="Names" />
             </Field>
             <Field label="Mother" htmlFor="ps-mom">
               <TextBox id="ps-mom" value={input.mother} onChange={(mother) => update({ mother })} width="100%" />
@@ -244,7 +244,7 @@ export default function PromotionScriptBuilder() {
                     value={v.name}
                     onChange={(name) => update({ visitors: input.visitors.map((x, j) => (j === i ? { ...x, name } : x)) })}
                     width="100%"
-                    placeholder="Chief Master Sergeant (Ret.) Vance"
+                    placeholder="Rank and name"
                   />
                 </Field>
                 <Field label="Role / note (optional)" htmlFor={`ps-dvr-${i}`}>
@@ -253,7 +253,7 @@ export default function PromotionScriptBuilder() {
                     value={v.role}
                     onChange={(role) => update({ visitors: input.visitors.map((x, j) => (j === i ? { ...x, role } : x)) })}
                     width="100%"
-                    placeholder="his first supervisor"
+                    placeholder="Relationship or title"
                   />
                 </Field>
                 <button
