@@ -251,9 +251,9 @@ empty user password, permissions that allow filling and printing and nothing els
 it can be filled in and printed but not edited.
 
 The three look like one family. Every one opens with the same ink band naming the tool
-and saying what it is, with the site's name at the right; every page ends with the same
-footer, the site's address and a current-as-of stamp (`CAO 15 SEP 2026`) that says when
-the builders were last changed, with a link to the site over it. The stamp is
+and saying what it is; every page ends with the same small footer, the site's address
+beside a current-as-of stamp (`CAO 15 SEP 2026`) that says when the builders were last
+changed, with a link to the site over it. That footer is the only branding. The stamp is
 `BUILDERS_UPDATED` in `src/lib/pdfform/version.ts`; bump it when a builder changes. The
 files are named the same way too, `OpsCheckGood-<Tool>-Builder.pdf`, with `-filled` when
 the download carries the page's entries, and their document titles say the same. On each

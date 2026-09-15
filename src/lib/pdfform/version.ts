@@ -33,7 +33,7 @@ export function documentTitle(tool: string): string {
   return `Ops Check Good - ${tool} - fillable PDF builder`;
 }
 
-/** The footer every page carries. */
+/** The footer every page carries: the site's address beside the current-as-of stamp, and nothing else. */
 export function footerText(iso: string = BUILDERS_UPDATED): string {
-  return `OPS CHECK GOOD   ${SITE_HOST}   ${caoStamp(iso)}`;
+  return `${SITE_HOST}   ${caoStamp(iso)}`;
 }

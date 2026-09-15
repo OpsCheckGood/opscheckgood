@@ -253,7 +253,7 @@ export default function PtCalculator() {
         items={[
           {
             label: 'PDF calculator',
-            detail: 'The PT calculator as a locked, fillable PDF that scores on its own in Acrobat or Reader.',
+            detail: 'The PT calculator as a fillable PDF that scores on its own in Acrobat or Reader.',
             run: async () => downloadBytes(await ptCalculatorPdf(), downloadName('PT Calculator')),
             primary: true,
           },

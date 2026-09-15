@@ -85,7 +85,7 @@ export default function PromotionScriptBuilder() {
     }
   }
 
-  /** The builder as a locked, fillable PDF: blank, or carrying what is on the page. */
+  /** The builder as a fillable PDF: blank, or carrying what is on the page. */
   async function downloadPdf(withEntries: boolean) {
     const bytes = await promotionBuilderPdf(withEntries ? input : null, data);
     downloadBytes(bytes, downloadName('Promotion Script Builder', withEntries ? 'filled' : 'blank'));
@@ -108,7 +108,7 @@ export default function PromotionScriptBuilder() {
           items={[
             {
               label: 'Blank PDF builder',
-              detail: 'The Promotion Script Builder as a locked, fillable PDF. Fill it in Acrobat or Reader.',
+              detail: 'The Promotion Script Builder as a fillable PDF. Fill it in Acrobat or Reader.',
               run: () => downloadPdf(false),
               primary: true,
             },

@@ -140,8 +140,8 @@ describe('the embedded forms', () => {
     expect(r.infoText).not.toMatch(/82|TORRES|MXAA/i);
     expect(r.content).not.toMatch(/82 RS|Reconnaissance|8-Deuce|FormXob/);
     expect(r.content).toContain('(PROMOTION SCRIPT BUILDER)');
-    expect(r.perPage[0]).toContain('(OPS CHECK GOOD)');
-    for (const page of r.perPage) expect(page).toMatch(/OPS CHECK GOOD   opscheckgood\.github\.io\/opscheckgood   CAO \d+ [A-Z]{3} \d{4}/);
+    expect(r.perPage[0]).not.toContain('(OPS CHECK GOOD)');
+    for (const page of r.perPage) expect(page).toMatch(/\(opscheckgood\.github\.io\/opscheckgood   CAO \d+ [A-Z]{3} \d{4}\)/);
     expect(r.links.filter((l) => l === 'https://opscheckgood.github.io/opscheckgood/')).toHaveLength(4);
     for (const [name, value] of r.fields) expect(value, name).toBe('');
     expect(r.script).toContain('var OCG = (function ()');
@@ -158,8 +158,8 @@ describe('the embedded forms', () => {
     expect(r.fields.size).toBe(264); // the print button is gone
     expect(r.script.startsWith('var PF = {')).toBe(true);
     expect(r.perPage[0]).toContain('(PT CALCULATOR)');
-    expect(r.perPage[0]).toContain('(OPS CHECK GOOD)');
-    for (const page of r.perPage) expect(page).toMatch(/CAO \d+ [A-Z]{3} \d{4}/);
+    expect(r.perPage[0]).not.toContain('(OPS CHECK GOOD)');
+    for (const page of r.perPage) expect(page).toMatch(/\(opscheckgood\.github\.io\/opscheckgood   CAO \d+ [A-Z]{3} \d{4}\)/);
     expect(r.links.filter((l) => l === 'https://opscheckgood.github.io/opscheckgood/')).toHaveLength(2);
     expect(saturated(r.content)).toEqual([]);
   });

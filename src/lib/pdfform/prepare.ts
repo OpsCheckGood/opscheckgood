@@ -67,7 +67,7 @@ function literal(text: string): string {
  */
 async function brandPages(rw: PdfRewriter): Promise<void> {
   const text = footerText();
-  const size = 7;
+  const size = 6.5;
   const width = measure('Helv', text, size);
   const x = 306 - width / 2;
   await rw.editContent(
@@ -98,8 +98,6 @@ async function brandPages(rw: PdfRewriter): Promise<void> {
 async function paintHeader(rw: PdfRewriter, title: string, subtitle: string, clearFrom: number): Promise<void> {
   const left = 54;
   const band = 792 - HEADER_BAND;
-  const site = 'OPS CHECK GOOD';
-  const siteX = 612 - left - measure('HeBo', site, 8);
   await rw.editContent((content, i) =>
     i !== 0
       ? content
@@ -107,8 +105,7 @@ async function paintHeader(rw: PdfRewriter, title: string, subtitle: string, cle
         `1 1 1 rg 0 ${clearFrom} 612 ${792 - clearFrom} re f\n` +
         `0.082 0.094 0.11 rg 0 ${band} 612 ${HEADER_BAND} re f\n` +
         `BT /F2 15 Tf 1 1 1 rg 1 0 0 1 ${left} ${792 - 21} Tm ${literal(title.toUpperCase())} Tj ET\n` +
-        `BT /F1 7.5 Tf 0.78 0.78 0.76 rg 1 0 0 1 ${left} ${792 - 35} Tm ${literal(subtitle)} Tj ET\n` +
-        `BT /F2 8 Tf 1 1 1 rg 1 0 0 1 ${siteX.toFixed(2)} ${792 - 27} Tm ${literal(site)} Tj ET\n`,
+        `BT /F1 7.5 Tf 0.78 0.78 0.76 rg 1 0 0 1 ${left} ${792 - 35} Tm ${literal(subtitle)} Tj ET\n`,
   );
 }
 

@@ -261,7 +261,7 @@ export default function DecorationWriter() {
     downloadBytes(new Uint8Array(await blob.arrayBuffer()), downloadName('Decoration Writer', 'word'), blob.type);
   }
 
-  /** The tool as a locked, fillable PDF: blank, or carrying what is on the page. */
+  /** The tool as a fillable PDF: blank, or carrying what is on the page. */
   async function downloadFormPdf(withEntries: boolean) {
     const bytes = await decorationBuilderPdf(withEntries ? draft : null, language, certificate);
     downloadBytes(bytes, downloadName('Decoration Writer', withEntries ? 'filled' : 'blank'));
@@ -311,7 +311,7 @@ export default function DecorationWriter() {
         items={[
           {
             label: 'Blank PDF builder',
-            detail: 'The Decoration Writer as a locked, fillable PDF. Fill it in Acrobat or Reader.',
+            detail: 'The Decoration Writer as a fillable PDF. Fill it in Acrobat or Reader.',
             run: () => downloadFormPdf(false),
             primary: true,
           },

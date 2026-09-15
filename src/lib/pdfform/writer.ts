@@ -443,24 +443,23 @@ export const FOOTER_Y = 22;
 
 /**
  * The top of every builder: an ink band with the tool's name and what it
- * is, and the site's name at the right. The same band is painted onto the
- * two original files, so the three cannot be told apart by their tops.
+ * is. The same band is painted onto the two original files, so the three
+ * cannot be told apart by their tops. The site is named only in the footer.
  */
 export function standardHeader(page: FormPage, pageWidth: number, pageHeight: number, title: string, subtitle: string, left = 54): void {
   page.fills = page.fills ?? [];
   page.fills.push({ x: 0, y: pageHeight - HEADER_BAND, w: pageWidth, h: HEADER_BAND, color: INK });
   page.texts.push({ x: left, y: pageHeight - 21, text: title.toUpperCase(), font: 'HeBo', size: 15, color: '1 1 1' });
   page.texts.push({ x: left, y: pageHeight - 35, text: subtitle, font: 'Helv', size: 7.5, color: '0.78 0.78 0.76' });
-  page.texts.push({ x: pageWidth - left, y: pageHeight - 27, text: 'OPS CHECK GOOD', font: 'HeBo', size: 8, color: '1 1 1', align: 'right' });
 }
 
-/** The site's mark on each page: the site, the current-as-of date, and a link over it. */
+/** The site's mark on each page: its address and the current-as-of date, small, with a link over it. */
 export function branding(pageWidth: number, url = SITE_URL): {
   texts: StaticText[];
   links: Link[];
 } {
   const text = footerText();
-  const size = 7;
+  const size = 6.5;
   const width = measure('Helv', text, size);
   const x = pageWidth / 2 - width / 2;
   return {
