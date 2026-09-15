@@ -231,6 +231,24 @@ export function aesCbcDecrypt(key: Uint8Array, data: Uint8Array): Uint8Array {
   return out;
 }
 
+/**
+ * AES-CBC the way PDF stores it: a random IV first, PKCS#5 padding last.
+ * The inverse of `aesCbcDecrypt`.
+ */
+export function aesCbcEncrypt(key: Uint8Array, data: Uint8Array, iv: Uint8Array = randomBytes(16)): Uint8Array {
+  const pad = 16 - (data.length % 16);
+  const padded = new Uint8Array(data.length + pad);
+  padded.set(data);
+  padded.fill(pad, data.length);
+  return concat(iv, aesCbcNoPadEncrypt(key, iv, padded));
+}
+
+export function randomBytes(n: number): Uint8Array {
+  const out = new Uint8Array(n);
+  crypto.getRandomValues(out);
+  return out;
+}
+
 /** AES-CBC without an IV prefix and without padding: the R6 password hash. */
 export function aesCbcNoPadEncrypt(key: Uint8Array, iv: Uint8Array, data: Uint8Array): Uint8Array {
   const roundKeys = expandKey(key);

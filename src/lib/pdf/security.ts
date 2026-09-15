@@ -1,4 +1,4 @@
-import { aesCbcDecrypt, aesCbcNoPadEncrypt, concat, md5, rc4, sha } from './crypto';
+import { aesCbcDecrypt, aesCbcEncrypt, aesCbcNoPadEncrypt, concat, md5, randomBytes, rc4, sha } from './crypto';
 import { PdfName, PdfString, type PdfDict } from './objects';
 
 /**
@@ -118,6 +118,135 @@ async function aes256FileKey(encrypt: PdfDict): Promise<Uint8Array> {
   const withIv = concat(new Uint8Array(16), ue.subarray(0, 32));
   const key = aesCbcDecrypt(intermediate, concat(withIv, new Uint8Array(0)));
   return key.subarray(0, 32);
+}
+
+// ---------------------------------------------------------------------------
+// Locking
+// ---------------------------------------------------------------------------
+
+/** What the holder of the file, without the owner password, may do. */
+export interface Permissions {
+  print: boolean;
+  /** Change the document's content or its form design. */
+  modify: boolean;
+  copy: boolean;
+  /** Add or change annotations, and fill in fields, when `fillForms` is off. */
+  annotate: boolean;
+  /** Fill in existing form fields. */
+  fillForms: boolean;
+  /** Extract for accessibility. */
+  accessibility: boolean;
+  /** Insert, rotate or delete pages. */
+  assemble: boolean;
+  printHighQuality: boolean;
+}
+
+/** A locked form: fill it in and print it, change nothing else. */
+export const FORM_ONLY: Permissions = {
+  print: true,
+  modify: false,
+  copy: true,
+  annotate: false,
+  fillForms: true,
+  accessibility: true,
+  assemble: false,
+  printHighQuality: true,
+};
+
+/** The /P value: every reserved bit set, the granted ones on. */
+export function permissionBits(p: Permissions): number {
+  let bits = -1 >>> 0; // all ones
+  const clear = (bit: number) => {
+    bits &= ~(1 << (bit - 1)) >>> 0;
+  };
+  if (!p.print) clear(3);
+  if (!p.modify) clear(4);
+  if (!p.copy) clear(5);
+  if (!p.annotate) clear(6);
+  if (!p.fillForms) clear(9);
+  if (!p.accessibility) clear(10);
+  if (!p.assemble) clear(11);
+  if (!p.printHighQuality) clear(12);
+  return bits | 0;
+}
+
+function padPassword(password: string): Uint8Array {
+  const bytes = new Uint8Array(32);
+  let i = 0;
+  for (; i < password.length && i < 32; i += 1) bytes[i] = password.charCodeAt(i) & 0xff;
+  bytes.set(PAD.subarray(0, 32 - i), i);
+  return bytes;
+}
+
+export interface Encryptor {
+  /** The /Encrypt dictionary, to be written unencrypted. */
+  dict: PdfDict;
+  /** Encrypts the bytes of a string or stream belonging to object `num gen`. */
+  encrypt(data: Uint8Array, num: number, gen: number): Uint8Array;
+}
+
+/**
+ * The standard security handler, revision 4 with AES-128, set up to lock a
+ * file: an owner password nobody keeps, an empty user password so anyone can
+ * open it, and permissions that allow filling and printing and nothing else.
+ * This is the scheme every e-Publishing form uses.
+ */
+export function lockStandardSecurity(
+  ownerPassword: string,
+  permissions: Permissions,
+  firstId: Uint8Array,
+): Encryptor {
+  const n = 16;
+  const p = permissionBits(permissions);
+
+  // Algorithm 3: the O entry.
+  let ownerKey = md5(padPassword(ownerPassword));
+  for (let i = 0; i < 50; i += 1) ownerKey = md5(ownerKey.subarray(0, n));
+  ownerKey = ownerKey.subarray(0, n);
+  let o = rc4(ownerKey, padPassword(''));
+  for (let i = 1; i <= 19; i += 1) {
+    const k = new Uint8Array(n);
+    for (let j = 0; j < n; j += 1) k[j] = ownerKey[j]! ^ i;
+    o = rc4(k, o);
+  }
+
+  // Algorithm 2: the file key from the (empty) user password.
+  const pBytes = new Uint8Array(4);
+  new DataView(pBytes.buffer).setInt32(0, p, true);
+  let key = md5(concat(PAD, o, pBytes, firstId));
+  for (let i = 0; i < 50; i += 1) key = md5(key.subarray(0, n));
+  key = key.subarray(0, n);
+
+  // Algorithm 5: the U entry.
+  let u = rc4(key, md5(concat(PAD, firstId)));
+  for (let i = 1; i <= 19; i += 1) {
+    const k = new Uint8Array(n);
+    for (let j = 0; j < n; j += 1) k[j] = key[j]! ^ i;
+    u = rc4(k, u);
+  }
+  u = concat(u, randomBytes(16));
+
+  const dict: PdfDict = new Map<string, unknown>([
+    ['Filter', new PdfName('Standard')],
+    ['V', 4],
+    ['R', 4],
+    ['Length', 128],
+    ['P', p],
+    ['O', new PdfString(o)],
+    ['U', new PdfString(u)],
+    ['CF', new Map<string, unknown>([['StdCF', new Map<string, unknown>([['CFM', new PdfName('AESV2')], ['AuthEvent', new PdfName('DocOpen')], ['Length', 16]])]])],
+    ['StmF', new PdfName('StdCF')],
+    ['StrF', new PdfName('StdCF')],
+  ]) as PdfDict;
+
+  return {
+    dict,
+    encrypt(data, num, gen) {
+      const extra = new Uint8Array([num & 0xff, (num >> 8) & 0xff, (num >> 16) & 0xff, gen & 0xff, (gen >> 8) & 0xff]);
+      const objectKey = md5(concat(key, extra, AES_SALT)).subarray(0, Math.min(n + 5, 16));
+      return aesCbcEncrypt(objectKey, data);
+    },
+  };
 }
 
 export async function openStandardSecurity(

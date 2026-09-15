@@ -236,6 +236,25 @@ export class PdfDocument {
     return this.decryptor !== null;
   }
 
+  /** Every object number the cross-reference knows, ascending. */
+  objectNumbers(): number[] {
+    return [...this.xref.keys()].sort((a, b) => a - b);
+  }
+
+  /** The generation of an object that sits directly in the file (0 for members of object streams). */
+  generationOf(num: number): number {
+    const entry = this.xref.get(num);
+    return entry?.kind === 'offset' ? entry.gen : 0;
+  }
+
+  /** A stream's bytes with the encryption removed but its filters left in place. */
+  rawDecrypted(stream: PdfStream, num: number, gen: number): Uint8Array {
+    const type = stream.dict.get('Type');
+    const isXref = type instanceof PdfName && type.name === 'XRef';
+    if (!this.decryptor || isXref) return stream.raw;
+    return this.decryptor.decrypt(stream.raw, num, gen, 'stream');
+  }
+
   // -------------------------------------------------------------------------
   // Objects
   // -------------------------------------------------------------------------
@@ -361,6 +380,11 @@ export class PdfDocument {
     const type = stream.dict.get('Type');
     const isXref = type instanceof PdfName && type.name === 'XRef';
     return decodeStream(stream, isXref ? null : this.decryptor, num, gen, (v) => this.resolve(v));
+  }
+
+  /** Filters only, for a stream whose bytes are already decrypted. */
+  async decodeDecrypted(stream: PdfStream): Promise<Uint8Array> {
+    return decodeStream(stream, null, 0, 0, (v) => this.resolve(v));
   }
 
   /** Convenience: resolve a reference expected to be a stream and decode it. */

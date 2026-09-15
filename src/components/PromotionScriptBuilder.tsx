@@ -12,6 +12,7 @@ import {
   type CeremonyInput,
 } from '@/lib/promotion/ceremony';
 import { printScript } from '@/lib/promotion/ceremony-print';
+import { downloadBytes, promotionBuilderPdf } from '@/lib/pdfform/downloads';
 import { SourceStamp } from './SourceStamp';
 
 /**
@@ -81,6 +82,13 @@ export default function PromotionScriptBuilder() {
     } catch {
       flash('Copy blocked — select and Ctrl+C');
     }
+  }
+
+  /** The builder as a locked, fillable PDF: blank, or carrying what is on the page. */
+  async function downloadPdf(withEntries: boolean) {
+    const bytes = await promotionBuilderPdf(withEntries ? input : null, data);
+    downloadBytes(bytes, withEntries ? 'promotion-script-draft.pdf' : 'promotion-script-builder.pdf');
+    flash('PDF builder downloaded. Open it in Acrobat or Reader.');
   }
 
   function print() {
@@ -305,6 +313,25 @@ export default function PromotionScriptBuilder() {
               style={{ background: blank ? 'var(--panel)' : 'var(--control)', borderColor: blank ? 'var(--rule-strong)' : 'var(--control)', color: blank ? 'var(--ink-faint)' : '#ffffff', letterSpacing: '0.09em' }}
             >
               Print
+            </button>
+            <button
+              type="button"
+              onClick={() => void downloadPdf(true)}
+              disabled={blank}
+              className="util border px-3.5 py-2"
+              style={{ background: 'var(--panel)', borderColor: blank ? 'var(--rule-strong)' : 'var(--ink)', color: blank ? 'var(--ink-faint)' : 'var(--ink)', letterSpacing: '0.09em' }}
+              title="This builder as a locked, fillable PDF with these entries already in it, for Acrobat or Reader"
+            >
+              PDF builder with these entries
+            </button>
+            <button
+              type="button"
+              onClick={() => void downloadPdf(false)}
+              className="util border px-3.5 py-2"
+              style={{ background: 'var(--panel)', borderColor: 'var(--ink)', color: 'var(--ink)', letterSpacing: '0.09em' }}
+              title="This builder as a locked, fillable PDF, blank, for Acrobat or Reader"
+            >
+              Blank PDF builder
             </button>
           </div>
         </div>

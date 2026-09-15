@@ -197,7 +197,10 @@ The certificate preview is the whole page as myDecs prints it -- the Department 
 Force or Presidential header, the oak leaf cluster line, the member in capitals, the basis
 and dates, the justified citation, GIVEN UNDER MY HAND, the signature block -- drawn from
 the same wrapped lines the count uses, so it cannot disagree with it. **Print certificate**
-prints that page alone, at size.
+prints that page alone, at size. **Word draft** is the same page as an editable document,
+the citation one justified Courier paragraph. **PDF builder** is the tool itself as a
+fillable PDF, blank or with the page's entries already in it; see
+[Fillable PDF builders](#fillable-pdf-builders).
 
 The certificate geometry is `src/data/decorations/mydecs-certificate.json`, `verified`:
 every figure in it was read with pdftotext off three certificates myDecs itself printed
@@ -236,6 +239,36 @@ meant to be copied and edited.
 dialog), plain-text copy, optional charge, local draft persistence.
 
 ---
+
+## Fillable PDF builders
+
+Three of the tools can be downloaded as a fillable PDF that does the same job on its own:
+the Decoration Writer, the PT calculator and the Promotion Script Builder. The file
+carries the tool's engine as document-level JavaScript, so it builds the citation,
+scores the assessment or writes the run of show inside Acrobat or Reader with no site
+and no network. Each is locked as it is downloaded -- an owner password nobody keeps, an
+empty user password, permissions that allow filling and printing and nothing else -- so
+it can be filled in and printed but not edited. The foot of each page carries the site's
+mark and a link to it, in small type.
+
+The Decoration Writer's file is built from scratch by `src/lib/pdfform` -- an AcroForm
+writer plus an ES5 port of the site's citation engine, generated from the same data
+files -- and can be downloaded blank or with the page's entries already in the fields.
+The PT calculator and the Promotion Script Builder are the maintainer's original fillable
+PDFs, from which the site's versions were written. They are embedded as prepared by
+`scripts/embed-forms.mjs`: document information scrubbed, the unit's name, emblem and
+sample entries removed, the site's mark added, and, for the promotion builder, the script
+replaced with an ES5 port of the site's so the two cannot disagree. The originals sit in
+`forms-src/`, which is not committed; the prepared files under
+`src/lib/pdfform/embedded/` are. The PT calculator's own script is left exactly as it
+is: it is the oracle `tests/pt-score.test.ts` checks the site's scorer against.
+
+`tests/pdfform.test.ts` and `tests/pdf-embedded.test.ts` run the files' scripts under
+Node beside the site's engines and compare every sentence and every line; they also open
+the locked downloads with `src/lib/pdf` and check the fields, the script, the permissions
+and the link. What no test can do is run Acrobat: the scripts are written to its old
+JavaScript engine (`var` and `function`, nothing newer), and that is the one thing left
+to a human with Acrobat in front of them.
 
 ## Status
 

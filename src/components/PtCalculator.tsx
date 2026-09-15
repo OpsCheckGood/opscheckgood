@@ -17,6 +17,7 @@ import {
   type PtResult,
   type Rating,
 } from '@/lib/pt/score';
+import { downloadBytes, ptCalculatorPdf } from '@/lib/pdfform/downloads';
 import { SourceStamp } from './SourceStamp';
 
 /**
@@ -253,8 +254,22 @@ export default function PtCalculator() {
           <SectionTitle step={1} title="Personal information" />
           <button
             type="button"
-            onClick={() => setDraft(initialDraft())}
+            onClick={() => void ptCalculatorPdf().then((bytes) => downloadBytes(bytes, 'pt-calculator.pdf'))}
             className="util ml-auto flex items-center gap-2 border px-3.5 py-2"
+            style={{
+              background: 'var(--panel)',
+              borderColor: 'var(--ink)',
+              color: 'var(--ink)',
+              letterSpacing: '0.09em',
+            }}
+            title="This calculator as a locked, fillable PDF that scores on its own, for Acrobat or Reader"
+          >
+            PDF calculator
+          </button>
+          <button
+            type="button"
+            onClick={() => setDraft(initialDraft())}
+            className="util flex items-center gap-2 border px-3.5 py-2"
             style={{
               background: 'var(--panel)',
               borderColor: 'var(--accent)',

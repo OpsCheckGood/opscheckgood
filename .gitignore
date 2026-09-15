@@ -12,3 +12,7 @@ CLAUDE.md
 
 # Real forms dropped into the working directory for inspection. Never committed.
 /*.pdf
+
+# The two fillable PDFs the site serves, as received: they name their author and unit.
+# scripts/embed-forms.mjs scrubs them into src/lib/pdfform/embedded/, which is committed.
+forms-src/

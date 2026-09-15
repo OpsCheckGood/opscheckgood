@@ -334,8 +334,11 @@ describeBuilt('single-file offline PT calculator', () => {
   });
 
   // Bullet Bench's font data is most of its 1.5 MB and must not ride along.
+  // The PT calculator carries its own fillable PDF (about 430 KB as base64),
+  // which is the one large thing it is allowed.
   it('carries only its own bundle', () => {
-    expect(html.length).toBeLessThan(600_000);
+    expect(html.length).toBeLessThan(1_100_000);
+    expect(html).not.toContain('LiberationSerif');
   });
 
   it('states the unofficial-project disclaimer', () => {

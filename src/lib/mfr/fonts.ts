@@ -17,7 +17,7 @@ import type { FontKey, MemoDoc } from './types';
  */
 
 /** Times-Roman. */
-const TIMES_ROMAN: readonly number[] = [
+export const TIMES_ROMAN: readonly number[] = [
   250, 333, 408, 500, 500, 833, 778, 180, 333, 333, 500, 564, 250, 333, 250, 278, 500, 500, 500,
   500, 500, 500, 500, 500, 500, 500, 278, 278, 564, 564, 564, 444, 921, 722, 667, 667, 722, 611,
   556, 722, 722, 333, 389, 722, 611, 889, 722, 722, 556, 722, 667, 556, 611, 722, 722, 944, 722,
@@ -26,7 +26,7 @@ const TIMES_ROMAN: readonly number[] = [
 ];
 
 /** Times-Bold. */
-const TIMES_BOLD: readonly number[] = [
+export const TIMES_BOLD: readonly number[] = [
   250, 333, 555, 500, 500, 1000, 833, 278, 333, 333, 500, 570, 250, 333, 250, 278, 500, 500,
   500, 500, 500, 500, 500, 500, 500, 500, 333, 333, 570, 570, 570, 500, 930, 722, 667, 722, 722,
   667, 611, 778, 778, 389, 500, 778, 667, 944, 722, 778, 611, 778, 722, 556, 667, 722, 722,
@@ -48,7 +48,7 @@ const TIMES_ITALIC: readonly number[] = [
  * Helvetica. Verified glyph for glyph against arial.ttf, so an Arial body
  * renders at exactly these widths. Helvetica-Oblique shares them.
  */
-const HELVETICA: readonly number[] = [
+export const HELVETICA: readonly number[] = [
   278, 278, 355, 556, 556, 889, 667, 191, 333, 333, 389, 584, 278, 333, 278, 278, 556, 556, 556,
   556, 556, 556, 556, 556, 556, 556, 278, 278, 584, 584, 584, 556, 1015, 667, 667, 722, 722,
   667, 611, 778, 722, 278, 500, 667, 556, 833, 722, 778, 667, 778, 722, 667, 611, 722, 667, 944,
@@ -58,7 +58,7 @@ const HELVETICA: readonly number[] = [
 ];
 
 /** Helvetica-Bold. */
-const HELVETICA_BOLD: readonly number[] = [
+export const HELVETICA_BOLD: readonly number[] = [
   278, 333, 474, 556, 556, 889, 722, 238, 333, 333, 389, 584, 278, 333, 278, 278, 556, 556, 556,
   556, 556, 556, 556, 556, 556, 556, 333, 333, 584, 584, 584, 611, 975, 722, 722, 722, 722, 667,
   611, 778, 722, 278, 556, 722, 611, 833, 722, 778, 667, 778, 722, 667, 611, 722, 667, 944, 667,

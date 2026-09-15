@@ -23,6 +23,8 @@ import {
   type CitationInput,
 } from '@/lib/decoration/citation';
 import type { HeaderLine } from '@/lib/decoration/types';
+import { buildCitationDocx } from '@/lib/decoration/docx';
+import { decorationBuilderPdf, downloadBytes } from '@/lib/pdfform/downloads';
 import { SourceStamp } from './SourceStamp';
 
 /**
@@ -250,6 +252,23 @@ export default function DecorationWriter() {
 
   function editName(name: string) {
     update({ name, surname: draft.surnameEdited ? draft.surname : guessSurname(name) });
+  }
+
+  async function downloadDocx() {
+    if (!page) return;
+    const stem = draft.surname.trim() ? draft.surname.trim().toLowerCase() : 'citation';
+    const blob = buildCitationDocx(page, full);
+    downloadBytes(new Uint8Array(await blob.arrayBuffer()), `${stem}-citation.docx`, blob.type);
+    setCopyNote('Word draft downloaded');
+    window.setTimeout(() => setCopyNote(null), 3000);
+  }
+
+  /** The tool as a locked, fillable PDF: blank, or carrying what is on the page. */
+  async function downloadFormPdf(withEntries: boolean) {
+    const bytes = await decorationBuilderPdf(withEntries ? draft : null, language, certificate);
+    downloadBytes(bytes, withEntries ? 'decoration-writer-draft.pdf' : 'decoration-writer.pdf');
+    setCopyNote('PDF builder downloaded. Open it in Acrobat or Reader.');
+    window.setTimeout(() => setCopyNote(null), 4000);
   }
 
   async function copyCitation() {
@@ -635,6 +654,51 @@ export default function DecorationWriter() {
           <Field label="Signature date" htmlFor="dec-signed">
             <DateBox id="dec-signed" value={draft.signedDate} onChange={(signedDate) => update({ signedDate })} />
           </Field>
+          <div className="flex flex-wrap gap-2 lg:col-span-2">
+          <button
+            type="button"
+            onClick={downloadDocx}
+            disabled={!full}
+            className="util border px-3.5 py-2.5"
+            style={{
+              background: 'var(--panel)',
+              borderColor: full ? 'var(--ink)' : 'var(--rule-strong)',
+              color: full ? 'var(--ink)' : 'var(--ink-faint)',
+              letterSpacing: '0.09em',
+            }}
+            title="The certificate as an editable Word document"
+          >
+            Word draft
+          </button>
+          <button
+            type="button"
+            onClick={() => void downloadFormPdf(true)}
+            disabled={!full}
+            className="util border px-3.5 py-2.5"
+            style={{
+              background: 'var(--panel)',
+              borderColor: full ? 'var(--ink)' : 'var(--rule-strong)',
+              color: full ? 'var(--ink)' : 'var(--ink-faint)',
+              letterSpacing: '0.09em',
+            }}
+            title="This tool as a locked, fillable PDF with what is on this page already entered, for Acrobat or Reader"
+          >
+            PDF builder with these entries
+          </button>
+          <button
+            type="button"
+            onClick={() => void downloadFormPdf(false)}
+            className="util border px-3.5 py-2.5"
+            style={{
+              background: 'var(--panel)',
+              borderColor: 'var(--ink)',
+              color: 'var(--ink)',
+              letterSpacing: '0.09em',
+            }}
+            title="This tool as a locked, fillable PDF, blank: the same menus, sentences and line count, for Acrobat or Reader"
+          >
+            Blank PDF builder
+          </button>
           <button
             type="button"
             onClick={() => window.print()}
@@ -650,6 +714,7 @@ export default function DecorationWriter() {
           >
             Print certificate
           </button>
+          </div>
         </div>
 
         {page && (
