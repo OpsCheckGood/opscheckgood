@@ -40,6 +40,7 @@ const ponde: CitationInput = {
   start: '2024-01-01',
   end: '2025-12-31',
   date: '',
+  periodInOpening: true,
   approver: 'JANE Q. PUBLIC, Lt Col, USAF',
   approverTitle: 'Commander, 1st Maintenance Squadron',
   signedDate: '2026-07-31',
@@ -133,6 +134,16 @@ describe('the sentences', () => {
       'Technical Sergeant Ami Ponde distinguished herself by meritorious service as Flight Chief, ' +
         '1st Maintenance Squadron, Joint Base Langley-Eustis, Virginia, from 1 January 2024 to 31 December 2025.',
     );
+  });
+
+  it('keeps the dates out of the opening by default, the way myDecs prints it', () => {
+    const printed = openingSentence({ ...ponde, periodInOpening: false }, language);
+    expect(printed).toBe(
+      'Technical Sergeant Ami Ponde distinguished herself by meritorious service as Flight Chief, ' +
+        '1st Maintenance Squadron, Joint Base Langley-Eustis, Virginia.',
+    );
+    // The header still carries them.
+    expect(periodLine({ ...ponde, periodInOpening: false })).toBe('1 January 2024 to 31 December 2025');
   });
 
   it('prints the chain the certificate does: squadron, group, wing, base', () => {

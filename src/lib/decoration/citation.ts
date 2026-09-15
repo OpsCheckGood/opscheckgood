@@ -43,6 +43,13 @@ export interface CitationInput {
   start: string;
   end: string;
   date: string;
+  /**
+   * Whether the period is written into the opening sentence. The manual's
+   * examples carry it there, but myDecs prints the dates in the certificate's
+   * header and the citations it prints go straight from the assignment to
+   * "During this period", so the default is off.
+   */
+  periodInOpening: boolean;
   /** The approving official's signature block. */
   approver: string;
   approverTitle: string;
@@ -140,11 +147,13 @@ export function openingSentence(input: CitationInput, language: CitationLanguage
     basis: basis.text,
     assignment: fill(assignment.text, { place: placeText }),
     circumstance,
-    period: fill(period.text, {
-      start: formatCitationDate(input.start),
-      end: formatCitationDate(input.end),
-      date: formatCitationDate(input.date),
-    }),
+    period: input.periodInOpening
+      ? fill(period.text, {
+          start: formatCitationDate(input.start),
+          end: formatCitationDate(input.end),
+          date: formatCitationDate(input.date),
+        })
+      : '',
   })
     .replace(/\s+/g, ' ')
     .replace(/ ([,.])/g, '$1');

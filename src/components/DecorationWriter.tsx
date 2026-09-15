@@ -91,6 +91,7 @@ function initialDraft(): Draft {
     start: '',
     end: '',
     date: '',
+    periodInOpening: false,
     approver: '',
     approverTitle: '',
     signedDate: '',
@@ -482,7 +483,9 @@ export default function DecorationWriter() {
                 value={draft.periodId}
                 onChange={(periodId) => update({ periodId })}
                 width="10rem"
-                options={language.opening.periods.map((p) => ({ value: p.id, label: p.label }))}
+                options={language.opening.periods
+                  .filter((p) => p.id !== 'none')
+                  .map((p) => ({ value: p.id, label: p.label }))}
               />
             </Field>
             {periodNeeds === 'range' && (
@@ -500,7 +503,20 @@ export default function DecorationWriter() {
                 <DateBox id="dec-date" value={draft.date} onChange={(date) => update({ date })} />
               </Field>
             )}
+            <label className="flex items-center gap-2 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
+              <input
+                type="checkbox"
+                checked={draft.periodInOpening}
+                onChange={(e) => update({ periodInOpening: e.target.checked })}
+              />
+              Also write the period into the opening sentence
+            </label>
           </div>
+          <p className="m-0 mt-3 text-[11.5px] leading-relaxed" style={{ color: 'var(--ink-faint)' }}>
+            The dates print in the certificate&rsquo;s header. myDecs citations go straight from the
+            assignment to &ldquo;During this period&rdquo;; the manual&rsquo;s examples carry the dates in
+            the sentence as well, which the box above puts back.
+          </p>
         </section>
       )}
 
