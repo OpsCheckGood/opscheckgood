@@ -405,10 +405,12 @@ export function buildDecorationForm(language: CitationLanguage, certificate: Cer
 
   // ---- Page 1: inputs -----------------------------------------------------
   const p1: FormPage = { texts: [], rules: [], fields: [], links: [], fills: [] };
-  heading(p1, PAGE_H - HEADER_BAND - 10, 'Decoration Writer', 'Fill in the fields. The citation, its line count and the certificate text build themselves on page 2; page 3 previews the certificate.');
-  section(p1, 664, 'Decoration');
+  // No note under the band: the fields start straight away, and the room
+  // that saves goes to the narrative at the foot of the page.
+  standardHeader(p1, PAGE_W, PAGE_H, 'Decoration Writer', SUBTITLE, LEFT);
+  section(p1, PAGE_H - HEADER_BAND - 22, 'Decoration');
 
-  let y = 622;
+  let y = PAGE_H - HEADER_BAND - 64;
   const combo = (name: string, x: number, options: string[], value: string, tooltip?: string, w = COL_W): Field => ({
     name, kind: 'combo', rect: [x, y, w, FIELD_H], options, value, tooltip, size: 9,
   });
