@@ -1,6 +1,7 @@
 import { PdfRewriter } from '../pdf/rewrite';
 import { PdfName, PdfString, type PdfDict, type PdfObject } from '../pdf/objects';
-import { measure } from './writer';
+import { FOOTER_Y, HEADER_BAND, measure } from './writer';
+import { SITE_URL as SITE, footerText } from './version';
 
 /**
  * Preparing the two forms that came from elsewhere for the site.
@@ -15,8 +16,7 @@ import { measure } from './writer';
  * locking the file -- is in `downloads.ts`.
  */
 
-export const SITE_URL = 'https://opscheckgood.github.io/opscheckgood/';
-const SITE_HOST = 'opscheckgood.github.io/opscheckgood';
+export const SITE_URL = SITE;
 
 const INFO_COMMON = {
   Author: 'Ops Check Good',
@@ -61,32 +61,55 @@ function literal(text: string): string {
 }
 
 /**
- * The site's mark at the foot of a page: one small grey line and a link
- * over it. Drawn with whatever font the page already calls /F1.
+ * The site's mark at the foot of every page: the site, the current-as-of
+ * date, and a link over it. Drawn with whatever font the page calls /F1,
+ * which in both originals is Helvetica.
  */
-async function brandPage(rw: PdfRewriter, pageIndex: number, y: number): Promise<void> {
-  const text = `OPS CHECK GOOD   ${SITE_HOST}`;
+async function brandPages(rw: PdfRewriter): Promise<void> {
+  const text = footerText();
   const size = 7;
   const width = measure('Helv', text, size);
   const x = 306 - width / 2;
-  await rw.editContent((content, i) =>
-    i === pageIndex
-      ? `${content}\nBT /F1 ${size} Tf 0.55 g 1 0 0 1 ${x.toFixed(2)} ${y} Tm ${literal(text)} Tj ET\n`
-      : content,
+  await rw.editContent(
+    (content) => `${content}\n1 1 1 rg 0 0 612 ${FOOTER_Y + 12} re f\nBT /F1 ${size} Tf 0.5 g 1 0 0 1 ${x.toFixed(2)} ${FOOTER_Y} Tm ${literal(text)} Tj ET\n`,
   );
-  const page = rw.pages()[pageIndex]!;
-  const link: PdfDict = new Map<string, PdfObject>([
-    ['Type', new PdfName('Annot')],
-    ['Subtype', new PdfName('Link')],
-    ['Rect', [x, y - 3, x + width, y + size + 2]],
-    ['Border', [0, 0, 0]],
-    ['F', 4],
-    ['A', new Map<string, PdfObject>([['S', new PdfName('URI')], ['URI', new PdfString(latin1(SITE_URL))]])],
-  ]);
-  const ref = rw.add(link);
-  const annots = rw.deref(page.get('Annots'));
-  if (Array.isArray(annots)) annots.push(ref);
-  else page.set('Annots', [ref]);
+  for (const page of rw.pages()) {
+    const link: PdfDict = new Map<string, PdfObject>([
+      ['Type', new PdfName('Annot')],
+      ['Subtype', new PdfName('Link')],
+      ['Rect', [x, FOOTER_Y - 4, x + width, FOOTER_Y + 8]],
+      ['Border', [0, 0, 0]],
+      ['F', 4],
+      ['A', new Map<string, PdfObject>([['S', new PdfName('URI')], ['URI', new PdfString(latin1(SITE_URL))]])],
+    ]);
+    const ref = rw.add(link);
+    const annots = rw.deref(page.get('Annots'));
+    if (Array.isArray(annots)) annots.push(ref);
+    else page.set('Annots', [ref]);
+  }
+}
+
+/**
+ * The standard header, painted over the original's on the first page: white
+ * over whatever the original drew from `clearFrom` up, then the ink band
+ * with the tool's name, what it is, and the site's name. Later pages keep
+ * their own smaller headings.
+ */
+async function paintHeader(rw: PdfRewriter, title: string, subtitle: string, clearFrom: number): Promise<void> {
+  const left = 54;
+  const band = 792 - HEADER_BAND;
+  const site = 'OPS CHECK GOOD';
+  const siteX = 612 - left - measure('HeBo', site, 8);
+  await rw.editContent((content, i) =>
+    i !== 0
+      ? content
+      : `${content}\n` +
+        `1 1 1 rg 0 ${clearFrom} 612 ${792 - clearFrom} re f\n` +
+        `0.082 0.094 0.11 rg 0 ${band} 612 ${HEADER_BAND} re f\n` +
+        `BT /F2 15 Tf 1 1 1 rg 1 0 0 1 ${left} ${792 - 21} Tm ${literal(title.toUpperCase())} Tj ET\n` +
+        `BT /F1 7.5 Tf 0.78 0.78 0.76 rg 1 0 0 1 ${left} ${792 - 35} Tm ${literal(subtitle)} Tj ET\n` +
+        `BT /F2 8 Tf 1 1 1 rg 1 0 0 1 ${siteX.toFixed(2)} ${792 - 27} Tm ${literal(site)} Tj ET\n`,
+  );
 }
 
 function latin1(text: string): Uint8Array {
@@ -109,8 +132,12 @@ export async function preparePtCalculator(bytes: Uint8Array): Promise<Uint8Array
       'Self-calculating Physical Fitness Assessment score worksheet built to AFMAN 36-2905, with the Tier 2 body fat assessment.',
     Keywords: 'PFRA, PT, AFMAN 36-2905, fitness, WHtR, body fat',
   });
+  // The print button sat in the original's header; Reader prints anyway.
+  rw.removeFields(({ dict }) => dict.get('FT') instanceof PdfName && (dict.get('FT') as PdfName).name === 'Btn');
   await rw.editContent(monochrome);
-  await brandPage(rw, 0, 18);
+  // The original's band runs from 748 to 780; the standard band covers it.
+  await paintHeader(rw, 'PT Calculator', 'Physical fitness assessment scoring to AFMAN 36-2905, with the Tier 2 body fat assessment', 748);
+  await brandPages(rw);
   return rw.save();
 }
 
@@ -130,43 +157,18 @@ export async function preparePromotionBuilder(bytes: Uint8Array, engineSource: s
     // The orange accent carried the title on the navy band; on an ink band it
     // reads in white. The stripe under the band goes white with it.
     monochrome(content.replace(/\.909804 \.45098 \.109804 rg/g, '1 1 1 rg'))
+      // Page 1's title and subtitle are painted over below; later pages
+      // keep a small heading of their own. The unit's footer goes.
       .replace(/\(82 RS PROMOTION SCRIPT BUILDER\)/g, literal('PROMOTION SCRIPT BUILDER'))
-      .replace(/\(82d Reconnaissance Squadron\s+\\267\s+Team 8-Deuce\)/g, literal('Ops Check Good'))
-      .replace(/\(82 RS Promotion Script Builder\)/g, literal(`OPS CHECK GOOD   ${SITE_HOST}`))
+      .replace(/\(82d Reconnaissance Squadron\s+\\267\s+Team 8-Deuce\)/g, literal(''))
+      .replace(/\(82 RS Promotion Script Builder\)/g, literal(''))
       // The unit emblem: a form XObject drawn once at the top of page 1.
       .replace(/q\s+[\d.]+ 0 0 [\d.]+ [\d.]+ [\d.]+ cm\s+\/FormXob\.[0-9a-f]+ Do\s+Q\s*/g, ''),
   );
   rw.fill({}, true);
   rw.setDocumentScript('OpsCheckGood', engineSource);
-  // The footer line already names the site; give it the link.
-  const footer = await footerPosition(rw);
-  if (footer) await linkAt(rw, footer.page, footer.x, footer.y, footer.width);
+  // The original's band runs from 684 to 792; the standard band covers its top and white the rest.
+  await paintHeader(rw, 'Promotion Script Builder', 'Enlisted promotion ceremony run of show: names in, script out, with the charge the new grade calls for', 684);
+  await brandPages(rw);
   return rw.save();
-}
-
-async function footerPosition(rw: PdfRewriter): Promise<{ page: number; x: number; y: number; width: number } | null> {
-  let found: { page: number; x: number; y: number; width: number } | null = null;
-  await rw.editContent((content, i) => {
-    if (found) return content;
-    const m = /1 0 0 1 ([\d.]+) ([\d.]+) Tm \(OPS CHECK GOOD   [^)]*\) Tj/.exec(content);
-    if (m) found = { page: i, x: Number(m[1]), y: Number(m[2]), width: measure('Helv', `OPS CHECK GOOD   ${SITE_HOST}`, 7) };
-    return content;
-  });
-  return found;
-}
-
-async function linkAt(rw: PdfRewriter, pageIndex: number, x: number, y: number, width: number): Promise<void> {
-  const page = rw.pages()[pageIndex]!;
-  const link: PdfDict = new Map<string, PdfObject>([
-    ['Type', new PdfName('Annot')],
-    ['Subtype', new PdfName('Link')],
-    ['Rect', [x, y - 3, x + width, y + 9]],
-    ['Border', [0, 0, 0]],
-    ['F', 4],
-    ['A', new Map<string, PdfObject>([['S', new PdfName('URI')], ['URI', new PdfString(latin1(SITE_URL))]])],
-  ]);
-  const ref = rw.add(link);
-  const annots = rw.deref(page.get('Annots'));
-  if (Array.isArray(annots)) annots.push(ref);
-  else page.set('Annots', [ref]);
 }

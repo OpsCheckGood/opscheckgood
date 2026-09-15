@@ -24,7 +24,8 @@ import {
 } from '@/lib/decoration/citation';
 import type { HeaderLine } from '@/lib/decoration/types';
 import { buildCitationDocx } from '@/lib/decoration/docx';
-import { decorationBuilderPdf, downloadBytes } from '@/lib/pdfform/downloads';
+import { decorationBuilderPdf, downloadBytes, downloadName } from '@/lib/pdfform/downloads';
+import { DownloadBar } from './DownloadBar';
 import { SourceStamp } from './SourceStamp';
 
 /**
@@ -256,19 +257,14 @@ export default function DecorationWriter() {
 
   async function downloadDocx() {
     if (!page) return;
-    const stem = draft.surname.trim() ? draft.surname.trim().toLowerCase() : 'citation';
     const blob = buildCitationDocx(page, full);
-    downloadBytes(new Uint8Array(await blob.arrayBuffer()), `${stem}-citation.docx`, blob.type);
-    setCopyNote('Word draft downloaded');
-    window.setTimeout(() => setCopyNote(null), 3000);
+    downloadBytes(new Uint8Array(await blob.arrayBuffer()), downloadName('Decoration Writer', 'word'), blob.type);
   }
 
   /** The tool as a locked, fillable PDF: blank, or carrying what is on the page. */
   async function downloadFormPdf(withEntries: boolean) {
     const bytes = await decorationBuilderPdf(withEntries ? draft : null, language, certificate);
-    downloadBytes(bytes, withEntries ? 'decoration-writer-draft.pdf' : 'decoration-writer.pdf');
-    setCopyNote('PDF builder downloaded. Open it in Acrobat or Reader.');
-    window.setTimeout(() => setCopyNote(null), 4000);
+    downloadBytes(bytes, downloadName('Decoration Writer', withEntries ? 'filled' : 'blank'));
   }
 
   async function copyCitation() {
@@ -311,6 +307,29 @@ export default function DecorationWriter() {
 
   return (
     <div className="mx-auto flex max-w-[1100px] flex-col gap-4 px-3 sm:px-6 py-6">
+      <DownloadBar
+        items={[
+          {
+            label: 'Blank PDF builder',
+            detail: 'The Decoration Writer as a locked, fillable PDF. Fill it in Acrobat or Reader.',
+            run: () => downloadFormPdf(false),
+            primary: true,
+          },
+          {
+            label: 'PDF builder with these entries',
+            detail: 'The same PDF with everything on this page already entered.',
+            run: () => downloadFormPdf(true),
+            disabled: !full,
+          },
+          {
+            label: 'Word draft',
+            detail: 'The certificate as an editable Word document.',
+            run: () => downloadDocx(),
+            disabled: !full,
+          },
+        ]}
+      />
+
       {/* ---- Award -------------------------------------------------------- */}
       <section className="panel p-5">
         <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-3">
@@ -655,50 +674,6 @@ export default function DecorationWriter() {
             <DateBox id="dec-signed" value={draft.signedDate} onChange={(signedDate) => update({ signedDate })} />
           </Field>
           <div className="flex flex-wrap gap-2 lg:col-span-2">
-          <button
-            type="button"
-            onClick={downloadDocx}
-            disabled={!full}
-            className="util border px-3.5 py-2.5"
-            style={{
-              background: 'var(--panel)',
-              borderColor: full ? 'var(--ink)' : 'var(--rule-strong)',
-              color: full ? 'var(--ink)' : 'var(--ink-faint)',
-              letterSpacing: '0.09em',
-            }}
-            title="The certificate as an editable Word document"
-          >
-            Word draft
-          </button>
-          <button
-            type="button"
-            onClick={() => void downloadFormPdf(true)}
-            disabled={!full}
-            className="util border px-3.5 py-2.5"
-            style={{
-              background: 'var(--panel)',
-              borderColor: full ? 'var(--ink)' : 'var(--rule-strong)',
-              color: full ? 'var(--ink)' : 'var(--ink-faint)',
-              letterSpacing: '0.09em',
-            }}
-            title="This tool as a locked, fillable PDF with what is on this page already entered, for Acrobat or Reader"
-          >
-            PDF builder with these entries
-          </button>
-          <button
-            type="button"
-            onClick={() => void downloadFormPdf(false)}
-            className="util border px-3.5 py-2.5"
-            style={{
-              background: 'var(--panel)',
-              borderColor: 'var(--ink)',
-              color: 'var(--ink)',
-              letterSpacing: '0.09em',
-            }}
-            title="This tool as a locked, fillable PDF, blank: the same menus, sentences and line count, for Acrobat or Reader"
-          >
-            Blank PDF builder
-          </button>
           <button
             type="button"
             onClick={() => window.print()}

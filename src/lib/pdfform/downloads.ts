@@ -6,6 +6,8 @@ import { decodeBase64 } from '../metrics/registry';
 import { PdfRewriter } from '../pdf/rewrite';
 import { buildDecorationFormPdf, decorationFieldValues } from './decoration-form';
 import { promotionFieldValues } from './promotion-form';
+import { documentTitle } from './version';
+export { downloadName } from './version';
 
 /**
  * The fillable PDFs the site hands out, each locked at the moment of
@@ -19,22 +21,23 @@ import { promotionFieldValues } from './promotion-form';
  * a page that never downloads never pays for them.
  */
 
-async function lock(bytes: Uint8Array, values: Record<string, string> | null): Promise<Uint8Array> {
+async function lock(bytes: Uint8Array, values: Record<string, string> | null, tool: string): Promise<Uint8Array> {
   const rw = await PdfRewriter.open(bytes);
   if (values) rw.fill(values);
+  rw.setInfo({ Title: documentTitle(tool), Author: 'Ops Check Good', Creator: 'Ops Check Good', Producer: 'Ops Check Good' });
   return rw.save();
 }
 
 /** The PT calculator, always blank: the page keeps no draft to fill it from. */
 export async function ptCalculatorPdf(): Promise<Uint8Array> {
   const mod = await import('./embedded/pt-calculator');
-  return lock(new Uint8Array(decodeBase64(mod.base64)), null);
+  return lock(new Uint8Array(decodeBase64(mod.base64)), null, 'PT Calculator');
 }
 
 /** The promotion script builder, blank or carrying the page's entries. */
 export async function promotionBuilderPdf(input: CeremonyInput | null, data: CeremonyData): Promise<Uint8Array> {
   const mod = await import('./embedded/promotion-script');
-  return lock(new Uint8Array(decodeBase64(mod.base64)), input ? promotionFieldValues(input, data) : null);
+  return lock(new Uint8Array(decodeBase64(mod.base64)), input ? promotionFieldValues(input, data) : null, 'Promotion Script Builder');
 }
 
 /** The decoration writer, built fresh, blank or carrying the page's entries. */
@@ -44,7 +47,7 @@ export async function decorationBuilderPdf(
   certificate: CertificateDefinition,
 ): Promise<Uint8Array> {
   const bytes = buildDecorationFormPdf(language, certificate);
-  return lock(bytes, input ? decorationFieldValues(input, language, certificate) : null);
+  return lock(bytes, input ? decorationFieldValues(input, language, certificate) : null, 'Decoration Writer');
 }
 
 /** Hands the browser a file. Object URLs need no network and no server. */

@@ -12,7 +12,8 @@ import {
   type CeremonyInput,
 } from '@/lib/promotion/ceremony';
 import { printScript } from '@/lib/promotion/ceremony-print';
-import { downloadBytes, promotionBuilderPdf } from '@/lib/pdfform/downloads';
+import { downloadBytes, downloadName, promotionBuilderPdf } from '@/lib/pdfform/downloads';
+import { DownloadBar } from './DownloadBar';
 import { SourceStamp } from './SourceStamp';
 
 /**
@@ -87,8 +88,7 @@ export default function PromotionScriptBuilder() {
   /** The builder as a locked, fillable PDF: blank, or carrying what is on the page. */
   async function downloadPdf(withEntries: boolean) {
     const bytes = await promotionBuilderPdf(withEntries ? input : null, data);
-    downloadBytes(bytes, withEntries ? 'promotion-script-draft.pdf' : 'promotion-script-builder.pdf');
-    flash('PDF builder downloaded. Open it in Acrobat or Reader.');
+    downloadBytes(bytes, downloadName('Promotion Script Builder', withEntries ? 'filled' : 'blank'));
   }
 
   function print() {
@@ -103,6 +103,24 @@ export default function PromotionScriptBuilder() {
 
   return (
     <div className="mx-auto flex max-w-[1400px] flex-col gap-4 px-3 sm:px-6 py-6 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start">
+      <div className="min-w-0 lg:col-span-2">
+        <DownloadBar
+          items={[
+            {
+              label: 'Blank PDF builder',
+              detail: 'The Promotion Script Builder as a locked, fillable PDF. Fill it in Acrobat or Reader.',
+              run: () => downloadPdf(false),
+              primary: true,
+            },
+            {
+              label: 'PDF builder with these entries',
+              detail: 'The same PDF with everything on this page already entered.',
+              run: () => downloadPdf(true),
+              disabled: blank,
+            },
+          ]}
+        />
+      </div>
       <div className="flex flex-col gap-4 min-w-0">
         {/* ---- Ceremony --------------------------------------------------- */}
         <section className="panel p-5">
@@ -313,25 +331,6 @@ export default function PromotionScriptBuilder() {
               style={{ background: blank ? 'var(--panel)' : 'var(--control)', borderColor: blank ? 'var(--rule-strong)' : 'var(--control)', color: blank ? 'var(--ink-faint)' : '#ffffff', letterSpacing: '0.09em' }}
             >
               Print
-            </button>
-            <button
-              type="button"
-              onClick={() => void downloadPdf(true)}
-              disabled={blank}
-              className="util border px-3.5 py-2"
-              style={{ background: 'var(--panel)', borderColor: blank ? 'var(--rule-strong)' : 'var(--ink)', color: blank ? 'var(--ink-faint)' : 'var(--ink)', letterSpacing: '0.09em' }}
-              title="This builder as a locked, fillable PDF with these entries already in it, for Acrobat or Reader"
-            >
-              PDF builder with these entries
-            </button>
-            <button
-              type="button"
-              onClick={() => void downloadPdf(false)}
-              className="util border px-3.5 py-2"
-              style={{ background: 'var(--panel)', borderColor: 'var(--ink)', color: 'var(--ink)', letterSpacing: '0.09em' }}
-              title="This builder as a locked, fillable PDF, blank, for Acrobat or Reader"
-            >
-              Blank PDF builder
             </button>
           </div>
         </div>

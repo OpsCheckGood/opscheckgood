@@ -17,7 +17,8 @@ import {
   type PtResult,
   type Rating,
 } from '@/lib/pt/score';
-import { downloadBytes, ptCalculatorPdf } from '@/lib/pdfform/downloads';
+import { downloadBytes, downloadName, ptCalculatorPdf } from '@/lib/pdfform/downloads';
+import { DownloadBar } from './DownloadBar';
 import { SourceStamp } from './SourceStamp';
 
 /**
@@ -248,28 +249,25 @@ export default function PtCalculator() {
 
   return (
     <div className="mx-auto flex max-w-[1400px] flex-col gap-4 px-3 sm:px-6 py-6">
+      <DownloadBar
+        items={[
+          {
+            label: 'PDF calculator',
+            detail: 'The PT calculator as a locked, fillable PDF that scores on its own in Acrobat or Reader.',
+            run: async () => downloadBytes(await ptCalculatorPdf(), downloadName('PT Calculator')),
+            primary: true,
+          },
+        ]}
+      />
+
       {/* ---- Personal information ---------------------------------------- */}
       <section className="panel p-5">
         <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2">
           <SectionTitle step={1} title="Personal information" />
           <button
             type="button"
-            onClick={() => void ptCalculatorPdf().then((bytes) => downloadBytes(bytes, 'pt-calculator.pdf'))}
-            className="util ml-auto flex items-center gap-2 border px-3.5 py-2"
-            style={{
-              background: 'var(--panel)',
-              borderColor: 'var(--ink)',
-              color: 'var(--ink)',
-              letterSpacing: '0.09em',
-            }}
-            title="This calculator as a locked, fillable PDF that scores on its own, for Acrobat or Reader"
-          >
-            PDF calculator
-          </button>
-          <button
-            type="button"
             onClick={() => setDraft(initialDraft())}
-            className="util flex items-center gap-2 border px-3.5 py-2"
+            className="util ml-auto flex items-center gap-2 border px-3.5 py-2"
             style={{
               background: 'var(--panel)',
               borderColor: 'var(--accent)',

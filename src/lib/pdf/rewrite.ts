@@ -156,6 +156,23 @@ export class PdfRewriter {
     if (acro instanceof Map) acro.set('NeedAppearances', true);
   }
 
+  /** Removes every field the predicate accepts, from the form and from its page. */
+  removeFields(accept: (field: { name: string; dict: PdfDict }) => boolean): number {
+    const acro = this.deref(this.catalog.get('AcroForm'));
+    if (!(acro instanceof Map)) return 0;
+    const doomed = new Set<number>();
+    for (const { name, dict, ref } of this.fields()) if (accept({ name, dict })) doomed.add(ref.num);
+    if (doomed.size === 0) return 0;
+    const prune = (list: PdfObject) => (Array.isArray(list) ? list.filter((r) => !(r instanceof PdfRef && doomed.has(r.num))) : list);
+    acro.set('Fields', prune(this.deref(acro.get('Fields'))));
+    for (const page of this.pages()) {
+      const annots = this.deref(page.get('Annots'));
+      if (Array.isArray(annots)) page.set('Annots', prune(annots));
+    }
+    for (const num of doomed) this.objects.delete(num);
+    return doomed.size;
+  }
+
   /** Replaces the document-level JavaScript with one script. */
   setDocumentScript(name: string, source: string): void {
     const stream = new PdfStream(new Map<string, PdfObject>([['Length', source.length]]), latin1(source));
@@ -253,7 +270,13 @@ export class PdfRewriter {
       trailer.set(k, v);
     }
     trailer.set('Size', encryptRef + 1);
-    trailer.set('Encrypt', new PdfRef(encryptRef, 0));
+    // The trailer's references go through the same renumbering as everything
+    // else, so the /Encrypt reference is entered under a number no old object
+    // can have had. Writing `encryptRef` directly collided with an old object
+    // of that number whenever the old numbering had a gap.
+    const encryptKey = Math.max(0, ...numbers) + 1_000_000;
+    renumber.set(encryptKey, encryptRef);
+    trailer.set('Encrypt', new PdfRef(encryptKey, 0));
     trailer.set('ID', [new PdfString(firstId), new PdfString(secondId)]);
 
     const xref = length;

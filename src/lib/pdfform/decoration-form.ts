@@ -1,6 +1,6 @@
 import type { CertificateDefinition, CitationLanguage } from '../decoration/types';
 import { formatCitationDate, type CitationInput } from '../decoration/citation';
-import { INK, MUTED, PANEL, branding, buildFormPdf, type Field, type FormDocument, type FormPage, type StaticText } from './writer';
+import { HEADER_BAND, INK, MUTED, PANEL, branding, buildFormPdf, standardHeader, type Field, type FormDocument, type FormPage, type StaticText } from './writer';
 
 /**
  * The Decoration Writer as a fillable PDF.
@@ -18,7 +18,7 @@ import { INK, MUTED, PANEL, branding, buildFormPdf, type Field, type FormDocumen
  * the site's own engine and compares them.
  */
 
-const SITE = 'https://opscheckgood.github.io/opscheckgood/';
+const SUBTITLE = 'Decoration citation builder: the awards manual\'s sentences, wrapped and counted as myDecs prints them';
 
 /** Field names, shared by the layout and the script. */
 export const F = {
@@ -359,10 +359,8 @@ function label(x: number, y: number, text: string): StaticText {
  * the site's name beside it, and a note beneath.
  */
 function heading(page: FormPage, y: number, title: string, note: string) {
+  standardHeader(page, PAGE_W, PAGE_H, title, SUBTITLE, LEFT);
   page.fills = page.fills ?? [];
-  page.fills.push({ x: 0, y: PAGE_H - 64, w: PAGE_W, h: 64, color: INK });
-  page.texts.push({ x: LEFT, y: PAGE_H - 40, text: title.toUpperCase(), font: 'HeBo', size: 18, color: '1 1 1' });
-  page.texts.push({ x: PAGE_W - LEFT, y: PAGE_H - 40, text: 'OPS CHECK GOOD', font: 'Helv', size: 8, color: '0.75 0.75 0.73', align: 'right' });
   page.fills.push({ x: LEFT, y: y - 20, w: PAGE_W - 2 * LEFT, h: 22, color: PANEL });
   page.texts.push({ x: LEFT + 8, y: y - 13, text: note, font: 'Helv', size: 8, color: MUTED });
 }
@@ -381,11 +379,11 @@ function calcAction(name: string): string {
 export function buildDecorationForm(language: CitationLanguage, certificate: CertificateDefinition): FormDocument {
   const data = engineData(language, certificate);
   const first = language.awards[0]!;
-  const mark = branding(PAGE_W, SITE);
+  const mark = branding(PAGE_W);
 
   // ---- Page 1: inputs -----------------------------------------------------
   const p1: FormPage = { texts: [], rules: [], fields: [], links: [], fills: [] };
-  heading(p1, 710, 'Decoration Writer', 'Fill in the fields. The citation, its line count and the certificate text build themselves on page 2.');
+  heading(p1, PAGE_H - HEADER_BAND - 10, 'Decoration Writer', 'Fill in the fields. The citation, its line count and the certificate text build themselves on page 2; page 3 previews the certificate.');
   section(p1, 664, 'Decoration');
 
   let y = 622;
@@ -479,7 +477,7 @@ export function buildDecorationForm(language: CitationLanguage, certificate: Cer
 
   // ---- Page 2: outputs ----------------------------------------------------
   const p2: FormPage = { texts: [], rules: [], fields: [], links: [], fills: [] };
-  heading(p2, 710, 'Decoration Writer', `The citation, wrapped at ${data.columns} characters and held to ${data.lines} lines as myDecs prints it. Copy it into myDecs.`);
+  heading(p2, PAGE_H - HEADER_BAND - 10, 'Decoration Writer', `The citation, wrapped at ${data.columns} characters and held to ${data.lines} lines as myDecs prints it. Copy it into myDecs.`);
   section(p2, 664, 'Citation');
 
   const out = (name: string, yTop: number, h: number, kind: Field['kind'] = 'output', font: Field['font'] = 'Helv', size = 9, align?: Field['align']): Field => ({

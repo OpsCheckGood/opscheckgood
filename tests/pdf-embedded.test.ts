@@ -121,7 +121,16 @@ async function inspect(bytes: Uint8Array) {
     }
   }
   const infoText = [...info.values()].map((v) => (v instanceof PdfString ? v.text : '')).join(' ');
-  return { doc, infoText, fields, script, content, links, pages: pages.length };
+  // Per page, so a footer can be checked on every one.
+  const perPage: string[] = [];
+  for (const pageRef of pages) {
+    const page = (await doc.resolve(pageRef)) as PdfDict;
+    const c = page.get('Contents');
+    let t = '';
+    for (const r of Array.isArray(c) ? c : [c]) t += new TextDecoder('latin1').decode((await doc.streamOf(r as PdfRef)) ?? new Uint8Array());
+    perPage.push(t);
+  }
+  return { doc, infoText, fields, script, content, links, pages: pages.length, perPage };
 }
 
 describe('the embedded forms', () => {
@@ -131,8 +140,9 @@ describe('the embedded forms', () => {
     expect(r.infoText).not.toMatch(/82|TORRES|MXAA/i);
     expect(r.content).not.toMatch(/82 RS|Reconnaissance|8-Deuce|FormXob/);
     expect(r.content).toContain('(PROMOTION SCRIPT BUILDER)');
-    expect(r.content).toContain('opscheckgood.github.io/opscheckgood');
-    expect(r.links).toContain('https://opscheckgood.github.io/opscheckgood/');
+    expect(r.perPage[0]).toContain('(OPS CHECK GOOD)');
+    for (const page of r.perPage) expect(page).toMatch(/OPS CHECK GOOD   opscheckgood\.github\.io\/opscheckgood   CAO \d+ [A-Z]{3} \d{4}/);
+    expect(r.links.filter((l) => l === 'https://opscheckgood.github.io/opscheckgood/')).toHaveLength(4);
     for (const [name, value] of r.fields) expect(value, name).toBe('');
     expect(r.script).toContain('var OCG = (function ()');
     expect(r.script).toContain('function buildMain(');
@@ -145,10 +155,12 @@ describe('the embedded forms', () => {
     expect(r.pages).toBe(2);
     expect(r.infoText).not.toMatch(/TORRES|MXAA|82 RS/i);
     expect(r.infoText).toContain('PT Calculator');
-    expect(r.fields.size).toBe(265);
+    expect(r.fields.size).toBe(264); // the print button is gone
     expect(r.script.startsWith('var PF = {')).toBe(true);
-    expect(r.content).toContain('opscheckgood.github.io/opscheckgood');
-    expect(r.links).toContain('https://opscheckgood.github.io/opscheckgood/');
+    expect(r.perPage[0]).toContain('(PT CALCULATOR)');
+    expect(r.perPage[0]).toContain('(OPS CHECK GOOD)');
+    for (const page of r.perPage) expect(page).toMatch(/CAO \d+ [A-Z]{3} \d{4}/);
+    expect(r.links.filter((l) => l === 'https://opscheckgood.github.io/opscheckgood/')).toHaveLength(2);
     expect(saturated(r.content)).toEqual([]);
   });
 });
@@ -167,6 +179,7 @@ describe('the downloads', () => {
   it('lock every file and carry the page entries into the fields', async () => {
     const pt = await inspect(await ptCalculatorPdf());
     expect(pt.doc.encrypted).toBe(true);
+    expect(pt.infoText).toContain('Ops Check Good - PT Calculator - fillable PDF builder');
 
     const promo = await inspect(await promotionBuilderPdf(full, data));
     expect(promo.doc.encrypted).toBe(true);

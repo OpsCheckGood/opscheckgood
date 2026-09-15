@@ -1,4 +1,5 @@
 import { HELVETICA, HELVETICA_BOLD, TIMES_BOLD, TIMES_ROMAN } from '../mfr/fonts';
+import { SITE_URL, footerText } from './version';
 
 /**
  * A fillable PDF, written byte by byte.
@@ -435,19 +436,35 @@ function wrapForWidth(text: string, font: FormFont, size: number, width: number)
   return out;
 }
 
-/** The site's mark on each page: one small line and a link over it. */
-export function branding(pageWidth: number, url = 'https://opscheckgood.github.io/opscheckgood/'): {
+/** Height of the band every builder opens with. */
+export const HEADER_BAND = 44;
+/** Baseline of the footer every page carries. */
+export const FOOTER_Y = 22;
+
+/**
+ * The top of every builder: an ink band with the tool's name and what it
+ * is, and the site's name at the right. The same band is painted onto the
+ * two original files, so the three cannot be told apart by their tops.
+ */
+export function standardHeader(page: FormPage, pageWidth: number, pageHeight: number, title: string, subtitle: string, left = 54): void {
+  page.fills = page.fills ?? [];
+  page.fills.push({ x: 0, y: pageHeight - HEADER_BAND, w: pageWidth, h: HEADER_BAND, color: INK });
+  page.texts.push({ x: left, y: pageHeight - 21, text: title.toUpperCase(), font: 'HeBo', size: 15, color: '1 1 1' });
+  page.texts.push({ x: left, y: pageHeight - 35, text: subtitle, font: 'Helv', size: 7.5, color: '0.78 0.78 0.76' });
+  page.texts.push({ x: pageWidth - left, y: pageHeight - 27, text: 'OPS CHECK GOOD', font: 'HeBo', size: 8, color: '1 1 1', align: 'right' });
+}
+
+/** The site's mark on each page: the site, the current-as-of date, and a link over it. */
+export function branding(pageWidth: number, url = SITE_URL): {
   texts: StaticText[];
   links: Link[];
 } {
-  const label = 'OPS CHECK GOOD';
-  const site = url.replace(/^https?:\/\//, '').replace(/\/$/, '');
-  const text = `${label}   ${site}`;
+  const text = footerText();
   const size = 7;
   const width = measure('Helv', text, size);
   const x = pageWidth / 2 - width / 2;
   return {
-    texts: [{ x: pageWidth / 2, y: 30, text, font: 'Helv', size, gray: 0.55, align: 'center' }],
-    links: [{ rect: [x, 26, width, 12], url }],
+    texts: [{ x: pageWidth / 2, y: FOOTER_Y, text, font: 'Helv', size, gray: 0.5, align: 'center' }],
+    links: [{ rect: [x, FOOTER_Y - 4, width, 12], url }],
   };
 }
