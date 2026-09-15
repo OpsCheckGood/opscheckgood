@@ -2,9 +2,12 @@ import type { CeremonyData } from '../data/ceremony';
 import type { CeremonyInput } from '../promotion/ceremony';
 import type { CertificateDefinition, CitationLanguage } from '../decoration/types';
 import type { CitationInput } from '../decoration/citation';
+import type { EpbData } from '../data/epb';
+import type { Draft as EpbDraft } from '../epb/worksheet';
 import { decodeBase64 } from '../metrics/registry';
 import { PdfRewriter } from '../pdf/rewrite';
 import { buildDecorationFormPdf, decorationFieldValues } from './decoration-form';
+import { buildEpbFormPdf, epbFieldValues } from './epb-form';
 import { promotionFieldValues } from './promotion-form';
 import { documentTitle } from './version';
 export { downloadName } from './version';
@@ -48,6 +51,11 @@ export async function decorationBuilderPdf(
 ): Promise<Uint8Array> {
   const bytes = buildDecorationFormPdf(language, certificate);
   return lock(bytes, input ? decorationFieldValues(input, language, certificate) : null, 'Decoration Writer');
+}
+
+/** The EPB worksheet, built fresh, blank or carrying the page's boxes and their counts. */
+export async function epbWorksheetPdf(draft: EpbDraft | null, data: EpbData): Promise<Uint8Array> {
+  return lock(buildEpbFormPdf(data), draft ? epbFieldValues(draft, data) : null, 'EPB Worksheet');
 }
 
 /** Hands the browser a file. Object URLs need no network and no server. */

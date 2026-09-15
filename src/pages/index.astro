@@ -15,7 +15,7 @@ const arrow =
     <div class="display-rule" aria-hidden="true"></div>
   </div>
 
-  {/* Three across on a desktop: six tools make an even 3x2. Two on a tablet, one on a phone. */}
+  {/* Three across on a desktop: seven tools and the toolkit, which spans two columns, fill three even rows. Two on a tablet, one on a phone. */}
   <ul class="mx-auto m-0 grid max-w-[1480px] list-none gap-4 px-4 sm:px-8 p-0 sm:grid-cols-2 lg:grid-cols-3">
     {
       cards.map((tool, i) => (
@@ -28,16 +28,13 @@ const arrow =
         </li>
       ))
     }
-  </ul>
-
-  <div class="mx-auto max-w-[1480px] px-4 sm:px-8 pt-10 pb-16">
-    <p class="util m-0 mb-4">Toolkits</p>
-    <div class="tool-card tool-card--wide card">
-      <span class="util">{pad(cards.length + 1)}</span>
+    <li class="tool-card tool-card--wide card lg:col-span-2">
+      <span class="util">{pad(cards.length + 1)} · Toolkit</span>
       <a href={firstSergeant.href} class="h2 no-underline block" title={firstSergeant.tagline}>
         First Sergeant
       </a>
       <Fragment set:html={arrow} />
-    </div>
-  </div>
+    </li>
+  </ul>
+  <div class="pb-16"></div>
 </Base>

@@ -86,6 +86,14 @@ const TOOLS = [
     outFile: 'promotion-script-offline.html',
   },
   {
+    name: 'EPB Worksheet',
+    wordmark: 'EPB WORKSHEET',
+    tagline: 'Every box counted. Cut it here, not in myEval.',
+    entry: 'src/offline-entry-epb.tsx',
+    rootId: 'epb-worksheet-root',
+    outFile: 'epb-worksheet-offline.html',
+  },
+  {
     name: 'First Sergeant Toolkit',
     wordmark: 'FIRST SERGEANT',
     tagline: 'Where do I send them?',

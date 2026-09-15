@@ -78,6 +78,8 @@ export interface Field {
   calculate?: string;
   /** JavaScript run when the user commits a new value. */
   onCommit?: string;
+  /** JavaScript run on every keystroke, before the value changes; `event.change` is the keystroke. */
+  onKeystroke?: string;
   tooltip?: string;
   /** Character cells for a comb field; unused here but cheap to support. */
   maxLen?: number;
@@ -306,6 +308,12 @@ export function buildFormPdf(doc: FormDocument): Uint8Array {
         const code = jsBytes(field.onCommit);
         set(s, `<</S /JavaScript /JS ${pdfString(code)}>>`);
         actions.push(`/V ${s} 0 R`);
+      }
+      if (field.onKeystroke) {
+        const s = reserve();
+        const code = jsBytes(field.onKeystroke);
+        set(s, `<</S /JavaScript /JS ${pdfString(code)}>>`);
+        actions.push(`/K ${s} 0 R`);
       }
       if (actions.length) parts.push(`/AA <<${actions.join(' ')}>>`);
 

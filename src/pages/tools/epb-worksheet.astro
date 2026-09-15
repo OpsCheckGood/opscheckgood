@@ -1,0 +1,13 @@
+---
+import Base from '../../layouts/Base.astro';
+import EpbWorksheet from '../../components/EpbWorksheet.tsx';
+---
+
+<Base
+  title="EPB Worksheet — Ops Check Good"
+  description="Draft an Enlisted Performance Brief box by box, each counted to the limit myEval enforces, with the major performance areas and Airman Leadership Qualities beside you. Runs entirely in your browser."
+  brand="EPB Worksheet"
+  tagline="Every box counted. Cut it here, not in myEval."
+>
+  <EpbWorksheet client:load />
+</Base>

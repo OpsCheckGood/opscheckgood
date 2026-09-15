@@ -239,6 +239,8 @@ describeBuilt('hosted build', () => {
     expect(existsSync(join(dist, 'tools', 'decoration-writer', 'index.html'))).toBe(true);
     expect(existsSync(join(dist, 'tools', 'promotion-script', 'index.html'))).toBe(true);
     expect(existsSync(join(dist, 'promotion-script-offline.html'))).toBe(true);
+    expect(existsSync(join(dist, 'tools', 'epb-worksheet', 'index.html'))).toBe(true);
+    expect(existsSync(join(dist, 'epb-worksheet-offline.html'))).toBe(true);
     expect(existsSync(join(dist, 'first-sergeant', 'index.html'))).toBe(true);
   });
 
@@ -626,6 +628,82 @@ describeBuilt('single-file offline BTZ calculator', () => {
     expect(text).toContain('2 July 2026');
     expect(denied, `page attempted network requests: ${denied.join(', ')}`).toEqual([]);
 
+    dom.window.close();
+  }, 90000);
+});
+
+/**
+ * Constraint 3 for the EPB Worksheet: the counters are the whole tool, and
+ * they have to move with no network and no site behind them.
+ */
+describeBuilt('single-file offline EPB Worksheet', () => {
+  const file = join(dist, 'epb-worksheet-offline.html');
+  let html: string;
+  beforeAll(() => {
+    html = readFileSync(file, 'utf8');
+  });
+
+  it('has no subresources at all', () => {
+    const refs = [...stripCode(html).matchAll(/\b(?:src|href)\s*=\s*"([^"]*)"/gi)].map((m) => m[1]!);
+    expect(refs.filter((r) => !r.startsWith('#'))).toEqual([]);
+  });
+
+  it('carries no astro-island hydration and no absolute asset paths', () => {
+    expect(html).not.toContain('/_astro/');
+    expect(html).not.toContain('<astro-island');
+  });
+
+  // React, the worksheet and the PDF writer; no fonts, no thesaurus.
+  it('carries only its own bundle', () => {
+    expect(html.length).toBeLessThan(700_000);
+  });
+
+  it('states the unofficial-project disclaimer', () => {
+    expect(html).toContain('Department of War');
+    expect(html).toContain('Official guidance governs');
+  });
+
+  it('counts a box with no network available', async () => {
+    const { JSDOM } = await import('jsdom');
+    const dom = new JSDOM(html, {
+      runScripts: 'dangerously',
+      pretendToBeVisual: true,
+      url: 'file:///epb-worksheet-offline.html',
+    });
+    const denied: string[] = [];
+    dom.window.fetch = ((input: unknown) => {
+      denied.push(String(input));
+      return Promise.reject(new Error('network disabled'));
+    }) as typeof fetch;
+
+    const mount = dom.window.document.getElementById('epb-worksheet-root')!;
+    await vi.waitFor(
+      () => {
+        expect(mount.querySelector('textarea')).not.toBeNull();
+      },
+      { timeout: 45000, interval: 100 },
+    );
+    const doc = dom.window.document;
+    const type = (el: HTMLTextAreaElement, value: string) => {
+      Object.getOwnPropertyDescriptor(dom.window.HTMLTextAreaElement.prototype, 'value')!.set!.call(el, value);
+      el.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
+    };
+
+    expect(mount.textContent).toContain('350 remaining');
+    expect(mount.textContent).toContain('Executing the Mission');
+    expect(mount.textContent).toContain('Job Proficiency');
+
+    type(doc.getElementById('epb-executing') as HTMLTextAreaElement, 'x'.repeat(340));
+    await vi.waitFor(() => expect(mount.textContent).toContain('10 remaining'), { timeout: 10000, interval: 50 });
+    type(doc.getElementById('epb-executing') as HTMLTextAreaElement, 'x'.repeat(350));
+    await vi.waitFor(() => expect(mount.textContent).toContain('0 remaining'), { timeout: 10000, interval: 50 });
+    type(doc.getElementById('epb-hlr') as HTMLTextAreaElement, 'y'.repeat(262));
+    await vi.waitFor(() => expect(mount.textContent).toContain('12 over'), { timeout: 10000, interval: 50 });
+
+    const text = mount.textContent ?? '';
+    expect(text).not.toMatch(/yahtzee/i);
+    expect(text).not.toContain('Unverified data');
+    expect(denied, `page attempted network requests: ${denied.join(', ')}`).toEqual([]);
     dom.window.close();
   }, 90000);
 });

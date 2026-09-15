@@ -238,19 +238,40 @@ meant to be copied and edited.
 **Built:** live script, print view with a section per page (save as PDF from the print
 dialog), plain-text copy, optional charge, local draft persistence.
 
+### EPB Worksheet
+
+The Enlisted Performance Brief, box by box, each counted to the limit myEval enforces:
+the duty description (450 characters), the four major performance areas (350 each) with
+their definitions and the Airman Leadership Qualities under each, and the higher level
+reviewer assessment (250). A counter beside every box reads `n remaining` as you type
+and `n over` once you pass the limit, so a statement is cut to fit here rather than in
+myEval. Every count is a plain character count, spaces included, which is how myEval
+counts. A workbench at the end holds drafts that are not ready yet, with a running count
+and no limit.
+
+It descends from a unit-built fillable PDF that did the same job, rebuilt from scratch
+on the site's own form writer so it matches the other builders: the counters simply
+count, with no message when a box comes out exactly full. The areas, qualities and
+limits live in `src/data/epb/worksheet.json`, a `stub` until they are read back against
+DAFI 36-2406 and a live myEval session.
+
+**Built:** live counters, the qualities beside each statement, per-box and whole-sheet
+copy, local draft persistence, and the fillable PDF below, blank or carrying the page.
+
 ---
 
 ## Fillable PDF builders
 
-Three of the tools can be downloaded as a fillable PDF that does the same job on its own:
-the Decoration Writer, the PT calculator and the Promotion Script Builder. The file
+Four of the tools can be downloaded as a fillable PDF that does the same job on its own:
+the Decoration Writer, the PT calculator, the Promotion Script Builder and the EPB
+Worksheet. The file
 carries the tool's engine as document-level JavaScript, so it builds the citation,
 scores the assessment or writes the run of show inside Acrobat or Reader with no site
 and no network. Each is locked as it is downloaded -- an owner password nobody keeps, an
 empty user password, permissions that allow filling and printing and nothing else -- so
 it can be filled in and printed but not edited.
 
-The three look like one family. Every one opens with the same ink band naming the tool
+The four look like one family. Every one opens with the same ink band naming the tool
 and saying what it is; every page ends with the same small footer, the site's address
 beside a current-as-of stamp (`CAO 15 SEP 2026`) that says when the builders were last
 changed, with a link to the site over it. That footer is the only branding. The stamp is
@@ -260,9 +281,12 @@ the download carries the page's entries, and their document titles say the same.
 tool's page the downloads sit at the top in one bar, each button naming what it hands
 over.
 
-The Decoration Writer's file is built from scratch by `src/lib/pdfform` -- an AcroForm
-writer plus an ES5 port of the site's citation engine, generated from the same data
-files -- and can be downloaded blank or with the page's entries already in the fields.
+The Decoration Writer's and the EPB Worksheet's files are built from scratch by
+`src/lib/pdfform` -- an AcroForm writer plus an ES5 port of each tool's engine,
+generated from the same data files -- and can be downloaded blank or with the page's
+entries already in the fields. The worksheet's counters run from a keystroke action, so
+they move with every key in Acrobat, and from a calculate action, so they are right after
+a paste or a reopen.
 The PT calculator and the Promotion Script Builder are the maintainer's original fillable
 PDFs, from which the site's versions were written. They are embedded as prepared by
 `scripts/embed-forms.mjs`: document information scrubbed, the unit's name, emblem and
@@ -272,7 +296,7 @@ replaced with an ES5 port of the site's so the two cannot disagree. The original
 `src/lib/pdfform/embedded/` are. The PT calculator's own script is left exactly as it
 is: it is the oracle `tests/pt-score.test.ts` checks the site's scorer against.
 
-`tests/pdfform.test.ts` and `tests/pdf-embedded.test.ts` run the files' scripts under
+`tests/pdfform.test.ts`, `tests/epb.test.ts` and `tests/pdf-embedded.test.ts` run the files' scripts under
 Node beside the site's engines and compare every sentence and every line; they also open
 the locked downloads with `src/lib/pdf` and check the fields, the script, the permissions
 and the link. What no test can do is run Acrobat: the scripts are written to its old

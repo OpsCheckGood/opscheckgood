@@ -97,6 +97,17 @@ export const tools: Tool[] = [
       'SNCO charge when the new grade calls for one, and the closing. Every role is optional and ' +
       'a blank one simply has no lines. Print it a section per page or copy the text.',
   },
+  {
+    name: 'EPB Worksheet',
+    short: 'EPB',
+    tagline: 'Every box counted. Cut it here, not in myEval.',
+    href: `${base}/tools/epb-worksheet/`,
+    ready: true,
+    blurb:
+      'Drafts an Enlisted Performance Brief box by box, each counted to the limit myEval ' +
+      'enforces, with the major performance areas and the Airman Leadership Qualities beside ' +
+      'each statement and a scratch area for what is not ready yet.',
+  },
 ];
 
 /**
