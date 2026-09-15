@@ -71,6 +71,19 @@ describe("the PDF's own script agrees with the site's engine", () => {
     expect(ocg.calc(F.status, v)).toMatch(/^\d+ \/ 1350 characters   \d+ \/ 20 lines   FITS$/);
   });
 
+  it('lays out the preview header the way the site does, for both certificate styles', () => {
+    for (const input of [base, { ...base, awardId: 'msm', basisId: 'service', closingId: 'standard' }]) {
+      const v = valuesFor(input);
+      const page = certificateText(input, language, certificate)!;
+      const style = page.style;
+      const slots = certificate.page!.headers[style].lines.map((_, i) => ocg.calc(`preview_${style}_${i}`, v));
+      // The site drops empty lines; the file keeps blank slots. Same text otherwise.
+      expect(slots.filter((t) => t !== '')).toEqual(page.header.map((l) => l.text));
+      expect(ocg.calc(F.previewSigned, v)).toBe('31 July 2026');
+      expect(ocg.calc(F.previewSignature, v)).toBe('JANE Q. PUBLIC, Lt Col, USAF\nCommander, 1st Maintenance Squadron');
+    }
+  });
+
   it('names the oak leaf cluster and the basis line the way the page does', () => {
     const v = valuesFor(base);
     expect(ocg.calc(F.certCluster, v)).toBe('(FIRST OAK LEAF CLUSTER)');
@@ -127,7 +140,7 @@ describe('the form file', () => {
       expect(ap.get('N'), (f.get('T') as PdfString).text).toBeInstanceOf(PdfRef);
     }
     const order = (await doc.resolve(acro.get('CO'))) as PdfRef[];
-    expect(order).toHaveLength(OUTPUTS.length);
+    expect(order.length).toBeGreaterThanOrEqual(OUTPUTS.length);
 
     const namesDict = (await doc.resolve(catalog.get('Names'))) as PdfDict;
     const jsTree = (await doc.resolve(namesDict.get('JavaScript'))) as PdfDict;
@@ -141,7 +154,7 @@ describe('the form file', () => {
     expect(new Function(`${source.replace('OCG.sync(this);', '')}\nreturn OCG;`)().data.columns).toBe(70);
 
     const pages = (await doc.resolve((await doc.resolve(catalog.get('Pages')) as PdfDict).get('Kids'))) as PdfRef[];
-    expect(pages).toHaveLength(2);
+    expect(pages).toHaveLength(3);
     const page1 = (await doc.resolve(pages[0]!)) as PdfDict;
     const annots = (await doc.resolve(page1.get('Annots'))) as PdfRef[];
     let link: PdfDict | null = null;

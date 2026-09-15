@@ -57,11 +57,19 @@ export const F = {
   certMember: 'cert_member',
   certBasis: 'cert_basis',
   certPeriod: 'cert_period',
+  // The preview page.
+  previewCitation: 'preview_citation',
+  previewSigned: 'preview_signed',
+  previewSignature: 'preview_signature',
 } as const;
+
+/** A preview header slot: one line of one header style. */
+export const previewLine = (style: 'daf' | 'presidential', i: number) => `preview_${style}_${i}`;
 
 export const OUTPUTS = [
   F.opening, F.closingOut, F.citation, F.status,
   F.certTitle, F.certCluster, F.certMember, F.certBasis, F.certPeriod,
+  F.previewCitation, F.previewSigned, F.previewSignature,
 ];
 
 const YES_NO = ['No', 'Yes'];
@@ -80,11 +88,17 @@ export function engineData(language: CitationLanguage, certificate: CertificateD
       label: a.label,
       pattern: a.pattern,
       title: a.certificate.title,
+      style: a.certificate.style,
+      authority: a.certificate.authority,
       bases: a.bases.map((b) => ({ label: b.label, text: b.text, forLine: b.forLine ?? b.label.toUpperCase() })),
       circumstances: a.circumstances.map((c) => ({ label: c.label, text: c.text })),
       closings: a.closings.map((c) => ({ label: c.label, text: c.text })),
     })),
     clusters: certificate.page?.clusters ?? [''],
+    headers: {
+      daf: (certificate.page?.headers.daf.lines ?? []).map((l) => l.text),
+      presidential: (certificate.page?.headers.presidential.lines ?? []).map((l) => l.text),
+    },
     columns: certificate.box.columns ?? 70,
     lines: certificate.box.lines ?? 20,
     maxChars: certificate.maxChars,
@@ -248,8 +262,33 @@ var OCG = (function () {
     if (per.id === 'range') return s && e ? s + ' to ' + e : (s || e);
     return s;
   }
+  function style(v) { return award(v).style; }
+  /** One line of the certificate header, or '' when its placeholders are all empty. */
+  function certLine(which, i, v) {
+    var lines = D.headers[which] || [];
+    var text = lines[i];
+    if (!text) return '';
+    var a = award(v);
+    var vars = {
+      decoration: a.title, cluster: cluster(v), member: member(v),
+      basis: byLabel(a.bases, v.basis).forLine, period: periodLine(v), authority: a.authority
+    };
+    var keys = [], m, re = /\\{(\\w+)\\}/g;
+    while ((m = re.exec(text)) !== null) keys.push(m[1]);
+    if (keys.length) {
+      var any = false;
+      for (var k = 0; k < keys.length; k++) if (vars[keys[k]]) any = true;
+      if (!any) return '';
+    }
+    return fill(text, vars).replace(/\\s+/g, ' ').replace(/^\\s+|\\s+$/g, '');
+  }
   function calc(name, v) {
+    if (name.indexOf('preview_daf_') === 0) return certLine('daf', Number(name.slice(12)), v);
+    if (name.indexOf('preview_presidential_') === 0) return certLine('presidential', Number(name.slice(21)), v);
     switch (name) {
+      case '${F.previewCitation}': return wrap(citation(v), D.columns).join('\\n');
+      case '${F.previewSigned}': return trim(v.signed);
+      case '${F.previewSignature}': return [trim(v.approver), trim(v.approverTitle)].join('\\n').replace(/^\\n|\\n$/g, '');
       case '${F.opening}': return opening(v);
       case '${F.closingOut}': return closing(v);
       case '${F.citation}': return wrap(citation(v), D.columns).join('\\n');
@@ -291,7 +330,8 @@ var OCG = (function () {
     setChoices(doc, '${F.closing}', labels(a.closings));
   }
   return { data: D, opening: opening, closing: closing, citation: citation, wrap: wrap, status: status,
-           cluster: cluster, member: member, periodLine: periodLine, calc: calc, read: read, sync: sync };
+           cluster: cluster, member: member, periodLine: periodLine, style: style, certLine: certLine,
+           calc: calc, read: read, sync: sync };
 })();
 `;
 }
@@ -468,12 +508,73 @@ export function buildDecorationForm(language: CitationLanguage, certificate: Cer
   p2.texts.push(...mark.texts);
   p2.links.push(...mark.links);
 
+  // ---- Page 3: the certificate, as the site previews it ---------------------
+  const p3: FormPage = { texts: [], rules: [], fields: [], links: [] };
+  const layout = certificate.page;
+  const calcOrder: string[] = [...OUTPUTS];
+  if (layout) {
+    const faceOf = (face: string): Field['font'] => (face === 'mono' ? 'Cour' : face === 'serif-bold' ? 'TiBo' : 'TiRo');
+    for (const style of ['daf', 'presidential'] as const) {
+      layout.headers[style].lines.forEach((line, i) => {
+        const h = line.sizePt * 1.35;
+        const name = previewLine(style, i);
+        calcOrder.push(name);
+        p3.fields.push({
+          name,
+          kind: 'output',
+          rect: [layout.marginPt, PAGE_H - (line.yPt ?? 0) - h + 2, PAGE_W - 2 * layout.marginPt, h],
+          font: faceOf(line.face),
+          size: line.sizePt,
+          align: 'center',
+          plain: true,
+          calculate:
+            `var v = OCG.read(this); event.value = OCG.calc('${name}', v); ` +
+            `if (typeof display !== 'undefined') event.target.display = OCG.style(v) === '${style}' ? display.visible : display.hidden;`,
+        });
+      });
+    }
+    const pitch = certificate.box.linePitchPt ?? 13.38;
+    const lines = certificate.box.lines ?? 20;
+    const top = PAGE_H - layout.citationTopPt + 3;
+    p3.fields.push({
+      name: F.previewCitation,
+      kind: 'outputMultiline',
+      rect: [layout.marginPt, top - lines * pitch - 4, PAGE_W - 2 * layout.marginPt, lines * pitch + 4],
+      font: 'Cour',
+      size: certificate.font.sizePt,
+      plain: true,
+      calculate: calcAction(F.previewCitation),
+    });
+    p3.texts.push({ x: PAGE_W / 2, y: PAGE_H - layout.givenUnderMyHandPt - 9, text: 'GIVEN UNDER MY HAND', font: 'TiRo', size: 11, align: 'center' });
+    p3.fields.push({
+      name: F.previewSigned,
+      kind: 'output',
+      rect: [layout.marginPt, PAGE_H - layout.givenUnderMyHandPt - 30, PAGE_W - 2 * layout.marginPt, 15],
+      font: 'Cour',
+      size: 11,
+      align: 'center',
+      plain: true,
+      calculate: calcAction(F.previewSigned),
+    });
+    p3.fields.push({
+      name: F.previewSignature,
+      kind: 'outputMultiline',
+      rect: [layout.marginPt, PAGE_H - layout.signatureTopPt - 34, 260, 34],
+      font: 'TiRo',
+      size: 7,
+      plain: true,
+      calculate: calcAction(F.previewSignature),
+    });
+  }
+  p3.texts.push(...mark.texts);
+  p3.links.push(...mark.links);
+
   return {
     title: 'Decoration Writer',
     subject: 'Decoration citation builder from Ops Check Good',
-    pages: [p1, p2],
+    pages: [p1, p2, p3],
     script: decorationEngineSource(language, certificate) + '\nOCG.sync(this);\n',
-    calcOrder: OUTPUTS,
+    calcOrder,
   };
 }
 

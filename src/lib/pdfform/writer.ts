@@ -82,6 +82,8 @@ export interface Field {
   maxLen?: number;
   /** Text alignment inside the field. */
   align?: 'left' | 'center' | 'right';
+  /** No background and no border: text sitting on the page, for a preview. */
+  plain?: boolean;
 }
 
 export interface Link {
@@ -274,10 +276,12 @@ export function buildFormPdf(doc: FormDocument): Uint8Array {
         `/P ${pageRef} 0 R`,
         `/Ff ${flags}`,
         `/DA (/${font} ${num(size)} Tf 0 g)`,
-        output
-          ? '/MK <</BG [0.96 0.96 0.94]>>'
-          : '/MK <</BG [1 1 1] /BC [0.62 0.62 0.6]>>',
-        '/BS <</W 0.5 /S /S>>',
+        field.plain
+          ? '/MK <<>>'
+          : output
+            ? '/MK <</BG [0.96 0.96 0.94]>>'
+            : '/MK <</BG [1 1 1] /BC [0.62 0.62 0.6]>>',
+        field.plain ? '/BS <</W 0 /S /S>>' : '/BS <</W 0.5 /S /S>>',
       ];
       if (field.tooltip) parts.push(`/TU ${pdfString(field.tooltip)}`);
       if (field.align === 'center') parts.push('/Q 1');
@@ -380,9 +384,12 @@ function appearanceStream(
   fontDict: string,
 ): string {
   const fontSize = size > 0 ? size : Math.min(12, Math.max(6, h * 0.62));
-  let content = output ? '0.96 0.96 0.94 rg' : '1 1 1 rg';
-  content += ` 0 0 ${num(w)} ${num(h)} re f\n`;
-  if (!output) content += `0.62 0.62 0.6 RG 0.5 w 0.25 0.25 ${num(w - 0.5)} ${num(h - 0.5)} re S\n`;
+  let content = '';
+  if (!field.plain) {
+    content += output ? '0.96 0.96 0.94 rg' : '1 1 1 rg';
+    content += ` 0 0 ${num(w)} ${num(h)} re f\n`;
+    if (!output) content += `0.62 0.62 0.6 RG 0.5 w 0.25 0.25 ${num(w - 0.5)} ${num(h - 0.5)} re S\n`;
+  }
   const value = field.value ?? '';
   if (value !== '') {
     const multi = field.kind === 'multiline' || field.kind === 'outputMultiline';
