@@ -28,7 +28,14 @@ import { documentTitle } from './version';
  *
  * The counters are driven from a keystroke action, so they move with every
  * key rather than waiting for the box to lose focus, and from a calculate
- * action so they are right after a paste, a fill, or a reopened file.
+ * action so they are right after a paste, a fill, or a reopened file. The
+ * keystroke script is self-contained and shaped like the one in the
+ * workbench this descends from, which updated live in Acrobat: Acrobat's
+ * own merge function when it is loaded, the engine's otherwise, and the
+ * counter set directly. The boxes scroll and the file does not ask Acrobat
+ * to rebuild appearances, both of which the workbench also had, because
+ * Acrobat can otherwise leave a script-set value unpainted until the
+ * counter is next touched.
  */
 
 const TOOL = 'EPB Worksheet';
@@ -104,6 +111,19 @@ var OCG = (function () {
 })();
 try { this.calculateNow(); } catch (e) {}
 `;
+}
+
+/**
+ * The keystroke action of a counted box, ES5, one statement per line. The
+ * value the box is about to hold is counted and the counter set, with no
+ * call into anything but Acrobat's merge function or the engine's fallback.
+ */
+export function keystrokeScript(id: string, limit: number | null): string {
+  const value = "var v = String(typeof AFMergeChange === 'function' ? AFMergeChange(event) : OCG.merge(event)).replace(/\\r\\n?/g, '\\n');";
+  const set = limit !== null
+    ? `var n = ${limit} - v.length; this.getField('${counterName(id)}').value = n >= 0 ? n + ' remaining' : (-n) + ' over';`
+    : `var n = v.length; this.getField('${counterName(id)}').value = n + ' character' + (n === 1 ? '' : 's');`;
+  return `${value} ${set}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -194,7 +214,8 @@ function box(page: FormPage, top: number, id: string, title: string, limit: numb
     size: 9,
     tooltip,
     maxLen: limit !== null ? limit + 100 : undefined,
-    onKeystroke: `OCG.live(this, event, '${id}');`,
+    scroll: true,
+    onKeystroke: keystrokeScript(id, limit),
   });
   return y - fieldH;
 }
@@ -234,6 +255,7 @@ export function buildEpbForm(data: EpbData): FormDocument {
     pages: [p1, p2],
     script: epbEngineSource(data),
     calcOrder,
+    needAppearances: false,
   };
 }
 

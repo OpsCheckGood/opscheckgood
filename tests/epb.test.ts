@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { EPB } from '@/lib/data/epb';
 import { characterLabel, count, emptyDraft, isEmpty, worksheetText } from '@/lib/epb/worksheet';
-import { buildEpbFormPdf, counterName, epbEngineSource, epbFieldNames, epbFieldValues, WORKBENCH_COUNT } from '@/lib/pdfform/epb-form';
+import { buildEpbFormPdf, counterName, epbEngineSource, epbFieldNames, epbFieldValues, keystrokeScript, WORKBENCH_COUNT } from '@/lib/pdfform/epb-form';
 import { epbWorksheetPdf } from '@/lib/pdfform/downloads';
 import { PdfDocument } from '@/lib/pdf/document';
 import { PdfName, PdfRef, PdfString, type PdfDict } from '@/lib/pdf/objects';
@@ -108,6 +108,25 @@ describe("the PDF's script agrees with the site", () => {
     expect(ocg.calc(doc, 'workbench')).toBe('2 characters');
   });
 
+  it("runs each box's own keystroke script with or without Acrobat's merge function", () => {
+    const run = (id: string, limit: number | null, doc: ReturnType<typeof docOf>, event: unknown, merge?: (e: unknown) => string) =>
+      new Function('event', 'OCG', 'AFMergeChange', keystrokeScript(id, limit)).call(doc, event, ocg, merge);
+    const doc = docOf({ executing: 'x'.repeat(348), [counterName('executing')]: '', workbench: 'a\r\nb', [WORKBENCH_COUNT]: '' });
+    // The engine's merge, when Acrobat's library is not loaded.
+    run('executing', 350, doc, { value: doc.values.executing, change: 'yy', selStart: 348, selEnd: 348, willCommit: false }, undefined);
+    expect(doc.values[counterName('executing')]).toBe('0 remaining');
+    // Acrobat's own, when it is.
+    run('executing', 350, doc, { value: doc.values.executing, change: 'zzzzz', selStart: 348, selEnd: 348, willCommit: false }, () => 'x'.repeat(353));
+    expect(doc.values[counterName('executing')]).toBe('3 over');
+    run('workbench', null, doc, { value: doc.values.workbench, change: '', selStart: 0, selEnd: 0, willCommit: false }, undefined);
+    expect(doc.values[WORKBENCH_COUNT]).toBe('3 characters');
+    // ES5 only, on one line, nothing but Acrobat's library or the engine called.
+    for (const src of [keystrokeScript('duty', 450), keystrokeScript('workbench', null)]) {
+      expect(src).not.toMatch(/=>|`|\blet\b|\bconst\b/);
+      expect(src).not.toContain('\n');
+    }
+  });
+
   it('carries the page draft into the fields with its counts', () => {
     const values = epbFieldValues({ ...emptyDraft(data), duty: 'Lead.\r\nTwo lines.', workbench: 'note' }, data);
     expect(values.duty).toBe('Lead.\nTwo lines.');
@@ -170,10 +189,16 @@ describe('the EPB Worksheet PDF', () => {
     expect(r.value(counterName('duty'))).toBe('450 remaining');
     expect(r.value(WORKBENCH_COUNT)).toBe('0 characters');
     expect(r.value('duty')).toBe('');
-    // A keystroke action on every box, a calculate action on every counter.
+    // Appearances are the file's own, so Acrobat repaints a counter the moment a script sets it.
+    const acro = (await r.doc.resolve((await r.doc.catalog()).get('AcroForm'))) as PdfDict;
+    expect(acro.get('NeedAppearances')).toBe(false);
+    // A keystroke action on every box, which scrolls; a calculate action on every counter.
     for (const s of data.sections) {
       const aa = (await r.doc.resolve(r.fields.get(s.id)!.get('AA'))) as PdfDict;
       expect(aa.has('K'), s.id).toBe(true);
+      const k = (await r.doc.resolve(aa.get('K'))) as PdfDict;
+      expect((k.get('JS') as PdfString).text).toBe(keystrokeScript(s.id, s.limit));
+      expect((r.fields.get(s.id)!.get('Ff') as number) & (1 << 23), `${s.id} must scroll`).toBe(0);
       const ca = (await r.doc.resolve(r.fields.get(counterName(s.id))!.get('AA'))) as PdfDict;
       expect(ca.has('C'), s.id).toBe(true);
       expect(r.fields.get(s.id)!.get('MaxLen')).toBe(s.limit + 100);

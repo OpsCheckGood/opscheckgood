@@ -87,6 +87,8 @@ export interface Field {
   align?: 'left' | 'center' | 'right';
   /** No background and no border: text sitting on the page, for a preview. */
   plain?: boolean;
+  /** A multiline box that scrolls past its edge instead of refusing keys once it looks full. */
+  scroll?: boolean;
 }
 
 export interface Link {
@@ -132,6 +134,13 @@ export interface FormDocument {
   script: string;
   /** Names of calculated fields in the order their scripts run. */
   calcOrder?: string[];
+  /**
+   * Ask the viewer to rebuild every field's appearance itself (the default).
+   * Every field here carries an appearance of its own, so a form can turn
+   * this off; Acrobat then repaints a field the moment a script sets it,
+   * which with the flag on it can leave until the field is next touched.
+   */
+  needAppearances?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -266,7 +275,7 @@ export function buildFormPdf(doc: FormDocument): Uint8Array {
       const multi = field.kind === 'multiline' || field.kind === 'outputMultiline';
       let flags = FLAG_DO_NOT_SPELLCHECK;
       if (output) flags |= FLAG_READONLY;
-      if (multi) flags |= FLAG_MULTILINE | FLAG_DO_NOT_SCROLL;
+      if (multi) flags |= FLAG_MULTILINE | (field.scroll ? 0 : FLAG_DO_NOT_SCROLL);
       if (field.kind === 'combo') flags |= FLAG_COMBO;
       const font = field.font ?? (multi && output ? 'Cour' : 'Helv');
       const size = field.size ?? (multi ? 9 : 0);
@@ -350,7 +359,7 @@ export function buildFormPdf(doc: FormDocument): Uint8Array {
     catalog,
     `<</Type /Catalog /Pages ${pagesRoot} 0 R ` +
       `/Names <</JavaScript <</Names [(OpsCheckGood) ${scriptAction} 0 R]>>>> ` +
-      `/AcroForm <</Fields [${fieldRefs.map((f) => `${f} 0 R`).join(' ')}] /NeedAppearances true ` +
+      `/AcroForm <</Fields [${fieldRefs.map((f) => `${f} 0 R`).join(' ')}] /NeedAppearances ${doc.needAppearances === false ? 'false' : 'true'} ` +
       `/DA (/Helv 0 Tf 0 g) /DR <</Font <<${fontDict}>>>>` +
       (calcOrder.length ? ` /CO [${calcOrder.map((c) => `${c} 0 R`).join(' ')}]` : '') +
       '>>>>',
