@@ -26,8 +26,9 @@ import {
  * off here changes the shaped output there.
  *
  * Switching entries off is the point, not a nicety: the shipped Common list
- * includes platform designators like "Eagle" -> "F-15", which rewrite any use
- * of the word. Before this page the only remedy was disabling the whole list.
+ * abbreviates "Commander" to "CC" and "Squadron" to "Sq", and a unit whose
+ * leadership wants those written out needs to turn off the one entry, not the
+ * list. Before this page the only remedy was disabling the whole list.
  */
 
 const LISTS: ListId[] = ['hq', 'common'];

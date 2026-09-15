@@ -57,22 +57,22 @@ describe('effectiveTable', () => {
   });
 
   /**
-   * The reason this page exists. The shipped Common list maps a platform's
-   * name to its designator, so with abbreviation on, any use of the word
-   * "Eagle" is rewritten to "F-15". Switching that one entry off has to fix it
-   * without disabling the other 194.
+   * The reason this page exists. The shipped Common list abbreviates
+   * "Commander" to "CC", which some leadership does not want in a narrative,
+   * so with abbreviation on, every "Commander" is rewritten. Switching that
+   * one entry off has to fix it without disabling the rest of the list.
    */
   it('lets a single troublesome entry be switched off', () => {
     const overrides = blank();
-    const eagle = shippedEntries('common').find((e) => e.phrase === 'Eagle');
-    expect(eagle, 'the Eagle -> F-15 entry should be in the shipped list').toBeDefined();
+    const commander = shippedEntries('common').find((e) => e.phrase === 'Commander');
+    expect(commander, 'the Commander -> CC entry should be in the shipped list').toBeDefined();
 
-    expect(applyAbbreviations('Eagle team led the Squadron', effectiveTable('common', overrides)))
-      .toContain('F-15');
+    expect(applyAbbreviations('Commander led the Squadron', effectiveTable('common', overrides)))
+      .toContain('CC');
 
-    overrides.common.disabled.push(entryKey(eagle!));
-    const after = applyAbbreviations('Eagle team led the Squadron', effectiveTable('common', overrides));
-    expect(after).toContain('Eagle');
+    overrides.common.disabled.push(entryKey(commander!));
+    const after = applyAbbreviations('Commander led the Squadron', effectiveTable('common', overrides));
+    expect(after).toContain('Commander');
     // The rest of the list still works.
     expect(after).toContain('Sq');
   });

@@ -1,20 +1,16 @@
 {
   "meta": {
     "source": "Commonly used abbreviations, maintainer-supplied",
-    "version": "2026-08-30",
-    "verifiedDate": "2026-08-30",
+    "version": "2026-09-15",
+    "verifiedDate": "2026-09-15",
     "sourceUrl": "",
     "status": "stub",
-    "notes": "Not from an official source, which is the point: these are widely used but locally variable, so the UI always pairs them with the local-guidance note. Stays status=stub for that reason. Entries duplicated by the HQ-approved list were dropped so HQ wins. A trailing parenthetical was treated as an annotation and stripped (A1-A9 lost '(Directorate)'), except where stripping would collide -- ASOR-L and ASOR-S keep '(Long)' and '(Short)' because that gloss is the only thing telling them apart. Case-variant abbreviations (Qtr/qtr, QTRLY/QTR) are all kept so recognition matches whichever a writer used; replacement picks one deterministically. REVIEW: the platform designators (F-15 Eagle, MQ-9 Reaper, AIM-9 Sidewinder, ...) map a name to a designator rather than a phrase to its abbreviation, so greedy replacement will rewrite any use of the word 'Eagle' or 'Reaper'. Prune them if that is not wanted."
+    "notes": "Not from an official source, which is the point: these are widely used but locally variable, so the UI always pairs them with the local-guidance note. Stays status=stub for that reason. Entries duplicated by the AFPC list were dropped so it wins. On 2026-09-15 the list was pruned against the AFPC acronyms page (re-fetched that day; it is a single table of 148 entries with no categories, all carried in hq-approved.json) and against what a reader anywhere in the Air Force recognises without expansion: what remains is grades and ranks, unit echelons (Sq, Grp, Wg, NAF, MAJCOM, HQ), the major commands and components, squadron and group types, duty positions, decorations, unit awards and ribbons, correspondence types, the fiscal calendar, and units of measure and magnitude. Removed: the Headquarters Air Force directorates A1-A9, whose phrases (Operations, Intelligence, Communications) are ordinary words; the officer pay grades O-1 to O-6, replaced by the rank abbreviations 2d Lt to Col that evaluations actually use; aircraft and weapon names mapped to designators (Eagle, Raptor, Reaper, Globemaster III, Sidewinder and the rest), which are not abbreviations and rewrote ordinary words; Dec and Mo, which collide with the month; the radio bands UHF, VHF, HF and LOS, JDAM and C3, which are field-specific; and DCSA, DISA, FBI, SOCOM and POAM, which are not Air Force common. A trailing parenthetical was treated as an annotation and stripped, except where stripping would collide: ASOR-L and ASOR-S keep '(Long)' and '(Short)'. Case-variant abbreviations (Qtr/qtr, QTRLY/QTR) are all kept so recognition matches whichever a writer used; replacement picks one deterministically."
   },
   "data": [
     {
       "phrase": "Air Force Installation and Mission Support Center",
       "abbr": "AFIMSC"
-    },
-    {
-      "phrase": "Defense Counterintelligence and Security Agency",
-      "abbr": "DCSA"
     },
     {
       "phrase": "Air and Space Organization Excellence Award",
@@ -41,16 +37,8 @@
       "abbr": "ASESR"
     },
     {
-      "phrase": "Logistics, Engineering & Force Protection",
-      "abbr": "A4"
-    },
-    {
       "phrase": "Enlisted Professional Military Education",
       "abbr": "EPME"
-    },
-    {
-      "phrase": "United States Special Operations Command",
-      "abbr": "SOCOM"
     },
     {
       "phrase": "Secret Internet Protocol Router Network",
@@ -77,16 +65,8 @@
       "abbr": "ASOR-L"
     },
     {
-      "phrase": "Command, Control, and Communications",
-      "abbr": "C3"
-    },
-    {
       "phrase": "Air Education and Training Command",
       "abbr": "AETC"
-    },
-    {
-      "phrase": "Defense Information Systems Agency",
-      "abbr": "DISA"
     },
     {
       "phrase": "North Atlantic Treaty Organization",
@@ -121,22 +101,6 @@
       "abbr": "ASAM"
     },
     {
-      "phrase": "Federal Bureau of Investigation",
-      "abbr": "FBI"
-    },
-    {
-      "phrase": "Installations & Mission Support",
-      "abbr": "A7"
-    },
-    {
-      "phrase": "Studies, Analyses & Assessments",
-      "abbr": "A9"
-    },
-    {
-      "phrase": "Manpower, Personnel & Services",
-      "abbr": "A1"
-    },
-    {
       "phrase": "Senior Noncommissioned Officer",
       "abbr": "SNCO"
     },
@@ -157,20 +121,12 @@
       "abbr": "AMXS"
     },
     {
-      "phrase": "Plan of Action and Milestones",
-      "abbr": "POAM"
-    },
-    {
       "phrase": "Air Force Good Conduct Medal",
       "abbr": "AFGCM"
     },
     {
       "phrase": "Air and Space Campaign Medal",
       "abbr": "ASCM"
-    },
-    {
-      "phrase": "Joint Direct Attack Munition",
-      "abbr": "JDAM"
     },
     {
       "phrase": "Logistics Readiness Squadron",
@@ -211,10 +167,6 @@
     {
       "phrase": "Presidential Unit Citation",
       "abbr": "PUC"
-    },
-    {
-      "phrase": "Strategic Plans & Programs",
-      "abbr": "A8"
     },
     {
       "phrase": "Air Force Reserve Command",
@@ -357,14 +309,6 @@
       "abbr": "MXS"
     },
     {
-      "phrase": "Plans & Requirements",
-      "abbr": "A5"
-    },
-    {
-      "phrase": "Ultra High Frequency",
-      "abbr": "UHF"
-    },
-    {
       "phrase": "After Action Report",
       "abbr": "AAR"
     },
@@ -379,10 +323,6 @@
     {
       "phrase": "Letter of Reprimand",
       "abbr": "LOR"
-    },
-    {
-      "phrase": "Very High Frequency",
-      "abbr": "VHF"
     },
     {
       "phrase": "Air Combat Command",
@@ -402,7 +342,7 @@
     },
     {
       "phrase": "Lieutenant Colonel",
-      "abbr": "O-5"
+      "abbr": "Lt Col"
     },
     {
       "phrase": "Lieutenant General",
@@ -458,7 +398,7 @@
     },
     {
       "phrase": "Second Lieutenant",
-      "abbr": "O-1"
+      "abbr": "2d Lt"
     },
     {
       "phrase": "Wide Area Network",
@@ -466,7 +406,7 @@
     },
     {
       "phrase": "First Lieutenant",
-      "abbr": "O-2"
+      "abbr": "1st Lt"
     },
     {
       "phrase": "Joint Task Force",
@@ -489,10 +429,6 @@
       "abbr": "GO"
     },
     {
-      "phrase": "Globemaster III",
-      "abbr": "C-17"
-    },
-    {
       "phrase": "Legion of Merit",
       "abbr": "LOM"
     },
@@ -505,16 +441,8 @@
       "abbr": "AMNM"
     },
     {
-      "phrase": "Communications",
-      "abbr": "A6"
-    },
-    {
       "phrase": "First Sergeant",
       "abbr": "1Sgt"
-    },
-    {
-      "phrase": "High Frequency",
-      "abbr": "HF"
     },
     {
       "phrase": "Judge Advocate",
@@ -549,10 +477,6 @@
       "abbr": "CCC"
     },
     {
-      "phrase": "Line of Sight",
-      "abbr": "LOS"
-    },
-    {
       "phrase": "Major Command",
       "abbr": "MAJCOM"
     },
@@ -577,20 +501,8 @@
       "abbr": "HQ"
     },
     {
-      "phrase": "Intelligence",
-      "abbr": "A2"
-    },
-    {
-      "phrase": "Lightning II",
-      "abbr": "F-35"
-    },
-    {
       "phrase": "Purple Heart",
       "abbr": "PH"
-    },
-    {
-      "phrase": "Stratotanker",
-      "abbr": "KC-135"
     },
     {
       "phrase": "Year-to-Date",
@@ -609,20 +521,8 @@
       "abbr": "sq ft"
     },
     {
-      "phrase": "Decoration",
-      "abbr": "Dec"
-    },
-    {
       "phrase": "Kilometers",
       "abbr": "km"
-    },
-    {
-      "phrase": "Operations",
-      "abbr": "A3"
-    },
-    {
-      "phrase": "Sidewinder",
-      "abbr": "AIM-9"
     },
     {
       "phrase": "Air Force",
@@ -635,10 +535,6 @@
     {
       "phrase": "Commander",
       "abbr": "CC"
-    },
-    {
-      "phrase": "Pave Hawk",
-      "abbr": "HH-60"
     },
     {
       "phrase": "Quarter 1",
@@ -665,10 +561,6 @@
       "abbr": "QTR"
     },
     {
-      "phrase": "Hercules",
-      "abbr": "C-130"
-    },
-    {
       "phrase": "Kilogram",
       "abbr": "kg"
     },
@@ -686,11 +578,11 @@
     },
     {
       "phrase": "Captain",
-      "abbr": "O-3"
+      "abbr": "Capt"
     },
     {
       "phrase": "Colonel",
-      "abbr": "O-6"
+      "abbr": "Col"
     },
     {
       "phrase": "Dollars",
@@ -709,10 +601,6 @@
       "abbr": "mins"
     },
     {
-      "phrase": "Pegasus",
-      "abbr": "KC-46"
-    },
-    {
       "phrase": "Percent",
       "abbr": "%"
     },
@@ -729,28 +617,12 @@
       "abbr": "secs"
     },
     {
-      "phrase": "AMRAAM",
-      "abbr": "AIM-120"
-    },
-    {
       "phrase": "Airman",
       "abbr": "Amn"
     },
     {
       "phrase": "Pounds",
       "abbr": "lbs"
-    },
-    {
-      "phrase": "Raptor",
-      "abbr": "F-22"
-    },
-    {
-      "phrase": "Reaper",
-      "abbr": "MQ-9"
-    },
-    {
-      "phrase": "Eagle",
-      "abbr": "F-15"
     },
     {
       "phrase": "Group",
@@ -762,15 +634,11 @@
     },
     {
       "phrase": "Major",
-      "abbr": "O-4"
+      "abbr": "Maj"
     },
     {
       "phrase": "Miles",
       "abbr": "mi"
-    },
-    {
-      "phrase": "Month",
-      "abbr": "Mo"
     },
     {
       "phrase": "Feet",

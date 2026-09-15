@@ -64,8 +64,8 @@ It carries two reference pages of its own:
   per-entry enable/disable, your own additions, and CSV import/export. Edits are deltas
   against the shipped files, so "reset to defaults" is dropping the delta and a future
   data update still reaches anyone who has not overridden that entry. Switching a single
-  entry off matters: the Common list maps platform names to designators, so `Eagle` would
-  otherwise be rewritten to `F-15` wherever it appears.
+  entry off matters: the Common list abbreviates `Commander` to `CC`, and a unit whose
+  leadership wants the word written out can switch that one entry off and keep the rest.
 - **Thesaurus** (`/tools/bullet-bench/thesaurus/`) — look a word up without a bullet
   open. Results are grouped by meaning, and every alternative shows its width in
   millimetres at the selected form's type size.

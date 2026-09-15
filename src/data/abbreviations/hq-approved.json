@@ -1,11 +1,11 @@
 {
   "meta": {
     "source": "AFPC Acronyms list",
-    "version": "2026-08-30",
-    "verifiedDate": "2026-08-30",
+    "version": "2026-09-15",
+    "verifiedDate": "2026-09-15",
     "sourceUrl": "https://www.afpc.af.mil/Career-Management/Acronyms/",
     "status": "verified",
-    "notes": "Transcribed verbatim from the AFPC acronyms page as supplied by the maintainer on 2026-08-30. Phrases keep the source's uppercase styling; matching is case-insensitive so this does not affect replacement, only how a suggestion reads. Not independently re-fetched from afpc.af.mil -- re-check against the live page when the version date is bumped."
+    "notes": "Transcribed from the AFPC acronyms page, first as supplied by the maintainer on 2026-08-30 and re-fetched from the live page on 2026-09-15: a single table of 148 acronyms and definitions, no categories and no rule text, and every entry matched. Phrases keep the source's uppercase styling; matching is case-insensitive so this does not affect replacement, only how a suggestion reads. Re-check against the live page when the version date is bumped."
   },
   "data": [
     {
