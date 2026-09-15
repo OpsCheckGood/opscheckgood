@@ -316,8 +316,8 @@ export default function DecorationWriter() {
         </div>
 
         {guided ? (
-          <div className="flex flex-wrap items-end gap-x-8 gap-y-4">
-            <Field label="Decoration" htmlFor="dec-award">
+          <div className="grid items-end gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
+            <Field label="Decoration" htmlFor="dec-award" span={2}>
               <Select
                 id="dec-award"
                 value={draft.awardId}
@@ -357,7 +357,7 @@ export default function DecorationWriter() {
               />
             </Field>
             {award.circumstances.length > 0 && (
-              <Field label="While engaged" htmlFor="dec-circumstance">
+              <Field label="While engaged" htmlFor="dec-circumstance" span={2}>
                 <Select
                   id="dec-circumstance"
                   value={draft.circumstanceId}
@@ -377,7 +377,7 @@ export default function DecorationWriter() {
               />
             </Field>
             {showLongCareer && (
-              <label className="flex items-center gap-2 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
+              <label className="flex min-h-[38px] items-center gap-2 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
                 <input
                   type="checkbox"
                   checked={draft.longCareer}
@@ -405,7 +405,7 @@ export default function DecorationWriter() {
           <div className="mb-4">
             <SectionTitle step={2} title="Member and assignment" />
           </div>
-          <div className="flex flex-wrap items-end gap-x-8 gap-y-4">
+          <div className="grid items-end gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
             <Field label="Grade" htmlFor="dec-grade">
               <Select
                 id="dec-grade"
@@ -437,7 +437,7 @@ export default function DecorationWriter() {
             </Field>
           </div>
 
-          <div className="mt-5 flex flex-wrap items-end gap-x-8 gap-y-4">
+          <div className="mt-5 grid items-end gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
             <Field label="Assignment" htmlFor="dec-assignment">
               <Select
                 id="dec-assignment"
@@ -465,7 +465,7 @@ export default function DecorationWriter() {
                 </Field>
               </>
             )}
-            <Field label="Base / location" htmlFor="dec-base">
+            <Field label="Base / location" htmlFor="dec-base" span={2}>
               <TextBox
                 id="dec-base"
                 value={draft.base}
@@ -476,7 +476,7 @@ export default function DecorationWriter() {
             </Field>
           </div>
 
-          <div className="mt-5 flex flex-wrap items-end gap-x-8 gap-y-4">
+          <div className="mt-5 grid items-end gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
             <Field label="Period" htmlFor="dec-period">
               <Select
                 id="dec-period"
@@ -503,7 +503,7 @@ export default function DecorationWriter() {
                 <DateBox id="dec-date" value={draft.date} onChange={(date) => update({ date })} />
               </Field>
             )}
-            <label className="flex items-center gap-2 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
+            <label className="flex min-h-[38px] items-center gap-2 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
               <input
                 type="checkbox"
                 checked={draft.periodInOpening}
@@ -613,8 +613,8 @@ export default function DecorationWriter() {
           </span>
         </div>
 
-        <div className="mb-4 flex flex-wrap items-end gap-x-8 gap-y-4">
-          <Field label="Approving official" htmlFor="dec-approver">
+        <div className="mb-4 grid items-end gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
+          <Field label="Approving official" htmlFor="dec-approver" span={2}>
             <TextBox
               id="dec-approver"
               value={draft.approver}
@@ -639,7 +639,7 @@ export default function DecorationWriter() {
             type="button"
             onClick={() => window.print()}
             disabled={!full}
-            className="util border px-3.5 py-2"
+            className="util border px-3.5 py-2.5"
             style={{
               background: 'var(--panel)',
               borderColor: full ? 'var(--ink)' : 'var(--rule-strong)',
@@ -765,7 +765,8 @@ function CertificatePage({
   const rows = Math.max(limits.lines, lines.length);
 
   return (
-    <div ref={host} className="w-full" style={{ height: heightPx * scale }}>
+    <div ref={host} className="flex w-full justify-center">
+      <div style={{ width: widthPx * scale, height: heightPx * scale }}>
       <div
         className="certificate-page"
         style={{
@@ -873,6 +874,7 @@ function CertificatePage({
           </div>
         )}
       </div>
+      </div>
     </div>
   );
 }
@@ -922,9 +924,20 @@ function SectionTitle({ step, title }: { step: number; title: string }) {
   );
 }
 
-function Field({ label, htmlFor, children }: { label: string; htmlFor?: string; children: React.ReactNode }) {
+function Field({
+  label,
+  htmlFor,
+  span = 1,
+  children,
+}: {
+  label: string;
+  htmlFor?: string;
+  /** Grid columns to occupy on a wide screen. */
+  span?: 1 | 2;
+  children: React.ReactNode;
+}) {
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className={`flex min-w-0 flex-col gap-1.5 ${span === 2 ? 'lg:col-span-2' : ''}`}>
       {htmlFor ? (
         <label className="util" htmlFor={htmlFor}>
           {label}
@@ -947,9 +960,11 @@ function TextBox({
   id: string;
   value: string;
   onChange: (value: string) => void;
-  width: string;
+  /** Kept for callers; every control now fills its grid cell. */
+  width?: string;
   placeholder?: string;
 }) {
+  void width;
   return (
     <input
       id={id}
@@ -958,7 +973,7 @@ function TextBox({
       placeholder={placeholder}
       onChange={(e) => onChange(e.target.value)}
       className="border px-3 py-2 text-[13px]"
-      style={{ ...CONTROL, width, maxWidth: '100%' }}
+      style={{ ...CONTROL, width: '100%' }}
     />
   );
 }
@@ -971,7 +986,7 @@ function DateBox({ id, value, onChange }: { id: string; value: string; onChange:
       value={value}
       onChange={(e) => onChange(e.target.value)}
       className="tabular border px-3 py-2 text-[13px]"
-      style={{ ...CONTROL, width: '11rem' }}
+      style={{ ...CONTROL, width: '100%' }}
     />
   );
 }
@@ -987,15 +1002,16 @@ function Select({
   value: string;
   onChange: (value: string) => void;
   options: { value: string; label: string }[];
-  width: string;
+  width?: string;
 }) {
+  void width;
   return (
     <select
       id={id}
       value={value}
       onChange={(e) => onChange(e.target.value)}
       className="border px-3 py-2 text-[13px]"
-      style={{ ...CONTROL, width, maxWidth: '100%' }}
+      style={{ ...CONTROL, width: '100%' }}
     >
       {options.map((o) => (
         <option key={o.value} value={o.value}>
