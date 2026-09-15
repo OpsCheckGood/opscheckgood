@@ -89,12 +89,20 @@ caps the rating below Excellent, a single component minimum fails the whole asse
 and the waist-to-height ratio truncates rather than rounds. Your row is marked on the
 scoring chart, so you can see how many more reps buy the next point.
 
-The scoring tables and the engine were ported from a fillable PDF calculator the
-maintainer wrote. `tests/pt-score.test.ts` runs that PDF's own JavaScript as an oracle
-and scores several hundred cases through both engines, comparing composite, rating,
-per-component points, and which chart row each one landed on. The data still carries
-`status: "stub"` because the PDF is one step removed from the AFMAN itself — see
-[Populating the data](#populating-the-data).
+The data is `status: "verified"`. The scoring tables in `src/data/pt/afman36-2905.json`
+were compared cell by cell against the USAF PFRA Scoring Charts effective 1 March 2026
+(3,096 cells, zero differences, pinned in `tests/fixtures/pfra-scoring-charts.json`), and
+the body composition rules against AFMAN 36-2905, 24 March 2026, each paragraph cited by
+a test in `tests/pt-score.test.ts`. The body fat percent is read from the manual's
+Attachments 9 and 10, which ship as `src/data/pt/body-fat-tables.json`. Reading the manual
+found three errors in the fillable PDF the tool was first ported from, all corrected: the
+tape rounds to the quarter inch, not the half (Attachment 8); a result equal to the
+standard fails, since Table 3.2 reads "< 26%" and "< 36%"; and a met Tier 2 assessment is
+scored as an exempt component without being an exemption, so no PFRA hold is warned of
+(para 3.9). `tests/pt-score.test.ts` still runs the original PDF's script as the oracle
+for the scoring tables, ladders, proration and ratings, which the manual does not
+contradict; the downloadable PDF builder carries the same three corrections (see
+[Fillable PDF builders](#fillable-pdf-builders)).
 
 ### BTZ calculator
 
@@ -293,8 +301,14 @@ PDFs, from which the site's versions were written. They are embedded as prepared
 sample entries removed, the site's mark added, and, for the promotion builder, the script
 replaced with an ES5 port of the site's so the two cannot disagree. The originals sit in
 `forms-src/`, which is not committed; the prepared files under
-`src/lib/pdfform/embedded/` are. The PT calculator's own script is left exactly as it
-is: it is the oracle `tests/pt-score.test.ts` checks the site's scorer against.
+`src/lib/pdfform/embedded/` are. The PT calculator's scoring script is left as it is: it
+is the oracle `tests/pt-score.test.ts` checks the site's scorer against. Its Tier 2 body
+fat page is patched at embed time (`patchTier2Script` in `src/lib/pdfform/prepare.ts`) to
+the same four corrections the site made against the manual -- quarter-inch tape, the
+strict standard, the published tables, no false PFRA hold -- each edit anchored to the
+exact text it replaces so a new edition of the file fails loudly rather than silently
+keeping the old rules. `tests/pdf-embedded.test.ts` runs the patched script beside the
+site's body fat assessment.
 
 `tests/pdfform.test.ts`, `tests/epb.test.ts` and `tests/pdf-embedded.test.ts` run the files' scripts under
 Node beside the site's engines and compare every sentence and every line; they also open

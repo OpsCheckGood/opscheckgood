@@ -115,13 +115,121 @@ function latin1(text: string): Uint8Array {
   return out;
 }
 
+/** A published body fat table: percent by circumference row and height column. */
+export interface Tier2Table {
+  circumference: { start: number; step: number; count: number };
+  height: { start: number; step: number; count: number };
+  rows: ReadonlyArray<ReadonlyArray<number>>;
+}
+
+function patch(source: string, anchor: RegExp, replacement: string, what: string): string {
+  const matches = source.match(new RegExp(anchor.source, 'g'));
+  if (!matches || matches.length !== 1) {
+    throw new Error(`PT calculator script: expected exactly one match for ${what}, found ${matches?.length ?? 0}. Has the source PDF changed?`);
+  }
+  return source.replace(anchor, replacement);
+}
+
 /**
- * The PT calculator: its script is the oracle the site's scorer is tested
- * against and stays exactly as it is. Only the document information, which
- * named its author and unit, is replaced, and the site's mark added.
+ * The PT calculator's script, brought to the manual where the site was.
+ *
+ * The scoring tables, the ladders, proration and the ratings are the oracle
+ * the site's scorer is tested against and are not touched. The Tier 2 body
+ * fat page is where the file and AFMAN 36-2905 disagreed, and the site was
+ * corrected on 2026-09-03; this carries the same four corrections into the
+ * file so the two cannot answer differently: abdomen, waist and buttocks
+ * round down to the quarter inch (Attachment 8), the standard is "under 26%"
+ * and "under 36%" rather than "or less" (Table 3.2), the percent is read from
+ * the published tables at Attachments 9 and 10 with the DoD equation kept
+ * only for a measurement off the end of them, and a met assessment is scored
+ * as an exempt component without being counted as an exemption, so the file
+ * stops warning of a PFRA hold that para 3.9 does not impose. Every edit is
+ * anchored to the exact text it replaces and fails loudly if the file's
+ * script has moved on.
  */
-export async function preparePtCalculator(bytes: Uint8Array): Promise<Uint8Array> {
+export function patchTier2Script(source: string, tables: Record<'male' | 'female', Tier2Table>): string {
+  const compact = (t: Tier2Table) =>
+    `{c0:${t.circumference.start},cs:${t.circumference.step},h0:${t.height.start},hs:${t.height.step},r:${JSON.stringify(t.rows)}}`;
+  let out = source;
+  out = patch(
+    out,
+    /function floorHalfDown\(x\)\{ return Math\.floor\(x \* 2 \+ 1e-9\) \/ 2; \}/,
+    [
+      'function floorHalfDown(x){ return Math.floor(x * 4 + 1e-9) / 4; } /* AFMAN 36-2905 Atch 8: the quarter inch, not the half */',
+      `var BFT = { m: ${compact(tables.male)}, f: ${compact(tables.female)} };`,
+      '/* AFMAN 36-2905 Attachments 9 (male) and 10 (female): the published cell, or null off the table. */',
+      'function bftLookup(sexF, circ, ht){',
+      '  var t = sexF ? BFT.f : BFT.m;',
+      '  var ci = Math.round((circ - t.c0) / t.cs), hi = Math.round((ht - t.h0) / t.hs);',
+      '  if (ci < 0 || hi < 0 || ci >= t.r.length || hi >= t.r[0].length) return null;',
+      '  if (Math.abs(t.c0 + ci * t.cs - circ) > 1e-6 || Math.abs(t.h0 + hi * t.hs - ht) > 1e-6) return null;',
+      '  return t.r[ci][hi];',
+      '}',
+    ].join('\n'),
+    'the half-inch rounding',
+  );
+  out = patch(
+    out,
+    /S\("BF_Std", sexF \? "36% or less" : "26% or less"\);/,
+    'S("BF_Std", sexF ? "under 36%" : "under 26%");',
+    'the standard label',
+  );
+  out = patch(
+    out,
+    /\/\* DoD circumference equations; DoDI 1308\.3 E3\.1\.2\.1 - whole percent \*\/\s*var pct = null;\s*if \(circ !== null && htR !== null && htR > 0\)\{\s*if \(sexF\) pct = 163\.205 \* lg\(circ\) - 97\.684 \* lg\(htR\) - 78\.387;\s*else\s+pct = 86\.010 \* lg\(circ\) - 70\.041 \* lg\(htR\) \+ 36\.76;\s*pct = Math\.round\(pct\);\s*if \(pct < 0\) pct = 0;\s*\}/,
+    [
+      '/* AFMAN 36-2905 Atch 9 / Atch 10 first; the DoD equation (DoDI 1308.3) only off the end of the table */',
+      '  var pct = null, fromTable = false;',
+      '  if (circ !== null && htR !== null && htR > 0){',
+      '    pct = bftLookup(sexF, circ, htR);',
+      '    if (pct !== null) fromTable = true;',
+      '    else {',
+      '      if (sexF) pct = 163.205 * lg(circ) - 97.684 * lg(htR) - 78.387;',
+      '      else      pct = 86.010 * lg(circ) - 70.041 * lg(htR) + 36.76;',
+      '      pct = Math.round(pct);',
+      '      if (pct < 0) pct = 0;',
+      '    }',
+      '  }',
+    ].join('\n'),
+    'the equation block',
+  );
+  out = patch(
+    out,
+    /res = \(pct <= max\) \? "PASS" : "FAIL";\s*\/\* Table 3\.2: 26% \/ 36% or less \*\//,
+    'res = (pct < max) ? "PASS" : "FAIL";      /* Table 3.2: "< 26%" / "< 36%" -- equal to the standard does not pass */',
+    'the pass test',
+  );
+  out = patch(
+    out,
+    /note = "Cross-check " \+ pct \+ "% against " \+ fmtIn\(circ\) \+ " and " \+ fmtIn\(htR\)\s*\+ " in " \+ \(sexF \? "Attachment 10\." : "Attachment 9\."\);/,
+    [
+      'note = fromTable',
+      '         ? "Read from " + (sexF ? "Attachment 10" : "Attachment 9") + " at " + fmtIn(circ) + " and " + fmtIn(htR) + "."',
+      '         : fmtIn(circ) + " at " + fmtIn(htR) + " falls outside the published table. This figure is the DoD circumference equation the table is built from, not a published one \\u2014 have it checked.";',
+    ].join('\n'),
+    'the cross-check note',
+  );
+  out = patch(
+    out,
+    /bodyPts = 0; bodyPos = 0; exCount\+\+;(\s*notes\.push\("BFA met)/,
+    'bodyPts = 0; bodyPos = 0; /* scored as exempt (para 3.7.2) but not an exemption: no PFRA hold (para 3.9) */$1',
+    'the met-assessment branch',
+  );
+  return out;
+}
+
+/**
+ * The PT calculator: the scoring script that is the oracle the site's scorer
+ * is tested against stays as it is, its Tier 2 page is brought to the manual
+ * (see `patchTier2Script`), the document information, which named its author
+ * and unit, is replaced, and the site's mark added.
+ */
+export async function preparePtCalculator(bytes: Uint8Array, tables: Record<'male' | 'female', Tier2Table>): Promise<Uint8Array> {
   const rw = await PdfRewriter.open(bytes);
+  const scripts = await rw.documentScripts();
+  const main = scripts.find((s) => s.name === 'PFRA');
+  if (!main || scripts.length !== 1) throw new Error(`PT calculator: expected one document script named PFRA, found ${scripts.map((s) => s.name).join(', ') || 'none'}`);
+  rw.setDocumentScript('PFRA', patchTier2Script(main.source, tables));
   rw.setInfo({
     ...INFO_COMMON,
     Title: 'PT Calculator',
@@ -131,7 +239,17 @@ export async function preparePtCalculator(bytes: Uint8Array): Promise<Uint8Array
   });
   // The print button sat in the original's header; Reader prints anyway.
   rw.removeFields(({ dict }) => dict.get('FT') instanceof PdfName && (dict.get('FT') as PdfName).name === 'Btn');
-  await rw.editContent(monochrome);
+  // Page 2's printed explanation of the body fat figure, kept true to the script above.
+  const explained = ['(The DoD circumference equation, rounded to a whole percent, which is how the Attachment 9 and 10 tables are)', '(generated. Verified against 58 published table cells with no differences. Standard: male 26% or less, female 36% or less.)'];
+  await rw.editContent((content, i) => {
+    if (i !== 1) return monochrome(content);
+    for (const line of explained) if (!content.includes(line)) throw new Error(`PT calculator: page 2 no longer carries ${line}`);
+    return monochrome(
+      content
+        .replace(explained[0]!, literal('Read from the published tables at AFMAN 36-2905 Attachments 9 and 10; the DoD circumference equation is used'))
+        .replace(explained[1]!, literal('only where a measurement falls off the end of the table. Standard (Table 3.2): male under 26%, female under 36%.')),
+    );
+  });
   // The original's band runs from 748 to 780; the standard band covers it.
   await paintHeader(rw, 'PT Calculator', 'Physical fitness assessment scoring to AFMAN 36-2905, with the Tier 2 body fat assessment', 748);
   await brandPages(rw);

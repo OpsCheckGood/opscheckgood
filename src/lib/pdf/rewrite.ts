@@ -173,6 +173,28 @@ export class PdfRewriter {
     return doomed.size;
   }
 
+  /** The document-level scripts, decoded, in the order the name tree lists them. */
+  async documentScripts(): Promise<Array<{ name: string; source: string }>> {
+    const names = this.deref(this.catalog.get('Names'));
+    if (!(names instanceof Map)) return [];
+    const tree = this.deref(names.get('JavaScript'));
+    if (!(tree instanceof Map)) return [];
+    const entries = this.deref(tree.get('Names'));
+    if (!Array.isArray(entries)) return [];
+    const out: Array<{ name: string; source: string }> = [];
+    for (let i = 0; i + 1 < entries.length; i += 2) {
+      const key = this.deref(entries[i]);
+      const action = this.deref(entries[i + 1]);
+      if (!(key instanceof PdfString) || !(action instanceof Map)) continue;
+      const js = action.get('JS');
+      let source = '';
+      if (js instanceof PdfRef) source = new TextDecoder('latin1').decode((await this.decode(js)) ?? new Uint8Array());
+      else if (js instanceof PdfString) source = js.text;
+      out.push({ name: key.text, source });
+    }
+    return out;
+  }
+
   /** Replaces the document-level JavaScript with one script. */
   setDocumentScript(name: string, source: string): void {
     const stream = new PdfStream(new Map<string, PdfObject>([['Length', source.length]]), latin1(source));

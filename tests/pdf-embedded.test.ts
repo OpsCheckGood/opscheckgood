@@ -1,4 +1,9 @@
 import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = fileURLToPath(new URL('..', import.meta.url));
 import { CEREMONY } from '@/lib/data/ceremony';
 import { buildScript, emptyInput, type CeremonyInput } from '@/lib/promotion/ceremony';
 import { PF, promotionEngineSource, promotionFieldValues } from '@/lib/pdfform/promotion-form';
@@ -9,6 +14,8 @@ import { PdfName, PdfRef, PdfString, type PdfDict } from '@/lib/pdf/objects';
 import { base64 as promotionBase64 } from '@/lib/pdfform/embedded/promotion-script';
 import { base64 as ptBase64 } from '@/lib/pdfform/embedded/pt-calculator';
 import { decodeBase64 } from '@/lib/metrics/registry';
+import { BODY_FAT_TABLES, CURRENT_STANDARDS } from '@/lib/data/pt';
+import { assessBodyFat, lookupBodyFat } from '@/lib/pt/score';
 
 const data = CEREMONY.data;
 
@@ -150,18 +157,106 @@ describe('the embedded forms', () => {
     expect(saturated(r.content)).toEqual([]);
   });
 
-  it('PT calculator: scrubbed and branded, its own script untouched', async () => {
+  it('PT calculator: scrubbed and branded, its scoring script untouched and its Tier 2 page brought to the manual', async () => {
     const r = await inspect(new Uint8Array(decodeBase64(ptBase64)));
     expect(r.pages).toBe(2);
     expect(r.infoText).not.toMatch(/TORRES|MXAA|82 RS/i);
     expect(r.infoText).toContain('PT Calculator');
     expect(r.fields.size).toBe(264); // the print button is gone
     expect(r.script.startsWith('var PF = {')).toBe(true);
+    // The scoring tables are the oracle and are byte-for-byte the fixture's.
+    const fixture = readFileSync(join(root, 'tests', 'fixtures', 'pdf-calculator.js'), 'utf8');
+    const tables = (src: string) => src.slice(src.indexOf('var PF = {'), src.indexOf('function ageIndex'));
+    expect(tables(r.script)).toBe(tables(fixture));
+    // Attachment 8: the quarter inch. Table 3.2: strictly under. Attachments 9 and 10: the published cell. Para 3.9: no hold for a met assessment.
+    expect(r.script).toContain('function floorHalfDown(x){ return Math.floor(x * 4 + 1e-9) / 4; }');
+    expect(r.script).toContain('res = (pct < max) ? "PASS" : "FAIL";');
+    expect(r.script).toContain('S("BF_Std", sexF ? "under 36%" : "under 26%");');
+    expect(r.script).toContain('function bftLookup(sexF, circ, ht){');
+    expect(r.script).not.toContain('bodyPts = 0; bodyPos = 0; exCount++;');
+    expect(r.perPage[1]).toContain('male under 26%, female under 36%');
+    expect(r.perPage[1]).not.toContain('26% or less');
     expect(r.perPage[0]).toContain('(PT CALCULATOR)');
     expect(r.perPage[0]).not.toContain('(OPS CHECK GOOD)');
     for (const page of r.perPage) expect(page).toMatch(/\(opscheckgood\.github\.io\/opscheckgood   CAO \d+ [A-Z]{3} \d{4}\)/);
     expect(r.links.filter((l) => l === 'https://opscheckgood.github.io/opscheckgood/')).toHaveLength(2);
     expect(saturated(r.content)).toEqual([]);
+  });
+});
+
+/**
+ * Runs the embedded PT calculator's script the way the oracle harness runs
+ * the original: enough of the Acrobat form API for it to calculate over a
+ * plain object of field values.
+ */
+function runEmbeddedPt(script: string, inputs: Record<string, string>): Record<string, string> {
+  const harness = `
+    var color = { white: ['RGB', 1, 1, 1] };
+    var display = { visible: 0, hidden: 1 };
+    ${script}
+    var values = Object.create(null), fields = Object.create(null);
+    function field(name) {
+      if (!fields[name]) fields[name] = { get value() { return values[name] === undefined ? '' : values[name]; }, set value(v) { values[name] = String(v); }, fillColor: color.white, display: display.visible };
+      return fields[name];
+    }
+    for (var key in inputs) field(key).value = inputs[key];
+    pfraCalc.call({ getField: field });
+    return values;
+  `;
+  return new Function('inputs', harness)(inputs) as Record<string, string>;
+}
+
+describe("the embedded PT calculator's Tier 2 page agrees with the site", () => {
+  const standards = CURRENT_STANDARDS.data;
+  const script = () => {
+    const bytes = new Uint8Array(decodeBase64(ptBase64));
+    return inspect(bytes).then((r) => r.script);
+  };
+  // A page 1 that fails on points with a waist-to-height ratio over .55, so the Tier 2 page opens.
+  const page1 = {
+    Age: '30', Track: 'Standard PFRA', BodyEvent: 'Measured', StrEvent: 'Push-up', CoreEvent: 'Sit-up', CardioEvent: '2 Mile Run',
+    Height: '66', W1: '38', W2: '38', W3: '38', StrRaw: '10', CoreA: '10', CardioA: '20', CardioB: '0',
+  };
+
+  it('reads the percent from the published table, rounds the tape to the quarter inch, and fails a result equal to the standard', async () => {
+    const src = await script();
+    const cases: Array<{ sex: 'male' | 'female'; tape: Record<string, string>; site: Record<string, number> }> = [
+      { sex: 'male', tape: { BF_Neck: '15.3', BF_2: '34.4' }, site: { neck: 15.3, abdomen: 34.4 } },
+      { sex: 'male', tape: { BF_Neck: '16', BF_2: '40.1' }, site: { neck: 16, abdomen: 40.1 } },
+      { sex: 'female', tape: { BF_Neck: '13.2', BF_2: '31.6', BF_3: '40.3' }, site: { neck: 13.2, waist: 31.6, buttocks: 40.3 } },
+    ];
+    for (const c of cases) {
+      const out = runEmbeddedPt(src, { ...page1, Sex: c.sex === 'female' ? 'Female' : 'Male', ...c.tape });
+      const mine = assessBodyFat(standards, c.sex, 66, c.site);
+      expect(out.BFA_Req, JSON.stringify(c)).toMatch(/^YES/);
+      expect(out.BF_Pct).toBe(`${mine.percent} %`);
+      expect(out.BF_Result).toBe(mine.result === 'pass' ? 'PASS' : 'FAIL');
+      expect(out.BF_Std).toBe(c.sex === 'female' ? 'under 36%' : 'under 26%');
+      expect(out.BF_Notes).toMatch(/^Read from Attachment (9|10) at /);
+      // The circumference is what quarter-inch rounding gives, not the half inch the file used to take.
+      expect(parseFloat(out.BF_Circ!)).toBe(mine.circumference);
+    }
+    // Exactly on the standard: the table says 26, and 26 is not under 26.
+    const male = BODY_FAT_TABLES.data.male;
+    let atStandard: number | null = null;
+    for (let circ = male.circumference.start; atStandard === null && circ < 60; circ += 0.25) {
+      if (lookupBodyFat(male, circ, 66) === 26) atStandard = circ;
+    }
+    expect(atStandard).not.toBeNull();
+    const exact = runEmbeddedPt(src, { ...page1, Sex: 'Male', BF_Neck: '0.25', BF_2: String(atStandard! + 0.25) });
+    expect(exact.BF_Pct).toBe('26 %');
+    expect(exact.BF_Result).toBe('FAIL');
+  });
+
+  it('scores a met assessment as an exempt component without warning of a PFRA hold', async () => {
+    const src = await script();
+    const met = runEmbeddedPt(src, { ...page1, Sex: 'Male', BF_Neck: '16', BF_2: '32' });
+    expect(met.BF_Result).toBe('PASS');
+    expect(met.Notes).toContain('BFA met');
+    expect(met.Notes).not.toContain('PFRA Hold');
+    const notMet = runEmbeddedPt(src, { ...page1, Sex: 'Male', BF_Neck: '14', BF_2: '44' });
+    expect(notMet.BF_Result).toBe('FAIL');
+    expect(notMet.Rating).toContain('UNSAT');
   });
 });
 
