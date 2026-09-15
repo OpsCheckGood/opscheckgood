@@ -56,6 +56,28 @@ export function normalizeCitation(text: string): string {
   return text.replace(/\r\n?|\n/g, ' ');
 }
 
+/**
+ * Wrapped lines set full-measure the way a typewriter justifies: every line
+ * but the last is padded to the column count by widening its word gaps,
+ * the spare spaces spread from the left. myDecs sets the certificate fully
+ * justified; a form field can only widen gaps by whole spaces, and this is
+ * the nearest a field can come.
+ */
+export function justifyMonospace(lines: string[], columns: number): string[] {
+  return lines.map((line, i) => {
+    if (i === lines.length - 1) return line;
+    const words = line.split(' ');
+    const gaps = words.length - 1;
+    const extra = columns - line.length;
+    if (gaps <= 0 || extra <= 0) return line;
+    const each = Math.floor(extra / gaps);
+    const more = extra % gaps;
+    let out = words[0]!;
+    for (let g = 0; g < gaps; g += 1) out += ' '.repeat(1 + each + (g < more ? 1 : 0)) + words[g + 1];
+    return out;
+  });
+}
+
 export function wrapMonospace(text: string, columns: number): string[] {
   if (columns <= 0) return [text];
   const lines: string[] = [];

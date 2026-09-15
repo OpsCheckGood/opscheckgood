@@ -15,7 +15,7 @@ import {
   openingSentence,
   type CitationInput,
 } from '@/lib/decoration/citation';
-import { wrapMonospace } from '@/lib/decoration/fit';
+import { justifyMonospace, wrapMonospace } from '@/lib/decoration/fit';
 import { buildCitationDocx } from '@/lib/decoration/docx';
 import { PdfDocument } from '@/lib/pdf/document';
 import { PdfName, PdfRef, PdfString, type PdfDict } from '@/lib/pdf/objects';
@@ -61,7 +61,13 @@ describe("the PDF's own script agrees with the site's engine", () => {
     expect(ocg.calc(F.opening, v)).toBe(opening);
     expect(ocg.calc(F.closingOut, v)).toBe(closing);
     const full = assembleCitation(opening, narrative, closing);
-    expect(ocg.calc(F.citation, v)).toBe(wrapMonospace(full, certificate.box.columns!).join('\n'));
+    const lines = wrapMonospace(full, certificate.box.columns!);
+    const block = (certificate.box.justified ? justifyMonospace(lines, certificate.box.columns!) : lines).join('\n');
+    expect(ocg.calc(F.citation, v)).toBe(block);
+    expect(ocg.calc(F.previewCitation, v)).toBe(block);
+    // Every line but the last runs the full measure; no line runs past it.
+    for (const line of block.split('\n').slice(0, -1)) expect(line.length).toBe(certificate.box.columns);
+    expect(Math.max(...block.split('\n').map((l) => l.length))).toBeLessThanOrEqual(certificate.box.columns!);
     const page = certificateText(input, language, certificate)!;
     const texts = page.header.map((l) => l.text);
     const award = language.awards.find((a) => a.id === input.awardId)!;

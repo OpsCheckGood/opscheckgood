@@ -101,6 +101,7 @@ export function engineData(language: CitationLanguage, certificate: CertificateD
     },
     columns: certificate.box.columns ?? 70,
     lines: certificate.box.lines ?? 20,
+    justified: certificate.box.justified,
     maxChars: certificate.maxChars,
   };
 }
@@ -233,6 +234,27 @@ var OCG = (function () {
   function citation(v) {
     return assemble([opening(v), String(v.narrative || '').replace(/\\r\\n?|\\n/g, ' '), closing(v)]);
   }
+  /** Every line but the last padded to the column count through its word gaps, as a typewriter justifies. */
+  function justify(lines) {
+    if (!D.justified) return lines;
+    var out = [];
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i];
+      if (i === lines.length - 1) { out.push(line); continue; }
+      var words = line.split(' '), gaps = words.length - 1, extra = D.columns - line.length;
+      if (gaps <= 0 || extra <= 0) { out.push(line); continue; }
+      var each = Math.floor(extra / gaps), more = extra % gaps, s = words[0];
+      for (var g = 0; g < gaps; g++) {
+        var pad = 1 + each + (g < more ? 1 : 0), sp = '';
+        while (sp.length < pad) sp += ' ';
+        s += sp + words[g + 1];
+      }
+      out.push(s);
+    }
+    return out;
+  }
+  /** The citation as the certificate sets it: wrapped to the columns and justified. */
+  function block(v) { return justify(wrap(citation(v), D.columns)).join('\\n'); }
   function status(v) {
     var text = citation(v);
     if (!trim(text)) return '';
@@ -286,12 +308,12 @@ var OCG = (function () {
     if (name.indexOf('preview_daf_') === 0) return certLine('daf', Number(name.slice(12)), v);
     if (name.indexOf('preview_presidential_') === 0) return certLine('presidential', Number(name.slice(21)), v);
     switch (name) {
-      case '${F.previewCitation}': return wrap(citation(v), D.columns).join('\\n');
+      case '${F.previewCitation}': return block(v);
       case '${F.previewSigned}': return trim(v.signed);
       case '${F.previewSignature}': return [trim(v.approver), trim(v.approverTitle)].join('\\n').replace(/^\\n|\\n$/g, '');
       case '${F.opening}': return opening(v);
       case '${F.closingOut}': return closing(v);
-      case '${F.citation}': return wrap(citation(v), D.columns).join('\\n');
+      case '${F.citation}': return block(v);
       case '${F.status}': return status(v);
       case '${F.certTitle}': return award(v).title;
       case '${F.certCluster}': return cluster(v);
@@ -476,33 +498,44 @@ export function buildDecorationForm(language: CitationLanguage, certificate: Cer
   p1.links.push(...mark.links);
 
   // ---- Page 2: outputs ----------------------------------------------------
+  // In the order the certificate carries them: the header lines, then the
+  // opening sentence, the citation set as a centred block, and the closing
+  // sentence under it, with the fit readout last.
   const p2: FormPage = { texts: [], rules: [], fields: [], links: [], fills: [] };
   heading(p2, PAGE_H - HEADER_BAND - 10, 'Decoration Writer', `The citation, wrapped at ${data.columns} characters and held to ${data.lines} lines as myDecs prints it. Copy it into myDecs.`);
-  section(p2, 664, 'Citation');
 
-  const out = (name: string, yTop: number, h: number, kind: Field['kind'] = 'output', font: Field['font'] = 'Helv', size = 9, align?: Field['align']): Field => ({
-    name, kind, rect: [LEFT, yTop - h, PAGE_W - 2 * LEFT, h], font, size, calculate: calcAction(name), align,
+  const out = (name: string, yTop: number, h: number, kind: Field['kind'] = 'output', font: Field['font'] = 'Helv', size = 9, align?: Field['align'], x = LEFT, w = PAGE_W - 2 * LEFT): Field => ({
+    name, kind, rect: [x, yTop - h, w, h], font, size, calculate: calcAction(name), align,
   });
 
-  p2.texts.push({ x: LEFT, y: 640, text: 'STATUS', font: 'Helv', size: 6.5, color: MUTED });
-  p2.fields.push(out(F.status, 636, FIELD_H, 'output', 'HeBo', 9));
-
-  p2.texts.push({ x: LEFT, y: 606, text: 'OPENING SENTENCE', font: 'Helv', size: 6.5, color: MUTED });
-  p2.fields.push(out(F.opening, 602, 42, 'outputMultiline', 'Helv', 9));
-  p2.texts.push({ x: LEFT, y: 548, text: 'CLOSING SENTENCE', font: 'Helv', size: 6.5, color: MUTED });
-  p2.fields.push(out(F.closingOut, 544, 30, 'outputMultiline', 'Helv', 9));
-
-  p2.texts.push({ x: LEFT, y: 502, text: `THE CITATION, ${data.columns} COLUMNS BY ${data.lines} LINES`, font: 'Helv', size: 6.5, color: MUTED });
-  // Courier 10: 70 columns are 420pt; the field is 504pt wide, so no line re-wraps.
-  p2.fields.push(out(F.citation, 498, 22 * 11.6, 'outputMultiline', 'Cour', 10));
-
-  let cy = 498 - 22 * 11.6 - 30;
-  section(p2, cy + 4, 'Certificate lines');
-  cy -= 24;
+  section(p2, 664, 'Certificate lines');
+  let cy = 640;
   for (const name of [F.certTitle, F.certCluster, F.certMember, F.certBasis, F.certPeriod]) {
-    p2.fields.push(out(name, cy + FIELD_H, FIELD_H, 'output', name === F.certMember || name === F.certBasis || name === F.certPeriod ? 'Cour' : 'TiBo', 10, 'center'));
+    p2.fields.push(out(name, cy, FIELD_H, 'output', name === F.certMember || name === F.certBasis || name === F.certPeriod ? 'Cour' : 'TiBo', 10, 'center'));
     cy -= FIELD_H + 4;
   }
+
+  cy -= 8;
+  section(p2, cy, 'Citation');
+  cy -= 26;
+  p2.texts.push({ x: LEFT, y: cy + 4, text: 'OPENING SENTENCE', font: 'Helv', size: 6.5, color: MUTED });
+  p2.fields.push(out(F.opening, cy, 42, 'outputMultiline', 'Helv', 9));
+  cy -= 42 + 16;
+
+  p2.texts.push({ x: PAGE_W / 2, y: cy + 4, text: `THE CITATION, ${data.columns} COLUMNS BY ${data.lines} LINES, AS THE CERTIFICATE SETS IT`, font: 'Helv', size: 6.5, color: MUTED, align: 'center' });
+  // Courier 10: 70 columns are 420pt. The block sits centred, with room inside the field for the reader's own padding so no line re-wraps.
+  const blockW = data.columns * 6 + 12;
+  const blockH = (data.lines + 2) * 11.6;
+  p2.fields.push(out(F.citation, cy, blockH, 'outputMultiline', 'Cour', 10, undefined, (PAGE_W - blockW) / 2, blockW));
+  cy -= blockH + 16;
+
+  p2.texts.push({ x: LEFT, y: cy + 4, text: 'CLOSING SENTENCE', font: 'Helv', size: 6.5, color: MUTED });
+  p2.fields.push(out(F.closingOut, cy, 30, 'outputMultiline', 'Helv', 9));
+  cy -= 30 + 16;
+
+  p2.texts.push({ x: LEFT, y: cy + 4, text: 'STATUS', font: 'Helv', size: 6.5, color: MUTED });
+  p2.fields.push(out(F.status, cy, FIELD_H, 'output', 'HeBo', 9));
+  if (cy - FIELD_H < 40) throw new Error('Decoration Writer page 2 overflows');
   p2.texts.push(...mark.texts);
   p2.links.push(...mark.links);
 
