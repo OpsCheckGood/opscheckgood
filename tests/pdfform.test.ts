@@ -119,6 +119,13 @@ describe('the form file', () => {
     }
     for (const name of Object.values(F)) expect(names, name).toContain(name);
     expect(acro.get('NeedAppearances')).toBe(true);
+    // Every field carries its own appearance, so it shows as a box to type in
+    // even in a viewer that ignores NeedAppearances.
+    for (const ref of fields) {
+      const f = (await doc.resolve(ref)) as PdfDict;
+      const ap = (await doc.resolve(f.get('AP'))) as PdfDict;
+      expect(ap.get('N'), (f.get('T') as PdfString).text).toBeInstanceOf(PdfRef);
+    }
     const order = (await doc.resolve(acro.get('CO'))) as PdfRef[];
     expect(order).toHaveLength(OUTPUTS.length);
 

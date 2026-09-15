@@ -137,6 +137,7 @@ describe('the embedded forms', () => {
     expect(r.script).toContain('var OCG = (function ()');
     expect(r.script).toContain('function buildMain(');
     expect(r.script).not.toContain('Team 8-Deuce');
+    expect(saturated(r.content)).toEqual([]);
   });
 
   it('PT calculator: scrubbed and branded, its own script untouched', async () => {
@@ -148,8 +149,19 @@ describe('the embedded forms', () => {
     expect(r.script.startsWith('var PF = {')).toBe(true);
     expect(r.content).toContain('opscheckgood.github.io/opscheckgood');
     expect(r.links).toContain('https://opscheckgood.github.io/opscheckgood/');
+    expect(saturated(r.content)).toEqual([]);
   });
 });
+
+/** Colour operators that are not paper, ink or grey: the originals' navy and orange. */
+function saturated(content: string): string[] {
+  return [...content.matchAll(/([\d.]+) ([\d.]+) ([\d.]+) (rg|RG)/g)]
+    .map((m) => m[0])
+    .filter((op) => {
+      const [r, g, b] = op.split(' ').slice(0, 3).map(Number) as [number, number, number];
+      return Math.max(r, g, b) - Math.min(r, g, b) > 0.05;
+    });
+}
 
 describe('the downloads', () => {
   it('lock every file and carry the page entries into the fields', async () => {

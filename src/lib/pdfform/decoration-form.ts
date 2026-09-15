@@ -1,6 +1,6 @@
 import type { CertificateDefinition, CitationLanguage } from '../decoration/types';
 import { formatCitationDate, type CitationInput } from '../decoration/citation';
-import { branding, buildFormPdf, type Field, type FormDocument, type FormPage, type StaticText } from './writer';
+import { INK, MUTED, PANEL, branding, buildFormPdf, type Field, type FormDocument, type FormPage, type StaticText } from './writer';
 
 /**
  * The Decoration Writer as a fillable PDF.
@@ -310,13 +310,28 @@ const FIELD_H = 18;
 const ROW = 36;
 
 function label(x: number, y: number, text: string): StaticText {
-  return { x, y: y + FIELD_H + 4, text: text.toUpperCase(), font: 'Helv', size: 6.5, gray: 0.45 };
+  return { x, y: y + FIELD_H + 4, text: text.toUpperCase(), font: 'Helv', size: 6.5, color: MUTED };
 }
 
+/**
+ * The site's chrome, shared with the other two builders once they are
+ * recoloured: an ink band across the top with the tool's name in white and
+ * the site's name beside it, and a note beneath.
+ */
 function heading(page: FormPage, y: number, title: string, note: string) {
-  page.texts.push({ x: LEFT, y, text: title, font: 'HeBo', size: 16 });
-  page.texts.push({ x: LEFT, y: y - 14, text: note, font: 'Helv', size: 8.5, gray: 0.4 });
-  page.rules.push({ x1: LEFT, y1: y - 22, x2: PAGE_W - LEFT, y2: y - 22, gray: 0.6 });
+  page.fills = page.fills ?? [];
+  page.fills.push({ x: 0, y: PAGE_H - 64, w: PAGE_W, h: 64, color: INK });
+  page.texts.push({ x: LEFT, y: PAGE_H - 40, text: title.toUpperCase(), font: 'HeBo', size: 18, color: '1 1 1' });
+  page.texts.push({ x: PAGE_W - LEFT, y: PAGE_H - 40, text: 'OPS CHECK GOOD', font: 'Helv', size: 8, color: '0.75 0.75 0.73', align: 'right' });
+  page.fills.push({ x: LEFT, y: y - 20, w: PAGE_W - 2 * LEFT, h: 22, color: PANEL });
+  page.texts.push({ x: LEFT + 8, y: y - 13, text: note, font: 'Helv', size: 8, color: MUTED });
+}
+
+/** A section band, as the original builders draw them. */
+function section(page: FormPage, y: number, title: string) {
+  page.fills = page.fills ?? [];
+  page.fills.push({ x: LEFT, y: y - 4, w: PAGE_W - 2 * LEFT, h: 14, color: INK });
+  page.texts.push({ x: LEFT + 6, y, text: title.toUpperCase(), font: 'HeBo', size: 8, color: '1 1 1' });
 }
 
 function calcAction(name: string): string {
@@ -329,10 +344,11 @@ export function buildDecorationForm(language: CitationLanguage, certificate: Cer
   const mark = branding(PAGE_W, SITE);
 
   // ---- Page 1: inputs -----------------------------------------------------
-  const p1: FormPage = { texts: [], rules: [], fields: [], links: [] };
-  heading(p1, 744, 'Decoration Writer', 'Fill in the fields; the citation, its line count and the certificate text build themselves on page 2.');
+  const p1: FormPage = { texts: [], rules: [], fields: [], links: [], fills: [] };
+  heading(p1, 710, 'Decoration Writer', 'Fill in the fields. The citation, its line count and the certificate text build themselves on page 2.');
+  section(p1, 664, 'Decoration');
 
-  let y = 690;
+  let y = 622;
   const combo = (name: string, x: number, options: string[], value: string, tooltip?: string, w = COL_W): Field => ({
     name, kind: 'combo', rect: [x, y, w, FIELD_H], options, value, tooltip, size: 9,
   });
@@ -363,6 +379,8 @@ export function buildDecorationForm(language: CitationLanguage, certificate: Cer
     { label: 'While engaged (Bronze Star only)', field: combo(F.circumstance, LEFT, first.circumstances.length ? first.circumstances.map((c) => c.label) : ['-'], first.circumstances[0]?.label ?? '-') },
     { label: 'Service', field: combo(F.service, RIGHT_COL, data.services.map((s) => s.label), data.services[0]!.label) },
   );
+  y -= 22;
+  section(p1, y + FIELD_H + 18, 'Member and assignment');
   row(
     { label: 'Grade', field: combo(F.grade, LEFT, data.grades.map((g) => g.label), 'Staff Sergeant') },
     { label: 'Pronouns', field: combo(F.pronouns, RIGHT_COL, data.pronouns.map((p) => p.label), data.pronouns[0]!.label) },
@@ -403,9 +421,11 @@ export function buildDecorationForm(language: CitationLanguage, certificate: Cer
     { label: 'Signature date', field: text(F.signed, RIGHT_COL, '31 July 2026') },
   );
 
-  const narrativeTop = y + FIELD_H;
-  const narrativeBottom = 70;
-  p1.texts.push({ x: LEFT, y: narrativeTop + 4, text: 'NARRATIVE (between the fixed opening and closing sentences)', font: 'Helv', size: 6.5, gray: 0.45 });
+  y -= 22;
+  section(p1, y + FIELD_H + 18, 'Narrative');
+  const narrativeTop = y + FIELD_H - 2;
+  const narrativeBottom = 56;
+  p1.texts.push({ x: LEFT, y: narrativeTop + 4, text: 'BETWEEN THE FIXED OPENING AND CLOSING SENTENCES; START WITH "DURING THIS PERIOD, ..."', font: 'Helv', size: 6.5, color: MUTED });
   p1.fields.push({
     name: F.narrative,
     kind: 'multiline',
@@ -418,27 +438,29 @@ export function buildDecorationForm(language: CitationLanguage, certificate: Cer
   p1.links.push(...mark.links);
 
   // ---- Page 2: outputs ----------------------------------------------------
-  const p2: FormPage = { texts: [], rules: [], fields: [], links: [] };
-  heading(p2, 744, 'Citation', `Wrapped at ${data.columns} characters and held to ${data.lines} lines, as myDecs prints it. Copy the citation into myDecs.`);
+  const p2: FormPage = { texts: [], rules: [], fields: [], links: [], fills: [] };
+  heading(p2, 710, 'Decoration Writer', `The citation, wrapped at ${data.columns} characters and held to ${data.lines} lines as myDecs prints it. Copy it into myDecs.`);
+  section(p2, 664, 'Citation');
 
   const out = (name: string, yTop: number, h: number, kind: Field['kind'] = 'output', font: Field['font'] = 'Helv', size = 9, align?: Field['align']): Field => ({
     name, kind, rect: [LEFT, yTop - h, PAGE_W - 2 * LEFT, h], font, size, calculate: calcAction(name), align,
   });
 
-  p2.texts.push({ x: LEFT, y: 700, text: 'STATUS', font: 'Helv', size: 6.5, gray: 0.45 });
-  p2.fields.push(out(F.status, 696, FIELD_H, 'output', 'HeBo', 9));
+  p2.texts.push({ x: LEFT, y: 640, text: 'STATUS', font: 'Helv', size: 6.5, color: MUTED });
+  p2.fields.push(out(F.status, 636, FIELD_H, 'output', 'HeBo', 9));
 
-  p2.texts.push({ x: LEFT, y: 664, text: 'OPENING SENTENCE', font: 'Helv', size: 6.5, gray: 0.45 });
-  p2.fields.push(out(F.opening, 660, 44, 'outputMultiline', 'Helv', 9));
-  p2.texts.push({ x: LEFT, y: 604, text: 'CLOSING SENTENCE', font: 'Helv', size: 6.5, gray: 0.45 });
-  p2.fields.push(out(F.closingOut, 600, 32, 'outputMultiline', 'Helv', 9));
+  p2.texts.push({ x: LEFT, y: 606, text: 'OPENING SENTENCE', font: 'Helv', size: 6.5, color: MUTED });
+  p2.fields.push(out(F.opening, 602, 42, 'outputMultiline', 'Helv', 9));
+  p2.texts.push({ x: LEFT, y: 548, text: 'CLOSING SENTENCE', font: 'Helv', size: 6.5, color: MUTED });
+  p2.fields.push(out(F.closingOut, 544, 30, 'outputMultiline', 'Helv', 9));
 
-  p2.texts.push({ x: LEFT, y: 556, text: `THE CITATION, ${data.columns} COLUMNS BY ${data.lines} LINES`, font: 'Helv', size: 6.5, gray: 0.45 });
+  p2.texts.push({ x: LEFT, y: 502, text: `THE CITATION, ${data.columns} COLUMNS BY ${data.lines} LINES`, font: 'Helv', size: 6.5, color: MUTED });
   // Courier 10: 70 columns are 420pt; the field is 504pt wide, so no line re-wraps.
-  p2.fields.push(out(F.citation, 552, 22 * 11.6, 'outputMultiline', 'Cour', 10));
+  p2.fields.push(out(F.citation, 498, 22 * 11.6, 'outputMultiline', 'Cour', 10));
 
-  let cy = 552 - 22 * 11.6 - 30;
-  p2.texts.push({ x: LEFT, y: cy + FIELD_H + 4, text: 'CERTIFICATE LINES', font: 'Helv', size: 6.5, gray: 0.45 });
+  let cy = 498 - 22 * 11.6 - 30;
+  section(p2, cy + 4, 'Certificate lines');
+  cy -= 24;
   for (const name of [F.certTitle, F.certCluster, F.certMember, F.certBasis, F.certPeriod]) {
     p2.fields.push(out(name, cy + FIELD_H, FIELD_H, 'output', name === F.certMember || name === F.certBasis || name === F.certPeriod ? 'Cour' : 'TiBo', 10, 'center'));
     cy -= FIELD_H + 4;

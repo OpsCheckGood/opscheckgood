@@ -37,6 +37,8 @@ export interface StaticText {
   size: number;
   /** 0 is black, 1 is white. */
   gray?: number;
+  /** "r g b" operands; overrides gray. */
+  color?: string;
   align?: 'left' | 'center' | 'right';
 }
 
@@ -87,11 +89,31 @@ export interface Link {
   url: string;
 }
 
+export interface Fill {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  /** "r g b" operands, or a single grey. */
+  color: string;
+}
+
 export interface FormPage {
   texts: StaticText[];
   rules: Rule[];
   fields: Field[];
   links: Link[];
+  fills?: Fill[];
+}
+
+/** The site's palette, as PDF operands. */
+export const INK = '0.082 0.094 0.11';
+export const PANEL = '0.918 0.914 0.894';
+export const RULE = '0.62 0.62 0.6';
+export const MUTED = '0.29 0.31 0.33';
+
+function fillOp(color: string): string {
+  return color.split(' ').length === 3 ? `${color} rg` : `${color} g`;
 }
 
 export interface FormDocument {
@@ -214,13 +236,17 @@ export function buildFormPdf(doc: FormDocument): Uint8Array {
 
     // Static content.
     let content = '';
+    for (const fill of page.fills ?? []) {
+      content += `${fillOp(fill.color)} ${num(fill.x)} ${num(fill.y)} ${num(fill.w)} ${num(fill.h)} re f\n`;
+    }
     for (const rule of page.rules) {
       content += `${num(rule.gray ?? 0)} G ${num(rule.width ?? 0.5)} w ${num(rule.x1)} ${num(rule.y1)} m ${num(rule.x2)} ${num(rule.y2)} l S\n`;
     }
     for (const t of page.texts) {
       const width = measure(t.font, t.text, t.size);
       const x = t.align === 'center' ? t.x - width / 2 : t.align === 'right' ? t.x - width : t.x;
-      content += `BT /${t.font} ${num(t.size)} Tf ${num(t.gray ?? 0)} g 1 0 0 1 ${num(x)} ${num(t.y)} Tm ${pdfString(t.text)} Tj ET\n`;
+      const color = t.color ? fillOp(t.color) : `${num(t.gray ?? 0)} g`;
+      content += `BT /${t.font} ${num(t.size)} Tf ${color} 1 0 0 1 ${num(x)} ${num(t.y)} Tm ${pdfString(t.text)} Tj ET\n`;
     }
     const contentRef = reserve();
     set(contentRef, `<</Length ${content.length}>>\nstream\n${content}\nendstream`);
@@ -277,6 +303,12 @@ export function buildFormPdf(doc: FormDocument): Uint8Array {
         actions.push(`/V ${s} 0 R`);
       }
       if (actions.length) parts.push(`/AA <<${actions.join(' ')}>>`);
+
+      // An appearance of its own, so a viewer that does not build one from
+      // NeedAppearances still shows a box to type in and the value in it.
+      const ap = reserve();
+      set(ap, appearanceStream(field, w, h, font, size, output, fontDict));
+      parts.push(`/AP <</N ${ap} 0 R>>`);
       set(ref, `<<${parts.join(' ')}>>`);
     }
 
@@ -332,6 +364,68 @@ export function buildFormPdf(doc: FormDocument): Uint8Array {
   const bytes = new Uint8Array(out.length);
   for (let i = 0; i < out.length; i += 1) bytes[i] = out.charCodeAt(i) & 0xff;
   return bytes;
+}
+
+/**
+ * The normal appearance of a field: its background, its border, and its
+ * value laid out the way the reader would lay it out.
+ */
+function appearanceStream(
+  field: Field,
+  w: number,
+  h: number,
+  font: FormFont,
+  size: number,
+  output: boolean,
+  fontDict: string,
+): string {
+  const fontSize = size > 0 ? size : Math.min(12, Math.max(6, h * 0.62));
+  let content = output ? '0.96 0.96 0.94 rg' : '1 1 1 rg';
+  content += ` 0 0 ${num(w)} ${num(h)} re f\n`;
+  if (!output) content += `0.62 0.62 0.6 RG 0.5 w 0.25 0.25 ${num(w - 0.5)} ${num(h - 0.5)} re S\n`;
+  const value = field.value ?? '';
+  if (value !== '') {
+    const multi = field.kind === 'multiline' || field.kind === 'outputMultiline';
+    const lead = fontSize * 1.15;
+    const lines = multi ? wrapForWidth(value, font, fontSize, w - 4) : [value];
+    content += '/Tx BMC q 1 1 ' + num(w - 2) + ' ' + num(h - 2) + ' re W n BT /' + font + ' ' + num(fontSize) + ' Tf 0 g\n';
+    if (multi) {
+      let y = h - 2 - fontSize;
+      for (const line of lines) {
+        content += `1 0 0 1 2 ${num(y)} Tm ${pdfString(line)} Tj\n`;
+        y -= lead;
+        if (y < -lead) break;
+      }
+    } else {
+      const width = measure(font, value, fontSize);
+      const x = field.align === 'center' ? (w - width) / 2 : field.align === 'right' ? w - width - 2 : 2;
+      const y = (h - fontSize * 0.72) / 2;
+      content += `1 0 0 1 ${num(Math.max(2, x))} ${num(y)} Tm ${pdfString(value)} Tj\n`;
+    }
+    content += 'ET Q EMC\n';
+  }
+  return (
+    `<</Type /XObject /Subtype /Form /BBox [0 0 ${num(w)} ${num(h)}] ` +
+    `/Resources <</Font <<${fontDict}>>>> /Length ${content.length}>>\nstream\n${content}\nendstream`
+  );
+}
+
+/** Greedy wrap by measured width, for an appearance stream. */
+function wrapForWidth(text: string, font: FormFont, size: number, width: number): string[] {
+  const out: string[] = [];
+  for (const paragraph of text.split(/\r\n?|\n/)) {
+    let line = '';
+    for (const word of paragraph.split(' ')) {
+      const candidate = line ? `${line} ${word}` : word;
+      if (measure(font, candidate, size) <= width || line === '') line = candidate;
+      else {
+        out.push(line);
+        line = word;
+      }
+    }
+    out.push(line);
+  }
+  return out;
 }
 
 /** The site's mark on each page: one small line and a link over it. */

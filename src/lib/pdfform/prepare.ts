@@ -24,6 +24,37 @@ const INFO_COMMON = {
   Producer: 'Ops Check Good',
 };
 
+/** The site's palette, as PDF fill and stroke operands. */
+export const INK = '0.082 0.094 0.11';
+export const PANEL = '0.918 0.914 0.894';
+export const RULE = '0.62 0.62 0.6';
+export const MUTED = '0.29 0.31 0.33';
+
+/**
+ * Every colour a page draws, remapped to paper and ink.
+ *
+ * The originals were designed in navy with an orange stripe and blue-grey
+ * tints; the site is monochrome. Dark colours and saturated accents become
+ * ink, light tints become the panel colour, mid greys become rules or muted
+ * text, and white stays white. Structure is untouched: bands stay bands,
+ * boxes stay boxes, they just stop being blue.
+ */
+export function monochrome(content: string): string {
+  return content.replace(/([\d.]+) ([\d.]+) ([\d.]+) (rg|RG)/g, (whole, r, g, b, op) => {
+    const [R, G, B] = [Number(r), Number(g), Number(b)];
+    if (R === 1 && G === 1 && B === 1) return whole;
+    const lum = 0.2126 * R + 0.7152 * G + 0.0722 * B;
+    const sat = Math.max(R, G, B) - Math.min(R, G, B);
+    let color: string;
+    if (op === 'RG') color = lum < 0.45 ? INK : RULE;
+    else if (lum < 0.4 || sat > 0.35) color = INK;
+    else if (lum > 0.88) color = PANEL;
+    else if (lum > 0.6) color = RULE;
+    else color = MUTED;
+    return `${color} ${op}`;
+  });
+}
+
 /** A literal string as it appears in a content stream: `(text) Tj`. */
 function literal(text: string): string {
   return `(${text.replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)')})`;
@@ -78,6 +109,7 @@ export async function preparePtCalculator(bytes: Uint8Array): Promise<Uint8Array
       'Self-calculating Physical Fitness Assessment score worksheet built to AFMAN 36-2905, with the Tier 2 body fat assessment.',
     Keywords: 'PFRA, PT, AFMAN 36-2905, fitness, WHtR, body fat',
   });
+  await rw.editContent(monochrome);
   await brandPage(rw, 0, 18);
   return rw.save();
 }
@@ -95,7 +127,9 @@ export async function preparePromotionBuilder(bytes: Uint8Array, engineSource: s
     Subject: 'Enlisted promotion ceremony run of show builder.',
   });
   await rw.editContent((content) =>
-    content
+    // The orange accent carried the title on the navy band; on an ink band it
+    // reads in white. The stripe under the band goes white with it.
+    monochrome(content.replace(/\.909804 \.45098 \.109804 rg/g, '1 1 1 rg'))
       .replace(/\(82 RS PROMOTION SCRIPT BUILDER\)/g, literal('PROMOTION SCRIPT BUILDER'))
       .replace(/\(82d Reconnaissance Squadron\s+\\267\s+Team 8-Deuce\)/g, literal('Ops Check Good'))
       .replace(/\(82 RS Promotion Script Builder\)/g, literal(`OPS CHECK GOOD   ${SITE_HOST}`))

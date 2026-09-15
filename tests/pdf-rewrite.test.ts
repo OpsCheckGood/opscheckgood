@@ -87,14 +87,14 @@ describe('rewriting a PDF', () => {
   it('edits page content as text', async () => {
     const source = buildDecorationFormPdf(CITATION_LANGUAGE.data, CERTIFICATE.data);
     const rw = await PdfRewriter.open(source);
-    await rw.editContent((content) => content.replace('(Decoration Writer)', '(Renamed Tool)'));
+    await rw.editContent((content) => content.replace('(DECORATION WRITER)', '(Renamed Tool)'));
     const out = rw.save();
     const doc = await PdfDocument.open(out);
     const pages = (await doc.resolve(((await doc.resolve((await doc.catalog()).get('Pages'))) as PdfDict).get('Kids'))) as PdfRef[];
     const page = (await doc.resolve(pages[0]!)) as PdfDict;
     const content = new TextDecoder('latin1').decode((await doc.streamOf(page.get('Contents')))!);
     expect(content).toContain('(Renamed Tool)');
-    expect(content).not.toContain('(Decoration Writer)');
+    expect(content).not.toContain('(DECORATION WRITER)');
     expect((page.get('Type') as PdfName).name).toBe('Page');
   });
 });
