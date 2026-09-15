@@ -2,10 +2,10 @@
   "meta": {
     "source": "DAFMAN 36-2806, Military Awards: Criteria and Procedures, Attachment 5",
     "version": "AFMAN 36-2806, 10 June 2019",
-    "verifiedDate": "2026-09-14",
+    "verifiedDate": "2026-09-15",
     "sourceUrl": "https://static.e-publishing.af.mil/production/1/af_a1/publication/dafman36-2806/dafman36_2806.pdf",
     "status": "stub",
-    "notes": "Transcribed from Attachment 5 of AFMAN 36-2806 dated 10 June 2019, the last copy of the manual that could be read outside a .mil network. The current DAFMAN 36-2806 keeps the same paragraph numbers (the myDecs Reimagined template cites A5.2.7, A5.2.10 and A5.2.11 for the same three decorations, and A5.1.10 and A5.1.14 for numbers and abbreviations), but the wording has not been read against it, so this file stays a stub. The 2019 manual names the Air Force Commendation and Achievement Medals; the labels here use the Air and Space names the template uses. The Space Force closing ('United States Space Force') is an assumption, not a transcription. Short titles follow A5.1.6: spell out the full grade in the opening sentence, then use the short title. Chaplain titles (A5.1.6) are not handled."
+    "notes": "Transcribed from Attachment 5 of AFMAN 36-2806 dated 10 June 2019 (paragraphs A5.1 and A5.2.1 through A5.2.11), the last copy of the manual readable outside a .mil network; the Purple Heart (A5.2.6) has no citation and is omitted. The current DAFMAN 36-2806 keeps the same paragraph numbers, but the wording has not been read against it, so this file stays a stub. The 2019 manual names the Air Force Commendation and Achievement Medals; the labels and certificate titles here use the Air and Space names myDecs prints. The Air National Guard closing is A5.1.5, applied to each decoration at that decoration's level of credit. Certificate headers: the Achievement and Commendation Medals print under the Department of the Air Force header and the Meritorious Service Medal under the Presidential header with its Executive Order line, all three read off certificates myDecs printed; the other decorations are given the Presidential header on the strength of being Presidential awards, with no authority line, because none has been read off a certificate. The Space Force closing ('United States Space Force') is an assumption, not a transcription. Short titles follow A5.1.6; Chaplain titles are not handled."
   },
   "data": {
     "services": [
@@ -44,7 +44,7 @@
       { "id": "gen", "abbr": "Gen", "full": "General", "short": "General", "service": "both" }
     ],
     "opening": {
-      "pattern": "{rank} {name} distinguished {reflexive} {basis} {assignment}{period}.",
+      "pattern": "{rank} {name} distinguished {reflexive} {basis} {assignment}{circumstance}{period}.",
       "assignments": [
         { "id": "as", "label": "as (duty title)", "text": "as {place}" },
         { "id": "while", "label": "while assigned to", "text": "while assigned to {place}" },
@@ -58,67 +58,165 @@
     },
     "awards": [
       {
-        "id": "msm",
-        "label": "Meritorious Service Medal",
-        "ref": "A5.2.7",
+        "id": "asam",
+        "label": "Air and Space Achievement Medal",
+        "ref": "A5.2.11",
+        "certificate": { "style": "daf", "title": "THE AIR AND SPACE ACHIEVEMENT MEDAL", "authority": "" },
         "bases": [
-          { "id": "service", "label": "outstanding service", "text": "in the performance of outstanding service to the United States" },
-          { "id": "achievement", "label": "outstanding achievement", "text": "by outstanding achievement" }
+          { "id": "service", "label": "meritorious service", "text": "by meritorious service", "forLine": "MERITORIOUS SERVICE" },
+          { "id": "achievement", "label": "outstanding achievement", "text": "by outstanding achievement", "forLine": "OUTSTANDING ACHIEVEMENT" }
         ],
         "closings": [
-          { "id": "standard", "label": "Standard", "text": "The singularly distinctive accomplishments of {shortRank} {surname} reflect great credit upon {reflexive} and the {service}." },
-          { "id": "retirement", "label": "Retirement", "text": "The singularly distinctive accomplishments of {shortRank} {surname} culminate a {longAnd}distinguished career in the service of {possessive} country and reflect great credit upon {reflexive} and the {service}." },
-          { "id": "separation", "label": "Separation", "text": "The singularly distinctive accomplishments of {shortRank} {surname} while serving {possessive} country reflect great credit upon {reflexive} and the {service}." },
-          { "id": "posthumous", "label": "Posthumous", "text": "The singularly distinctive accomplishments of {shortRank} {surname} in the dedication of {possessive} service to {possessive} country reflect great credit upon {reflexive} and the {service}." }
+          { "id": "standard", "label": "Standard", "text": "The distinctive accomplishments of {shortRank} {surname} reflect credit upon {reflexive} and the {service}." },
+          { "id": "guard", "label": "Air National Guard", "text": "The singularly distinctive accomplishments of {shortRank} {surname} reflect credit on {reflexive}, the Air National Guard, and the U.S. Air Force." }
         ]
       },
       {
         "id": "ascom",
         "label": "Air and Space Commendation Medal",
         "ref": "A5.2.10",
+        "certificate": { "style": "daf", "title": "THE AIR AND SPACE COMMENDATION MEDAL", "authority": "" },
         "bases": [
-          { "id": "service", "label": "meritorious service", "text": "by meritorious service" },
-          { "id": "achievement", "label": "outstanding achievement", "text": "by outstanding achievement" },
-          { "id": "heroism", "label": "an act of heroism", "text": "by an act of heroism" }
+          { "id": "service", "label": "meritorious service", "text": "by meritorious service", "forLine": "MERITORIOUS SERVICE" },
+          { "id": "achievement", "label": "outstanding achievement", "text": "by outstanding achievement", "forLine": "OUTSTANDING ACHIEVEMENT" },
+          { "id": "heroism", "label": "an act of heroism", "text": "by an act of heroism", "forLine": "HEROISM" }
         ],
         "closings": [
           { "id": "standard", "label": "Standard", "text": "The distinctive accomplishments of {shortRank} {surname} reflect credit upon {reflexive} and the {service}." },
           { "id": "heroism", "label": "Heroism", "text": "By {possessive} prompt action and humanitarian regard for {possessive} fellowman, {shortRank} {surname} has reflected credit upon {reflexive} and the {service}." },
           { "id": "retirement", "label": "Retirement", "text": "The distinctive accomplishments of {shortRank} {surname} culminate a {longAnd}distinguished career in the service of {possessive} country and reflect credit upon {reflexive} and the {service}." },
           { "id": "separation", "label": "Separation", "text": "The distinctive accomplishments of {shortRank} {surname} while serving {possessive} country reflect credit upon {reflexive} and the {service}." },
-          { "id": "posthumous", "label": "Posthumous", "text": "The distinctive accomplishments of {shortRank} {surname} in the dedication of {possessive} service to {possessive} country reflect credit upon {reflexive} and the {service}." }
+          { "id": "posthumous", "label": "Posthumous", "text": "The distinctive accomplishments of {shortRank} {surname} in the dedication of {possessive} service to {possessive} country reflect credit upon {reflexive} and the {service}." },
+          { "id": "guard", "label": "Air National Guard", "text": "The singularly distinctive accomplishments of {shortRank} {surname} reflect credit on {reflexive}, the Air National Guard, and the U.S. Air Force." }
         ]
       },
       {
-        "id": "asam",
-        "label": "Air and Space Achievement Medal",
-        "ref": "A5.2.11",
+        "id": "msm",
+        "label": "Meritorious Service Medal",
+        "ref": "A5.2.7",
+        "certificate": { "style": "presidential", "title": "THE MERITORIOUS SERVICE MEDAL", "authority": "AUTHORIZED BY EXECUTIVE ORDER, 16 JANUARY 1969" },
         "bases": [
-          { "id": "service", "label": "meritorious service", "text": "by meritorious service" },
-          { "id": "achievement", "label": "outstanding achievement", "text": "by outstanding achievement" }
+          { "id": "service", "label": "outstanding service", "text": "in the performance of outstanding service to the United States", "forLine": "MERITORIOUS SERVICE" },
+          { "id": "achievement", "label": "outstanding achievement", "text": "by outstanding achievement", "forLine": "OUTSTANDING ACHIEVEMENT" }
         ],
         "closings": [
-          { "id": "standard", "label": "Standard", "text": "The distinctive accomplishments of {shortRank} {surname} reflect credit upon {reflexive} and the {service}." }
+          { "id": "standard", "label": "Standard", "text": "The singularly distinctive accomplishments of {shortRank} {surname} reflect great credit upon {reflexive} and the {service}." },
+          { "id": "retirement", "label": "Retirement", "text": "The singularly distinctive accomplishments of {shortRank} {surname} culminate a {longAnd}distinguished career in the service of {possessive} country and reflect great credit upon {reflexive} and the {service}." },
+          { "id": "separation", "label": "Separation", "text": "The singularly distinctive accomplishments of {shortRank} {surname} while serving {possessive} country reflect great credit upon {reflexive} and the {service}." },
+          { "id": "posthumous", "label": "Posthumous", "text": "The singularly distinctive accomplishments of {shortRank} {surname} in the dedication of {possessive} service to {possessive} country reflect great credit upon {reflexive} and the {service}." },
+          { "id": "guard", "label": "Air National Guard", "text": "The singularly distinctive accomplishments of {shortRank} {surname} reflect great credit on {reflexive}, the Air National Guard, and the U.S. Air Force." }
+        ]
+      },
+      {
+        "id": "aam",
+        "label": "Aerial Achievement Medal",
+        "ref": "A5.2.9",
+        "certificate": { "style": "daf", "title": "THE AERIAL ACHIEVEMENT MEDAL", "authority": "" },
+        "bases": [
+          { "id": "sustained", "label": "sustained aerial flight", "text": "by meritorious achievement while participating in sustained aerial flight", "forLine": "MERITORIOUS ACHIEVEMENT" }
+        ],
+        "closings": [
+          { "id": "standard", "label": "Standard", "text": "The professional ability and outstanding aerial accomplishments of {shortRank} {surname} reflect great credit upon {reflexive} and the {service}." },
+          { "id": "posthumous", "label": "Posthumous", "text": "The professional ability and outstanding aerial accomplishments displayed by {shortRank} {surname} in the dedication of {possessive} service to {possessive} country reflect great credit upon {reflexive} and the {service}." },
+          { "id": "guard", "label": "Air National Guard", "text": "The singularly distinctive accomplishments of {shortRank} {surname} reflect great credit on {reflexive}, the Air National Guard, and the U.S. Air Force." }
+        ]
+      },
+      {
+        "id": "am",
+        "label": "Air Medal",
+        "ref": "A5.2.8",
+        "certificate": { "style": "presidential", "title": "THE AIR MEDAL", "authority": "" },
+        "bases": [
+          { "id": "flight", "label": "aerial flight", "text": "by meritorious achievement while participating in aerial flight", "forLine": "MERITORIOUS ACHIEVEMENT" },
+          { "id": "sustained", "label": "sustained aerial flight", "text": "by meritorious achievement while participating in sustained aerial flight", "forLine": "MERITORIOUS ACHIEVEMENT" }
+        ],
+        "closings": [
+          { "id": "standard", "label": "Aerial flight", "text": "The professional skill and airmanship displayed by {shortRank} {surname} reflect great credit upon {reflexive} and the {service}." },
+          { "id": "posthumous", "label": "Posthumous", "text": "The professional skill and airmanship displayed by {shortRank} {surname} in the dedication of {possessive} service to {possessive} country reflect great credit upon {reflexive} and the {service}." },
+          { "id": "guard", "label": "Air National Guard", "text": "The singularly distinctive accomplishments of {shortRank} {surname} reflect great credit on {reflexive}, the Air National Guard, and the U.S. Air Force." }
+        ]
+      },
+      {
+        "id": "bsm",
+        "label": "Bronze Star Medal",
+        "ref": "A5.2.5",
+        "certificate": { "style": "presidential", "title": "THE BRONZE STAR MEDAL", "authority": "" },
+        "bases": [
+          { "id": "achievement", "label": "meritorious achievement", "text": "by meritorious achievement", "forLine": "MERITORIOUS ACHIEVEMENT" },
+          { "id": "service", "label": "meritorious service", "text": "by meritorious service", "forLine": "MERITORIOUS SERVICE" }
+        ],
+        "circumstances": [
+          { "id": "enemy", "label": "in action against an enemy of the United States", "text": " while engaged in action against an enemy of the United States" },
+          { "id": "foreign", "label": "in military operations involving conflict with an opposing foreign force", "text": " while engaged in military operations involving conflict with an opposing foreign force" },
+          { "id": "armed", "label": "in operations against an opposing armed force", "text": " while engaged in operations against an opposing armed force" }
+        ],
+        "closings": [
+          { "id": "standard", "label": "Standard", "text": "The exemplary leadership, personal endeavor, and devotion to duty displayed by {shortRank} {surname} in this responsible position reflect great credit upon {reflexive} and the {service}." },
+          { "id": "posthumous", "label": "Posthumous", "text": "By {possessive} unselfish dedication to duty in the service of {possessive} country, {shortRank} {surname} has reflected great credit upon {reflexive} and the {service}." }
+        ]
+      },
+      {
+        "id": "airmans",
+        "label": "Airman's Medal",
+        "ref": "A5.2.4",
+        "certificate": { "style": "presidential", "title": "THE AIRMAN'S MEDAL", "authority": "" },
+        "bases": [
+          { "id": "heroism", "label": "heroism involving voluntary risk of life", "text": "by heroism involving voluntary risk of life", "forLine": "HEROISM" }
+        ],
+        "closings": [
+          { "id": "standard", "label": "Exemplary heroism", "text": "The exemplary heroism displayed by {shortRank} {surname} reflect great credit upon {reflexive} and the {service}." },
+          { "id": "humanitarian", "label": "Heroic action", "text": "By {possessive} heroic action and humanitarian regard for {possessive} fellowman, {shortRank} {surname} has reflected great credit upon {reflexive} and the {service}." },
+          { "id": "posthumous", "label": "Posthumous", "text": "The exemplary heroism displayed by {shortRank} {surname} in the dedication of service to {possessive} country reflect great credit upon {reflexive} and the {service}." }
+        ]
+      },
+      {
+        "id": "dfc",
+        "label": "Distinguished Flying Cross",
+        "ref": "A5.2.3",
+        "certificate": { "style": "presidential", "title": "THE DISTINGUISHED FLYING CROSS", "authority": "" },
+        "bases": [
+          { "id": "extraordinary", "label": "extraordinary achievement in aerial flight", "text": "by extraordinary achievement while participating in aerial flight", "forLine": "EXTRAORDINARY ACHIEVEMENT" }
+        ],
+        "closings": [
+          { "id": "standard", "label": "Standard", "text": "The professional competence, aerial skill, and devotion to duty displayed by {shortRank} {surname} reflect great credit upon {reflexive} and the {service}." },
+          { "id": "posthumous", "label": "Posthumous", "text": "The selfless devotion to duty displayed by {shortRank} {surname} in the dedication of {possessive} service to {possessive} country reflect great credit upon {reflexive} and the {service}." }
         ]
       },
       {
         "id": "lom",
         "label": "Legion of Merit",
         "ref": "A5.2.2",
+        "certificate": { "style": "presidential", "title": "THE LEGION OF MERIT", "authority": "" },
         "bases": [
-          { "id": "service", "label": "exceptionally meritorious conduct", "text": "by exceptionally meritorious conduct in the performance of outstanding service to the United States" }
+          { "id": "service", "label": "exceptionally meritorious conduct", "text": "by exceptionally meritorious conduct in the performance of outstanding service to the United States", "forLine": "EXCEPTIONALLY MERITORIOUS CONDUCT" }
         ],
         "closings": [
           { "id": "standard", "label": "Standard", "text": "The singularly distinctive accomplishments of {shortRank} {surname} reflect great credit upon {reflexive} and the {service}." },
           { "id": "leadership", "label": "Leadership", "text": "The superior initiative, outstanding leadership, and personal endeavor displayed by {shortRank} {surname} reflect great credit upon {reflexive} and the {service}." },
           { "id": "retirement", "label": "Retirement", "text": "The singularly distinctive accomplishments of {shortRank} {surname} culminate a {longAnd}distinguished career in the service of {possessive} country and reflect great credit upon {reflexive} and the {service}." },
-          { "id": "posthumous", "label": "Posthumous", "text": "The singularly distinctive accomplishments of {shortRank} {surname} in the dedication of {possessive} service to {possessive} country reflect great credit upon {reflexive} and the {service}." }
+          { "id": "posthumous", "label": "Posthumous", "text": "The singularly distinctive accomplishments of {shortRank} {surname} in the dedication of {possessive} service to {possessive} country reflect great credit upon {reflexive} and the {service}." },
+          { "id": "guard", "label": "Air National Guard", "text": "The singularly distinctive accomplishments of {shortRank} {surname} reflect great credit on {reflexive}, the Air National Guard, and the U.S. Air Force." }
+        ]
+      },
+      {
+        "id": "dsm",
+        "label": "Distinguished Service Medal",
+        "ref": "A5.2.1",
+        "pattern": "The President of the United States of America, authorized by Act of Congress July 9, 1918, awards the Distinguished Service Medal to {rank} {name} for exceptionally meritorious service in a duty of great responsibility. {shortRank} {surname} distinguished {reflexive} {assignment}{period}.",
+        "certificate": { "style": "presidential", "title": "THE DISTINGUISHED SERVICE MEDAL", "authority": "" },
+        "bases": [
+          { "id": "responsibility", "label": "duty of great responsibility", "text": "", "forLine": "EXCEPTIONALLY MERITORIOUS SERVICE" }
+        ],
+        "closings": [
+          { "id": "standard", "label": "Standard", "text": "The singularly distinctive accomplishments of {shortRank} {surname} reflect the highest credit upon {reflexive} and the {service}." },
+          { "id": "retirement", "label": "Retirement", "text": "The singularly distinctive accomplishments of {shortRank} {surname} culminate a {longAnd}distinguished career in the service of {possessive} country and reflect the highest credit upon {reflexive} and the {service}." },
+          { "id": "posthumous", "label": "Posthumous", "text": "The singularly distinctive accomplishments of {shortRank} {surname} in the dedication of {possessive} service to {possessive} country reflect the highest credit upon {reflexive} and the {service}." }
         ]
       }
     ],
     "rules": [
       { "ref": "A5.1.4", "text": "The inclusive period stays on one line." },
-      { "ref": "A5.1.5", "text": "\"long and\" in a retirement closing is for 30 or more years of service." },
+      { "ref": "A5.1.5", "text": "\"long and\" in a retirement closing is for 30 or more years of service. Air National Guard members not on extended active duty take the Guard closing." },
       { "ref": "A5.1.6", "text": "No abbreviations other than Jr., Sr., II, III after the name; spell out the grade in the opening sentence, then use the short title. Code names such as RED FLAG are fine. Never split the member's name across two lines." },
       { "ref": "A5.1.7", "text": "Numeric unit designators read 3rd Aerospace Wing, 4th Mission Support Group." },
       { "ref": "A5.1.10", "text": "Numbers through nine are spelled out unless space is limited." },

@@ -689,3 +689,34 @@ body {
     display: none !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+ * Printing a certificate
+ *
+ * The Decoration Writer's preview is the letter page myDecs prints, scaled to
+ * its column on screen. Printed, it is the only thing on the paper, at size.
+ * ------------------------------------------------------------------------ */
+
+@media print {
+  body:has(.certificate-page) * {
+    visibility: hidden;
+  }
+
+  body:has(.certificate-page) .certificate-page,
+  body:has(.certificate-page) .certificate-page * {
+    visibility: visible;
+  }
+
+  body:has(.certificate-page) .certificate-page {
+    position: fixed !important;
+    left: 0;
+    top: 0;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  @page {
+    size: letter portrait;
+    margin: 0;
+  }
+}

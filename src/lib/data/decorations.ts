@@ -3,8 +3,11 @@ import { DataFileError, type Dataset } from './types';
 import type {
   AwardLanguage,
   CertificateDefinition,
+  CertificateStyle,
   CitationLanguage,
   GradeTitle,
+  HeaderLine,
+  PageLayout,
   Phrase,
 } from '../decoration/types';
 
@@ -52,7 +55,57 @@ function normalizeCertificate(raw: unknown, _meta: unknown, file: string): Certi
       widthMm: optionalNumber(file, raw.box, 'widthMm'),
       columns: optionalNumber(file, raw.box, 'columns'),
       lines: optionalNumber(file, raw.box, 'lines'),
+      linePitchPt: optionalNumber(file, raw.box, 'linePitchPt'),
+      justified: raw.box.justified === true,
     },
+    page: isRecord(raw.page) ? normalizePage(raw.page, file) : null,
+  };
+}
+
+function headerLines(file: string, value: unknown, what: string): HeaderLine[] {
+  if (!Array.isArray(value)) throw new DataFileError(file, `${what} must be an array`);
+  return value.map((entry, i) => {
+    if (!isRecord(entry) || typeof entry.text !== 'string' || typeof entry.sizePt !== 'number') {
+      throw new DataFileError(file, `${what}[${i}] needs text and sizePt`);
+    }
+    const face = entry.face;
+    if (face !== 'serif' && face !== 'serif-bold' && face !== 'mono') {
+      throw new DataFileError(file, `${what}[${i}].face must be serif, serif-bold or mono`);
+    }
+    const line: HeaderLine = { text: entry.text, face, sizePt: entry.sizePt };
+    if (typeof entry.yPt === 'number') line.yPt = entry.yPt;
+    return line;
+  });
+}
+
+function normalizePage(raw: Record<string, unknown>, file: string): PageLayout {
+  const num = (key: string): number => {
+    const value = raw[key];
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+      throw new DataFileError(file, `page.${key} must be a number`);
+    }
+    return value;
+  };
+  if (!isRecord(raw.headers)) throw new DataFileError(file, 'page.headers must be an object');
+  const headers = {} as PageLayout['headers'];
+  for (const style of ['daf', 'presidential'] as CertificateStyle[]) {
+    const entry = raw.headers[style];
+    if (!isRecord(entry)) throw new DataFileError(file, `page.headers.${style} is missing`);
+    headers[style] = {
+      label: typeof entry.label === 'string' ? entry.label : style,
+      lines: headerLines(file, entry.lines, `page.headers.${style}.lines`),
+    };
+  }
+  return {
+    widthPt: num('widthPt'),
+    heightPt: num('heightPt'),
+    marginPt: num('marginPt'),
+    citationTopPt: num('citationTopPt'),
+    givenUnderMyHandPt: num('givenUnderMyHandPt'),
+    signatureTopPt: num('signatureTopPt'),
+    headers,
+    closing: headerLines(file, raw.closing, 'page.closing'),
+    clusters: Array.isArray(raw.clusters) ? raw.clusters.map(String) : [''],
   };
 }
 
@@ -64,11 +117,13 @@ function phrases(file: string, value: unknown, what: string): Phrase[] {
     if (!isRecord(entry) || typeof entry.id !== 'string' || typeof entry.text !== 'string') {
       throw new DataFileError(file, `${what}[${i}] needs an id and text`);
     }
-    return {
+    const phrase: Phrase = {
       id: entry.id,
       label: typeof entry.label === 'string' ? entry.label : entry.id,
       text: entry.text,
     };
+    if (typeof entry.forLine === 'string') phrase.forLine = entry.forLine;
+    return phrase;
   });
 }
 
@@ -89,12 +144,26 @@ function normalizeLanguage(raw: unknown, _meta: unknown, file: string): Citation
     if (!isRecord(entry) || typeof entry.id !== 'string') {
       throw new DataFileError(file, `awards[${i}] needs an id`);
     }
+    const cert = isRecord(entry.certificate) ? entry.certificate : {};
+    const style = cert.style === 'presidential' ? 'presidential' : 'daf';
     return {
       id: entry.id,
       label: typeof entry.label === 'string' ? entry.label : entry.id,
       ref: typeof entry.ref === 'string' ? entry.ref : '',
+      pattern: typeof entry.pattern === 'string' ? entry.pattern : null,
       bases: phrases(file, entry.bases, `awards[${i}].bases`),
+      circumstances: Array.isArray(entry.circumstances) && entry.circumstances.length > 0
+        ? phrases(file, entry.circumstances, `awards[${i}].circumstances`)
+        : [],
       closings: phrases(file, entry.closings, `awards[${i}].closings`),
+      certificate: {
+        style,
+        title:
+          typeof cert.title === 'string'
+            ? cert.title
+            : `THE ${String(entry.label ?? entry.id).toUpperCase()}`,
+        authority: typeof cert.authority === 'string' ? cert.authority : '',
+      },
     };
   });
 

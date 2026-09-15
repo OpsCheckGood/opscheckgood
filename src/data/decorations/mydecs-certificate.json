@@ -1,25 +1,77 @@
 {
   "meta": {
-    "source": "myDecs decoration certificate (AF Form 2228B)",
-    "version": "myDecs Reimagined, 2024",
-    "verifiedDate": "2026-09-14",
+    "source": "myDecs decoration certificates (AF Form 2228B family) as myDecs prints them",
+    "version": "myDecs Reimagined, certificates printed 31 July 2026",
+    "verifiedDate": "2026-09-15",
     "sourceUrl": "https://www.e-publishing.af.mil/",
-    "status": "stub",
-    "notes": "WORKING FIGURES, not an authority. myDecs caps the citation field at 1350 characters and renders it on the certificate in Courier New at 11 point; both figures come from a unit decoration guide (airforcehub.com, 'myDecs Reimagined'), not from the system's own documentation. The box geometry was measured off the Nellis AFB myDecs Reimagined citation template (a Word document printed to PDF that reproduces AF Form 2228B): the drawn citation box is 488.6 pt wide by 250.3 pt tall between its inner edges, which is 172.4 mm; at 6.6 pt per Courier New character that is 74 columns, and at Courier New's 12.46 pt line pitch it is 20 lines. Neither number has been checked against a certificate myDecs itself produced. To promote to verified: take a real myDecs certificate, count the characters on its fullest line and the number of lines the box holds, set columns and lines to those counts, then set status=verified. We ship Liberation Mono, which is metrically identical to Courier New and redistributable under the SIL Open Font License."
+    "status": "verified",
+    "notes": "Measured off three certificates myDecs itself produced (an Air and Space Achievement Medal, an Air and Space Commendation Medal with oak leaf cluster, and a Meritorious Service Medal with oak leaf cluster), read with pdftotext -bbox-layout. All three agree: letter page, the citation set in Courier 11 point, fully justified, between one-inch margins (468 pt, 165.1 mm), 70 characters on the fullest line, line pitch 13.38 pt, and exactly 20 lines between ACCOMPLISHMENTS and GIVEN UNDER MY HAND -- every one of the three ran to the twentieth line and no further. Their citations were 1291, 1340 and 1347 characters, which is what a 1350-character cap looks like when it is real. The header layout below (line texts, sizes and vertical positions in points from the top of the page) is transcribed from the same three certificates; the Achievement and Commendation Medals share the Department of the Air Force header, the Meritorious Service Medal carries the Presidential header with its Executive Order line. The certificates are not committed: they name real people. Liberation Mono is metrically identical to Courier and redistributable under the SIL Open Font License."
   },
   "data": {
     "id": "mydecs",
     "label": "myDecs certificate",
     "font": {
-      "family": "Courier New (Liberation Mono metrics)",
+      "family": "Courier (Liberation Mono metrics)",
       "sizePt": 11,
       "file": "/fonts/LiberationMono-Regular.ttf"
     },
     "maxChars": 1350,
     "box": {
-      "widthMm": 172.4,
-      "columns": null,
-      "lines": 20
+      "widthMm": 165.1,
+      "columns": 70,
+      "lines": 20,
+      "linePitchPt": 13.38,
+      "justified": true
+    },
+    "page": {
+      "widthPt": 612,
+      "heightPt": 792,
+      "marginPt": 72,
+      "citationTopPt": 384.5,
+      "givenUnderMyHandPt": 651.7,
+      "signatureTopPt": 704.8,
+      "headers": {
+        "daf": {
+          "label": "Department of the Air Force certificate",
+          "lines": [
+            { "text": "DEPARTMENT OF THE AIR FORCE", "face": "serif-bold", "sizePt": 24, "yPt": 172 },
+            { "text": "THIS IS TO CERTIFY THAT", "face": "serif", "sizePt": 12, "yPt": 208 },
+            { "text": "{decoration}", "face": "serif-bold", "sizePt": 15, "yPt": 223 },
+            { "text": "{cluster}", "face": "serif", "sizePt": 10, "yPt": 240 },
+            { "text": "HAS BEEN AWARDED TO", "face": "serif", "sizePt": 12, "yPt": 275 },
+            { "text": "{member}", "face": "mono", "sizePt": 11, "yPt": 293 },
+            { "text": "FOR", "face": "serif", "sizePt": 12, "yPt": 308 },
+            { "text": "{basis}", "face": "mono", "sizePt": 11, "yPt": 327 },
+            { "text": "{period}", "face": "mono", "sizePt": 11, "yPt": 343 },
+            { "text": "ACCOMPLISHMENTS", "face": "serif", "sizePt": 12, "yPt": 370 }
+          ]
+        },
+        "presidential": {
+          "label": "Presidential certificate",
+          "lines": [
+            { "text": "THE UNITED STATES OF AMERICA", "face": "serif-bold", "sizePt": 24, "yPt": 140 },
+            { "text": "TO ALL WHO SHALL SEE THESE PRESENTS, GREETINGS:", "face": "serif", "sizePt": 13, "yPt": 169 },
+            { "text": "THIS IS TO CERTIFY THAT THE PRESIDENT OF THE UNITED STATES OF", "face": "serif", "sizePt": 13, "yPt": 187 },
+            { "text": "AMERICA {authority}", "face": "serif", "sizePt": 13, "yPt": 205 },
+            { "text": "HAS AWARDED", "face": "serif", "sizePt": 12, "yPt": 223 },
+            { "text": "{decoration}", "face": "serif-bold", "sizePt": 13, "yPt": 240 },
+            { "text": "{cluster}", "face": "serif", "sizePt": 13, "yPt": 258 },
+            { "text": "TO", "face": "serif", "sizePt": 11, "yPt": 277 },
+            { "text": "{member}", "face": "mono", "sizePt": 11, "yPt": 295 },
+            { "text": "FOR", "face": "serif", "sizePt": 11, "yPt": 313 },
+            { "text": "{basis}", "face": "mono", "sizePt": 11, "yPt": 332 },
+            { "text": "{period}", "face": "mono", "sizePt": 11, "yPt": 351 },
+            { "text": "ACCOMPLISHMENTS", "face": "serif", "sizePt": 12, "yPt": 368 }
+          ]
+        }
+      },
+      "closing": [
+        { "text": "GIVEN UNDER MY HAND", "face": "serif", "sizePt": 11 },
+        { "text": "{signed}", "face": "mono", "sizePt": 11 }
+      ],
+      "clusters": [
+        "", "FIRST", "SECOND", "THIRD", "FOURTH", "FIFTH", "SIXTH", "SEVENTH", "EIGHTH", "NINTH", "TENTH"
+      ]
     }
   }
 }

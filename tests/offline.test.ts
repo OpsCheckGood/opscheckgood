@@ -180,8 +180,8 @@ describeBuilt('decoration writer offline build', () => {
     await vi.waitFor(
       () => {
         expect(root.querySelector('textarea')).not.toBeNull();
-        // "74 columns" can only be printed once the embedded font has parsed.
-        expect(root.textContent).toMatch(/74 columns/);
+        // "70 columns" can only be printed once the embedded font has parsed.
+        expect(root.textContent).toMatch(/70 columns/);
       },
       { timeout: 45000, interval: 100 },
     );

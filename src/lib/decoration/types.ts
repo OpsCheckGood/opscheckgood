@@ -19,6 +19,42 @@ export interface CertificateBox {
   columns: number | null;
   /** Lines the box holds before the rest is cut off. */
   lines: number | null;
+  /** Baseline to baseline, in points. */
+  linePitchPt: number | null;
+  /** True when the certificate sets the citation fully justified. */
+  justified: boolean;
+}
+
+export type HeaderFace = 'serif' | 'serif-bold' | 'mono';
+
+/**
+ * One centred line of the certificate above or below the citation. `text`
+ * may carry `{decoration}`, `{cluster}`, `{member}`, `{basis}`, `{period}`,
+ * `{authority}` or `{signed}`; a line whose placeholders all come up empty
+ * is not drawn.
+ */
+export interface HeaderLine {
+  text: string;
+  face: HeaderFace;
+  sizePt: number;
+  /** Top of the line, in points from the top of the page. Absent: flows. */
+  yPt?: number;
+}
+
+export type CertificateStyle = 'daf' | 'presidential';
+
+/** The whole page, as myDecs lays it out. Points, letter size. */
+export interface PageLayout {
+  widthPt: number;
+  heightPt: number;
+  marginPt: number;
+  citationTopPt: number;
+  givenUnderMyHandPt: number;
+  signatureTopPt: number;
+  headers: Record<CertificateStyle, { label: string; lines: HeaderLine[] }>;
+  closing: HeaderLine[];
+  /** Ordinal words for oak leaf clusters, index 1 = FIRST. */
+  clusters: string[];
 }
 
 export interface CertificateDefinition {
@@ -28,6 +64,7 @@ export interface CertificateDefinition {
   /** What the myDecs field itself refuses beyond. */
   maxChars: number;
   box: CertificateBox;
+  page: PageLayout | null;
 }
 
 export interface ServiceOption {
@@ -59,6 +96,16 @@ export interface Phrase {
   id: string;
   label: string;
   text: string;
+  /** For a basis: what the certificate prints after FOR. Default: the label in capitals. */
+  forLine?: string;
+}
+
+export interface AwardCertificate {
+  style: CertificateStyle;
+  /** The decoration's name as the certificate prints it, in capitals. */
+  title: string;
+  /** The Presidential header's authority line, when known. */
+  authority: string;
 }
 
 export interface AwardLanguage {
@@ -66,8 +113,13 @@ export interface AwardLanguage {
   label: string;
   /** Paragraph of the manual's Attachment 5 this came from. */
   ref: string;
+  /** Overrides the shared opening pattern for a decoration with its own shape. */
+  pattern: string | null;
   bases: Phrase[];
+  /** Optional clause after the assignment, e.g. the Bronze Star's engagement. */
+  circumstances: Phrase[];
   closings: Phrase[];
+  certificate: AwardCertificate;
 }
 
 export interface CitationRule {

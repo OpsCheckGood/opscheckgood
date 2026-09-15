@@ -1,4 +1,11 @@
-import type { AwardLanguage, CitationLanguage, GradeTitle, Phrase } from './types';
+import type {
+  AwardLanguage,
+  CertificateDefinition,
+  CitationLanguage,
+  GradeTitle,
+  HeaderLine,
+  Phrase,
+} from './types';
 
 /**
  * Builds the sentences the manual fixes, and reviews the result against the
@@ -16,19 +23,30 @@ export interface CitationInput {
   closingId: string;
   /** Retirement closing: 30 or more years of service earns "long and". */
   longCareer: boolean;
+  /** The Bronze Star's engagement clause; empty for decorations without one. */
+  circumstanceId: string;
+  /** Which award of this decoration: 1 is the first, 2 the first oak leaf cluster. */
+  awardNumber: number;
   gradeId: string;
   name: string;
   surname: string;
   pronounId: string;
   assignmentId: string;
   duty: string;
-  unit: string;
-  location: string;
+  /** The chain the certificate prints, each on its own: squadron, group, wing, base. */
+  squadron: string;
+  group: string;
+  wing: string;
+  base: string;
   periodId: string;
   /** ISO dates from the date inputs. */
   start: string;
   end: string;
   date: string;
+  /** The approving official's signature block. */
+  approver: string;
+  approverTitle: string;
+  signedDate: string;
 }
 
 const MONTHS = [
@@ -102,25 +120,117 @@ export function openingSentence(input: CitationInput, language: CitationLanguage
   const assignment = pick(language.opening.assignments, input.assignmentId);
   const period = pick(language.opening.periods, input.periodId);
 
+  const chain = [input.squadron, input.group, input.wing, input.base];
   const placeText =
     assignment.id === 'as'
-      ? place([input.duty, input.unit, input.location])
+      ? place([input.duty, ...chain])
       : assignment.id === 'while'
-        ? place([input.unit, input.location])
-        : place([input.location]);
+        ? place(chain)
+        : place([input.base]);
 
-  return fill(language.opening.pattern, {
+  const circumstance =
+    award.circumstances.length > 0 ? pick(award.circumstances, input.circumstanceId).text : '';
+
+  return fill(award.pattern ?? language.opening.pattern, {
     rank: grade.full,
     name: input.name.trim(),
+    shortRank: grade.short,
+    surname: input.surname.trim(),
     reflexive: pronoun.reflexive,
     basis: basis.text,
     assignment: fill(assignment.text, { place: placeText }),
+    circumstance,
     period: fill(period.text, {
       start: formatCitationDate(input.start),
       end: formatCitationDate(input.end),
       date: formatCitationDate(input.date),
     }),
-  }).replace(/\s+/g, ' ');
+  })
+    .replace(/\s+/g, ' ')
+    .replace(/ ([,.])/g, '$1');
+}
+
+// ---------------------------------------------------------------------------
+// The certificate's own lines
+// ---------------------------------------------------------------------------
+
+/** "(FIRST OAK LEAF CLUSTER)", or nothing for a first award. */
+export function clusterLine(awardNumber: number, clusters: readonly string[]): string {
+  const n = Math.max(1, Math.floor(awardNumber));
+  if (n <= 1) return '';
+  const word = clusters[n - 1];
+  return word ? `(${word} OAK LEAF CLUSTER)` : `(${n - 1} OAK LEAF CLUSTERS)`;
+}
+
+/**
+ * The member's line: full grade and full name in capitals, initials without
+ * their periods, the way myDecs prints "STAFF SERGEANT QUINN H BRENNER".
+ */
+export function memberLine(input: CitationInput, language: CitationLanguage): string {
+  const grade = findGrade(language, input.gradeId);
+  const name = input.name.trim().replace(/\b([A-Za-z])\./g, '$1');
+  return `${grade.full} ${name}`.trim().toUpperCase();
+}
+
+/** "8 November 2022 to 8 November 2025", or the single date, or nothing. */
+export function periodLine(input: CitationInput): string {
+  if (input.periodId === 'range') {
+    const start = formatCitationDate(input.start);
+    const end = formatCitationDate(input.end);
+    return start && end ? `${start} to ${end}` : start || end;
+  }
+  if (input.periodId === 'on') return formatCitationDate(input.date);
+  return '';
+}
+
+export interface CertificateText {
+  style: 'daf' | 'presidential';
+  /** Header lines above the citation, placeholders filled, empty ones dropped. */
+  header: HeaderLine[];
+  /** Lines below the citation: GIVEN UNDER MY HAND and the date. */
+  closing: HeaderLine[];
+  /** The signature block, left column. */
+  signature: string[];
+}
+
+/**
+ * Everything the certificate prints besides the citation, with the
+ * decoration's own words filled into the page layout.
+ */
+export function certificateText(
+  input: CitationInput,
+  language: CitationLanguage,
+  certificate: CertificateDefinition,
+): CertificateText | null {
+  const page = certificate.page;
+  if (!page) return null;
+  const award = findAward(language, input.awardId);
+  const basis = pick(award.bases, input.basisId);
+  const vars: Record<string, string> = {
+    decoration: award.certificate.title,
+    cluster: clusterLine(input.awardNumber, page.clusters),
+    member: memberLine(input, language),
+    basis: basis.forLine ?? basis.label.toUpperCase(),
+    period: periodLine(input),
+    authority: award.certificate.authority,
+    signed: formatCitationDate(input.signedDate),
+  };
+  const render = (lines: HeaderLine[]): HeaderLine[] =>
+    lines.flatMap((line) => {
+      const keys = [...line.text.matchAll(/\{(\w+)\}/g)].map((m) => m[1]!);
+      if (keys.length > 0 && keys.every((k) => (vars[k] ?? '') === '')) return [];
+      const text = line.text
+        .replace(/\{(\w+)\}/g, (_, k: string) => vars[k] ?? '')
+        .replace(/\s+/g, ' ')
+        .trim();
+      return [{ ...line, text }];
+    });
+  return {
+    style: award.certificate.style,
+    header: render(page.headers[award.certificate.style].lines),
+    closing: render(page.closing),
+    signature: [input.approver.trim(), input.approverTitle.trim()].filter(Boolean),
+  };
 }
 
 export function closingSentence(input: CitationInput, language: CitationLanguage): string {
@@ -136,7 +246,7 @@ export function closingSentence(input: CitationInput, language: CitationLanguage
     possessive: pronoun.possessive,
     service: service.text,
     longAnd: input.longCareer ? 'long and ' : '',
-  });
+  }).replace(/\s+/g, ' ');
 }
 
 /** One paragraph: the three parts with single spaces between the ones present. */

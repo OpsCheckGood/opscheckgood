@@ -34,11 +34,15 @@ describe('the certificate font', () => {
   });
 
   /**
-   * Pins the working figure. 172.4mm at 11pt Courier is 74 columns; if the
-   * data changes, this changes with it, deliberately.
+   * The one-inch margins of a letter page leave 468pt, 165.1mm; at 6.6pt per
+   * Courier 11 character that is 70 columns, which is what the fullest line
+   * on every certificate myDecs printed held. The data file states 70 as
+   * well; this pins that the two agree.
    */
-  it('derives 74 columns from the template box width', () => {
-    expect(columnsFor(font, certificate.font.sizePt, certificate.box.widthMm!)).toBe(74);
+  it('derives 70 columns from the page width, matching the certificates', () => {
+    expect(columnsFor(font, certificate.font.sizePt, certificate.box.widthMm!)).toBe(70);
+    expect(certificate.box.columns).toBe(70);
+    expect(certificate.box.lines).toBe(20);
   });
 });
 
