@@ -802,20 +802,37 @@ export default function BulletBench() {
           </span>
         </Field>
 
-        <Field label="Status">
-          <span className="flex items-center gap-3 py-2 text-[13px]">
-            <span style={{ color: STATE_COLOR[statusState] }}>{statusText}</span>
+        {/*
+          The one flexible item in the bar. Its basis is fixed so the wrap
+          decision never depends on how much the readout says: a long readout
+          truncates inside the slot instead of pushing the buttons onto a new
+          row and shifting the whole workspace. The transient note lives here
+          for the same reason.
+        */}
+        <Field label="Status" style={{ flex: '1 1 220px', minWidth: 0 }}>
+          <span className="flex min-w-0 items-center gap-3 whitespace-nowrap py-2 text-[13px]">
+            <span className="shrink-0" style={{ color: STATE_COLOR[statusState] }}>
+              {statusText}
+            </span>
             {activeReadout && (
               <>
-                <span style={{ color: 'var(--rule-strong)' }}>|</span>
-                <span style={{ color: 'var(--ink-muted)' }}>{activeReadout}</span>
+                <span className="shrink-0" style={{ color: 'var(--rule-strong)' }}>
+                  |
+                </span>
+                <span
+                  className="truncate"
+                  title={activeReadout}
+                  style={{ color: 'var(--ink-muted)' }}
+                >
+                  {activeReadout}
+                </span>
               </>
             )}
+            {copyNote && <span className="util ml-auto shrink-0 pl-3">{copyNote}</span>}
           </span>
         </Field>
 
         <div className="ml-auto flex flex-wrap items-center gap-3">
-          {copyNote && <span className="util">{copyNote}</span>}
           <input
             ref={fileInputRef}
             type="file"
@@ -1380,9 +1397,17 @@ function FieldBox({
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+  label,
+  style,
+  children,
+}: {
+  label: string;
+  style?: React.CSSProperties;
+  children: React.ReactNode;
+}) {
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1.5" style={style}>
       <span className="util">{label}</span>
       {children}
     </div>
