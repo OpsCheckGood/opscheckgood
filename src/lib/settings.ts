@@ -19,17 +19,12 @@ export interface BenchPrefs {
   autoSpace: boolean;
   abbreviate: boolean;
   showDuplicates: boolean;
-  /** Empty means "whatever the tool picks by default". */
-  formId: string;
-  fieldId: string;
 }
 
 export const DEFAULT_BENCH_PREFS: BenchPrefs = {
   autoSpace: true,
   abbreviate: true,
   showDuplicates: true,
-  formId: '',
-  fieldId: '',
 };
 
 function readRaw(key: string): string | null {
@@ -72,8 +67,6 @@ export function parseBenchPrefs(raw: string | null): BenchPrefs {
         duplicatesChosen && typeof parsed.showDuplicates === 'boolean'
           ? parsed.showDuplicates
           : DEFAULT_BENCH_PREFS.showDuplicates,
-      formId: typeof parsed.formId === 'string' ? parsed.formId : '',
-      fieldId: typeof parsed.fieldId === 'string' ? parsed.fieldId : '',
     };
   } catch {
     return { ...DEFAULT_BENCH_PREFS };

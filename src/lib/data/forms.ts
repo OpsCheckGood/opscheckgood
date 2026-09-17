@@ -20,7 +20,8 @@ import sandbox from '../../data/forms/sandbox.json';
  * see constraint 4 in the README.
  */
 
-// Order drives the form picker, and the first usable entry is the default.
+// Order drives the Thesaurus's form picker, and the first usable entry is its
+// default. The bench itself is pinned to the 1206 and offers no picker.
 const RAW_FORMS: ReadonlyArray<readonly [string, unknown]> = [
   ['src/data/forms/af1206.json', af1206],
   ['src/data/forms/af910.json', af910],

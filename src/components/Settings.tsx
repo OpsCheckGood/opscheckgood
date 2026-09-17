@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { FORMS, getForm, isFormUsable } from '@/lib/data/forms';
 import {
   DEFAULT_BENCH_PREFS,
   clearAllStored,
@@ -84,8 +83,6 @@ export default function Settings() {
     flash(`Cleared ${cleared.length} item${cleared.length === 1 ? '' : 's'}.`);
   }
 
-  const usable = FORMS.filter((f) => isFormUsable(f.data));
-  const selectedForm = prefs.formId ? getForm(prefs.formId) : undefined;
   const totalBytes = items.reduce((n, item) => n + item.bytes, 0);
 
   const control = {
@@ -153,47 +150,6 @@ export default function Settings() {
             label="Show Duplicates"
             hint="Highlight repeated words in the draft."
           />
-        </div>
-
-        <div className="mt-4 flex flex-wrap items-end gap-x-4 gap-y-2">
-          <label className="flex flex-col gap-1.5">
-            <span className="util">Form it opens on</span>
-            <select
-              value={prefs.formId}
-              onChange={(e) => {
-                update('formId', e.target.value);
-                update('fieldId', '');
-              }}
-              className="border px-2.5 py-1.5 text-[13px]"
-              style={control}
-            >
-              <option value="">First available</option>
-              {usable.map((f) => (
-                <option key={f.data.id} value={f.data.id}>
-                  {f.data.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          {selectedForm && selectedForm.data.fields.length > 1 && (
-            <label className="flex flex-col gap-1.5">
-              <span className="util">Section</span>
-              <select
-                value={prefs.fieldId}
-                onChange={(e) => update('fieldId', e.target.value)}
-                className="border px-2.5 py-1.5 text-[13px]"
-                style={control}
-              >
-                <option value="">First section</option>
-                {selectedForm.data.fields.map((field) => (
-                  <option key={field.id} value={field.id}>
-                    {field.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
         </div>
       </section>
 

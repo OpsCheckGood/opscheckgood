@@ -336,8 +336,9 @@ official sources. They are deliberately left empty rather than guessed, because 
 plausible wrong millimetre value is worse than an obviously absent one for a tool whose
 entire value is precision. See [Populating the data](#populating-the-data).
 
-Until a form is populated it appears in the picker marked *not yet populated* and cannot
-be selected. A synthetic **Sandbox** form ships so the pipeline can be exercised end to
+Until a form is populated it appears in the Thesaurus's picker marked *not yet populated*
+and cannot be selected. The Bullet Bench has no picker: it is pinned to the 1206's
+Specific Accomplishments block, which every real form's bullet block matches. A synthetic **Sandbox** form ships so the pipeline can be exercised end to
 end; its numbers are fabricated round values, it is permanently marked `stub`, and it
 corresponds to no real form.
 

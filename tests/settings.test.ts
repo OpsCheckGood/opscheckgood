@@ -61,8 +61,8 @@ describe('bench preferences', () => {
   });
 
   it('round-trips a saved preference', () => {
-    saveBenchPrefs({ ...DEFAULT_BENCH_PREFS, abbreviate: false, formId: 'af1206' });
-    expect(loadBenchPrefs()).toMatchObject({ abbreviate: false, formId: 'af1206' });
+    saveBenchPrefs({ ...DEFAULT_BENCH_PREFS, abbreviate: false, autoSpace: false });
+    expect(loadBenchPrefs()).toMatchObject({ abbreviate: false, autoSpace: false });
   });
 
   /**

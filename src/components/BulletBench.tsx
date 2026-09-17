@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { FORMS, getForm, getField, isFormUsable } from '@/lib/data/forms';
+import { FORMS, getForm } from '@/lib/data/forms';
 import { HQ_APPROVED, COMMON } from '@/lib/data/abbreviationSets';
 import { mergeAbbreviations, applyAbbreviations } from '@/lib/data/abbreviations';
 import {
@@ -115,6 +115,14 @@ const BOX_MIN_HEIGHT = 230;
 
 type StatusState = 'ok' | 'warn' | 'bad' | 'idle';
 
+/**
+ * The bench measures against one block, the 1206's Specific Accomplishments,
+ * and offers no picker: every real form's bullet block is the same line in the
+ * same face, so a 910 or 911 opened here reads against the rule it prints to.
+ */
+const BENCH_FORM = getForm('af1206') ?? FORMS[0]!;
+const BENCH_FIELD = BENCH_FORM.data.fields[0]!;
+
 const STATE_COLOR: Record<StatusState, string> = {
   ok: 'var(--ok)',
   warn: 'var(--warn)',
@@ -123,12 +131,8 @@ const STATE_COLOR: Record<StatusState, string> = {
 };
 
 export default function BulletBench() {
-  const usable = useMemo(() => FORMS.filter((f) => isFormUsable(f.data)), []);
-  const [formId, setFormId] = useState(() => usable[0]?.data.id ?? FORMS[0]!.data.id);
-
-  const form = getForm(formId) ?? FORMS[0]!;
-  const [fieldId, setFieldId] = useState(() => form.data.fields[0]!.id);
-  const field = getField(form.data, fieldId) ?? form.data.fields[0]!;
+  const form = BENCH_FORM;
+  const field = BENCH_FIELD;
 
   const [text, setText] = useState(SAMPLE);
   const [draftLoaded, setDraftLoaded] = useState(false);
@@ -162,10 +166,6 @@ export default function BulletBench() {
   /** Rendered height of each draft line, so the output can sit level with it. */
   const [lineHeights, setLineHeights] = useState<number[]>([]);
 
-  useEffect(() => {
-    if (!getField(form.data, fieldId)) setFieldId(form.data.fields[0]!.id);
-  }, [form, fieldId]);
-
   // localStorage only -- nothing leaves the browser. Read after mount so the
   // server-rendered markup and the first client render agree.
   useEffect(() => {
@@ -182,10 +182,6 @@ export default function BulletBench() {
     setAutoSpace(prefs.autoSpace);
     setAbbreviate(prefs.abbreviate);
     setShowDuplicates(prefs.showDuplicates);
-    if (prefs.formId && getForm(prefs.formId)) {
-      setFormId(prefs.formId);
-      if (prefs.fieldId) setFieldId(prefs.fieldId);
-    }
     setDraftLoaded(true);
   }, []);
 
@@ -248,7 +244,6 @@ export default function BulletBench() {
     };
   }, [form]);
 
-  const bindsOnWidth = field.constraint === 'width';
   const targetMm = field.widthMm ?? 0;
   const maxChars = field.maxChars ?? 0;
   const sizePt = form.data.font.sizePt;
@@ -477,27 +472,18 @@ export default function BulletBench() {
 
   /**
    * Opens a form PDF: the 1206 someone was sent, or a 910 with comments in
-   * it. The form is identified from its own XFA data, the matching definition
-   * is selected, and the bullets in its first filled block go into the draft.
-   * The widths come from the data file, which the tests hold equal to what the
-   * form says; the file only tells us which form it is and what it holds.
+   * it. The form is identified from its own XFA data and the bullets in its
+   * first filled block go into the draft. The bench keeps measuring against
+   * its one block: every real form's bullet block is the same line, which the
+   * tests hold equal to what the forms say, so nothing needs selecting.
    */
   async function openFormFile(file: File) {
     let note: string;
     try {
       const form = await readForm(new Uint8Array(await file.arrayBuffer()));
-      const number = form.formNumber?.replace(/^DAF/, 'AF') ?? null;
-      const known = number
-        ? FORMS.find((f) => `AF FORM ${f.data.id.replace(/^af/, '')}` === number)
-        : undefined;
       const blocks = bulletFields(form);
       const filled = blocks.find((b) => b.value !== null);
 
-      if (known) {
-        setFormId(known.data.id);
-        const field = filled && getField(known.data, filled.name) ? filled.name : undefined;
-        if (field) setFieldId(field);
-      }
       if (filled) {
         setText(plainSpaces(filled.value!));
         setSelection(null);
@@ -508,8 +494,9 @@ export default function BulletBench() {
       note = filled
         ? `Read ${what}${edition}: ${splitLines(filled.value!).filter((l) => l.trim() !== '').length} bullets from ${filled.name}`
         : `Read ${what}${edition}: no bullets in it`;
-      if (!known && blocks[0]?.widthMm) {
-        note += ` · its block is ${roundMm(blocks[0].widthMm, 2)} mm; this tool has no definition for it yet`;
+      const width = filled?.widthMm ?? blocks[0]?.widthMm;
+      if (width && Math.abs(width - targetMm) > 0.01) {
+        note += ` · its block is ${roundMm(width, 2)} mm; this bench measures ${roundMm(targetMm, 2)} mm`;
       }
     } catch (error: unknown) {
       note = error instanceof Error ? error.message : 'Could not read that PDF.';
@@ -742,67 +729,6 @@ export default function BulletBench() {
     <div className="mx-auto flex max-w-[1700px] flex-col gap-4 px-3 py-4 sm:px-6 sm:py-5">
       {/* ---- Configuration bar ------------------------------------------ */}
       <div className="flex flex-wrap items-end gap-x-8 gap-y-3">
-        <Field label="Form / Document">
-          <select
-            aria-label="Form or document"
-            value={formId}
-            onChange={(e) => setFormId(e.target.value)}
-            className="w-full border px-3 py-2 text-[13px] sm:w-[330px]"
-            style={{
-              background: 'var(--panel)',
-              borderColor: 'var(--rule-strong)',
-              color: 'var(--ink)',
-            }}
-          >
-            {FORMS.map((f) => (
-              <option key={f.data.id} value={f.data.id} disabled={!isFormUsable(f.data)}>
-                {f.data.label}
-              </option>
-            ))}
-          </select>
-        </Field>
-
-        <Field label="Section">
-          <select
-            aria-label="Section"
-            value={field.id}
-            onChange={(e) => setFieldId(e.target.value)}
-            className="w-full border px-3 py-2 text-[13px] sm:w-[270px]"
-            style={{
-              background: 'var(--panel)',
-              borderColor: 'var(--rule-strong)',
-              color: 'var(--ink)',
-            }}
-          >
-            {form.data.fields.map((f) => (
-              <option key={f.id} value={f.id}>
-                {f.label}
-              </option>
-            ))}
-          </select>
-        </Field>
-
-        <Field label="Requirements">
-          <span
-            className="flex items-center gap-2 py-2 text-[13px]"
-            style={{ color: 'var(--ink)' }}
-            title={
-              bindsOnWidth
-                ? 'Fit is decided by rendered width, not character count. The character figure is informational.'
-                : 'This block is limited by character count.'
-            }
-          >
-            {bindsOnWidth ? `${roundMm(targetMm, 2)} mm line` : `Max ${maxChars} characters`}
-            <span
-              aria-hidden
-              className="inline-flex h-[15px] w-[15px] items-center justify-center rounded-full border text-[9px]"
-              style={{ borderColor: 'var(--rule-strong)', color: 'var(--ink-faint)' }}
-            >
-              i
-            </span>
-          </span>
-        </Field>
-
         {/*
           The one flexible item in the bar. Its basis is fixed so the wrap
           decision never depends on how much the readout says: a long readout
