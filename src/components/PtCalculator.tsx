@@ -1323,8 +1323,11 @@ function ChartTable({
   // each carries, and each keeps a floor wide enough for its own headers so
   // the row wraps rather than crushing one of them.
   const width = headers.length + 1;
+  // The floor stops at the panel's width: on a phone the widest chart would
+  // otherwise push the whole page past the screen, which is what lets a phone
+  // zoom out. There the table keeps its own width and scrolls inside its box.
   return (
-    <div style={{ flex: `${width} 1 0`, minWidth: `${width * 5.5}rem` }}>
+    <div style={{ flex: `${width} 1 0`, minWidth: `min(${width * 5.5}rem, 100%)` }}>
       {/* Reserves two lines so a caption that wraps does not push its table
           out of line with the two beside it. */}
       <div className="mb-2.5 flex" style={{ minHeight: '2.9em' }}>
@@ -1340,7 +1343,10 @@ function ChartTable({
         </span>
       </div>
       <div className="overflow-x-auto">
-        <table className="tabular w-full border-collapse text-[12px]">
+        <table
+          className="tabular w-full border-collapse text-[12px]"
+          style={{ minWidth: `${width * 5.5}rem` }}
+        >
           <thead>
             <tr>
               {['Pts', ...headers].map((header) => (

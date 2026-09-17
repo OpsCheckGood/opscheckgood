@@ -173,6 +173,11 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  /*
+   * No double-tap zoom: a second tap on a box or a button is a second tap,
+   * not a request to magnify it. Pinch zoom is untouched.
+   */
+  touch-action: manipulation;
 }
 
 .app-shell {
