@@ -16,3 +16,6 @@ CLAUDE.md
 # The two fillable PDFs the site serves, as received: they name their author and unit.
 # scripts/embed-forms.mjs scrubs them into src/lib/pdfform/embedded/, which is committed.
 forms-src/
+
+# Local secrets, never committed
+.env
