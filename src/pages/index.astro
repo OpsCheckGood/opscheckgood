@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import { tools, firstSergeant } from '../lib/site-nav';
 
-// Numbered in build order, the toolkit after the tools.
+// Numbered in catalogue order, the toolkit after the tools.
 const pad = (n: number) => String(n).padStart(2, '0');
 const cards = tools.filter((t) => t.ready);
 const arrow =
@@ -10,10 +10,8 @@ const arrow =
 ---
 
 <Base title="Ops Check Good">
-  <div class="mx-auto max-w-[1480px] px-4 sm:px-8 pt-16 sm:pt-28 pb-8 sm:pb-12">
-    <h1 class="display m-0">Ops Check Good</h1>
-    <div class="display-rule" aria-hidden="true"></div>
-  </div>
+  {/* No display heading: the wordmark in the header names the site. The grid just needs room under the header. */}
+  <div class="pt-8 sm:pt-12"></div>
 
   {/* Three across on a desktop: seven tools and the toolkit, which spans two columns, fill three even rows. Two on a tablet, one on a phone. */}
   <ul class="mx-auto m-0 grid max-w-[1480px] list-none gap-4 px-4 sm:px-8 p-0 sm:grid-cols-2 lg:grid-cols-3">

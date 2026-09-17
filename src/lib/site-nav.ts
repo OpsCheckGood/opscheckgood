@@ -31,7 +31,7 @@ export interface Tool {
   ready: boolean;
 }
 
-/** Listed in build order. */
+/** Listed in home page order: the writing tools first, the calculators after. */
 export const tools: Tool[] = [
   {
     name: 'Bullet Bench',
@@ -42,6 +42,50 @@ export const tools: Tool[] = [
     blurb:
       'Fits a statement onto the single line a form allows by substituting half spaces, ' +
       'measured against the real rendered width rather than a character count.',
+  },
+  {
+    name: 'EPB Worksheet',
+    short: 'EPB',
+    tagline: 'Every box counted. Cut it here, not in myEval.',
+    href: `${base}/tools/epb-worksheet/`,
+    ready: true,
+    blurb:
+      'Drafts an Enlisted Performance Brief box by box, each counted to the limit myEval ' +
+      'enforces, with the major performance areas and the Airman Leadership Qualities beside ' +
+      'each statement and a scratch area for what is not ready yet.',
+  },
+  {
+    name: 'Decoration Writer',
+    short: 'Decoration',
+    tagline: 'Fit the certificate, not the counter.',
+    href: `${base}/tools/decoration-writer/`,
+    ready: true,
+    blurb:
+      'Drafts a decoration citation that fits the myDecs certificate: wrapped exactly as the ' +
+      'certificate wraps it, held to the lines it prints rather than the 1350-character ' +
+      'counter, with the awards manual\'s opening and closing sentences built in.',
+  },
+  {
+    name: 'MFR Generator',
+    short: 'MFR',
+    tagline: 'Format it once. Sign it.',
+    href: `${base}/tools/mfr/`,
+    ready: true,
+    blurb:
+      'Writes an official memorandum for record or a letter of counseling, admonishment or ' +
+      'reprimand to Tongue-and-Quill format, with an editable letterhead, and exports a PDF or ' +
+      'an editable Word document.',
+  },
+  {
+    name: 'Promotion Script Builder',
+    short: 'Promotion',
+    tagline: 'Names in. Run of show out.',
+    href: `${base}/tools/promotion-script/`,
+    ready: true,
+    blurb:
+      'Builds an enlisted promotion ceremony run of show for any unit: the opening, the NCO or ' +
+      'SNCO charge when the new grade calls for one, and the closing. Every role is optional and ' +
+      'a blank one simply has no lines. Print it a section per page or copy the text.',
   },
   {
     name: 'PT Calculator',
@@ -63,50 +107,6 @@ export const tools: Tool[] = [
     blurb:
       'Projects a below-the-zone consideration window, board quarter and promotion date ' +
       'from a date entered active duty and a date of rank, and shows the arithmetic.',
-  },
-  {
-    name: 'MFR Generator',
-    short: 'MFR',
-    tagline: 'Format it once. Sign it.',
-    href: `${base}/tools/mfr/`,
-    ready: true,
-    blurb:
-      'Writes an official memorandum for record or a letter of counseling, admonishment or ' +
-      'reprimand to Tongue-and-Quill format, with an editable letterhead, and exports a PDF or ' +
-      'an editable Word document.',
-  },
-  {
-    name: 'Decoration Writer',
-    short: 'Decoration',
-    tagline: 'Fit the certificate, not the counter.',
-    href: `${base}/tools/decoration-writer/`,
-    ready: true,
-    blurb:
-      'Drafts a decoration citation that fits the myDecs certificate: wrapped exactly as the ' +
-      'certificate wraps it, held to the lines it prints rather than the 1350-character ' +
-      'counter, with the awards manual\'s opening and closing sentences built in.',
-  },
-  {
-    name: 'Promotion Script Builder',
-    short: 'Promotion',
-    tagline: 'Names in. Run of show out.',
-    href: `${base}/tools/promotion-script/`,
-    ready: true,
-    blurb:
-      'Builds an enlisted promotion ceremony run of show for any unit: the opening, the NCO or ' +
-      'SNCO charge when the new grade calls for one, and the closing. Every role is optional and ' +
-      'a blank one simply has no lines. Print it a section per page or copy the text.',
-  },
-  {
-    name: 'EPB Worksheet',
-    short: 'EPB',
-    tagline: 'Every box counted. Cut it here, not in myEval.',
-    href: `${base}/tools/epb-worksheet/`,
-    ready: true,
-    blurb:
-      'Drafts an Enlisted Performance Brief box by box, each counted to the limit myEval ' +
-      'enforces, with the major performance areas and the Airman Leadership Qualities beside ' +
-      'each statement and a scratch area for what is not ready yet.',
   },
 ];
 
