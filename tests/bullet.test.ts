@@ -3,7 +3,13 @@ import { loadFontMetrics } from '@/lib/metrics/registry';
 import type { FontMetrics } from '@/lib/metrics/font';
 import { shapeBullet, shapeBullets, rowStatuses, joinRows } from '@/lib/shape/bullet';
 import { effectiveTargetMm, shapeLine } from '@/lib/shape/optimizer';
-import { SPACE_CHARS, countSpaces, unshape, usesOnlyPermittedSpaces } from '@/lib/shape/spaces';
+import {
+  SPACE_CHARS,
+  countSpaces,
+  plainSpaces,
+  unshape,
+  usesOnlyPermittedSpaces,
+} from '@/lib/shape/spaces';
 import { wrapToWidth } from '@/lib/text/wrap';
 
 const SIZE_PT = 12;
@@ -133,5 +139,26 @@ describe('shapeBullets', () => {
     expect(results[1]!.whole.status).toBe('empty');
     expect(results[1]!.text).toBe('');
     expect(results[2]!.wrapped).toBe(true);
+  });
+});
+
+describe('plainSpaces', () => {
+  it('turns shaped output back into the plain draft it came from, one for one', () => {
+    const shaped = shapeBullet(ONE_ROW, font, options).text;
+    const spaces = countSpaces(shaped);
+    expect(spaces[SPACE_CHARS.SIX_PER_EM] + spaces[SPACE_CHARS.THREE_PER_EM]).toBeGreaterThan(0);
+    const plain = plainSpaces(shaped);
+    expect(plain).toBe(ONE_ROW);
+    expect(plain.length).toBe(shaped.length);
+  });
+
+  it("covers pdf-bullets' thin space and the no-break space, and keeps everything else", () => {
+    const pasted = '- Led\u2009the\u00a0team\u2006to\u2004a win  \n- next';
+    expect(plainSpaces(pasted)).toBe('- Led the team to a win  \n- next');
+  });
+
+  it('leaves plain text alone', () => {
+    expect(plainSpaces(TWO_ROWS)).toBe(TWO_ROWS);
+    expect(plainSpaces('')).toBe('');
   });
 });

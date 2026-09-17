@@ -69,3 +69,23 @@ export function unshape(text: string): string {
     .replace(/ {2,}/g, SPACE_CHARS.NORMAL)
     .trim();
 }
+
+/**
+ * Every space that is not the ordinary one: the shaping spaces this tool and
+ * pdf-bullets emit (U+2004, U+2006, U+2009), the rest of that Unicode block,
+ * the narrow and medium mathematical spaces, the ideographic space and the
+ * no-break space Word likes to leave behind.
+ */
+const ODD_SPACES = /[\u00a0\u2000-\u200a\u202f\u205f\u3000]/g;
+
+/**
+ * Turns every odd space in `text` into an ordinary one, character for
+ * character. The draft is the text as typed; shaping belongs to the output
+ * alone, so a shaped bullet pasted back in must not carry its half spaces with
+ * it, or the shaper would be measuring its own last answer. Nothing is
+ * collapsed or trimmed: the length is unchanged, so the caret stays where the
+ * paste left it and a space being typed at the end of a line survives.
+ */
+export function plainSpaces(text: string): string {
+  return text.replace(ODD_SPACES, SPACE_CHARS.NORMAL);
+}

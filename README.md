@@ -36,6 +36,10 @@ is shaped to flush, and the last row is left as typed. The half-spaces stay insi
 rows, so the pasted paragraph wraps at the same places on the form. Pressing Enter still
 forces a break where you put it.
 
+The draft is the text as typed. Paste a bullet that has already been shaped, here or in
+pdf-bullets, and its half-spaces become ordinary spaces on the way in; only the output
+carries them. Otherwise the shaper would be measuring its own last answer.
+
 Under the shaper sit two more boxes that read the same draft rather than asking for the
 bullet again:
 

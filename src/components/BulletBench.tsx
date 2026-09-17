@@ -27,7 +27,7 @@ import {
   type BulletResult,
 } from '@/lib/shape/bullet';
 import { diagnose } from '@/lib/shape/diagnose';
-import { SPACE_CHARS, countSpaces, unshape } from '@/lib/shape/spaces';
+import { SPACE_CHARS, countSpaces, plainSpaces, unshape } from '@/lib/shape/spaces';
 import { splitLines } from '@/lib/text/tokenize';
 import { findDuplicates } from '@/lib/text/analyze';
 import { reviewDraft, KIND_LABEL, type Finding, type Occurrence } from '@/lib/text/review';
@@ -171,7 +171,8 @@ export default function BulletBench() {
   useEffect(() => {
     try {
       const saved = localStorage.getItem(DRAFT_KEY);
-      if (saved !== null) setText(saved);
+      // Drafts stored before the bench stripped odd spaces may still hold them.
+      if (saved !== null) setText(plainSpaces(saved));
     } catch {
       /* Blocked storage: the editor still works, the draft is not remembered. */
     }
@@ -429,7 +430,7 @@ export default function BulletBench() {
     let note: string;
     try {
       const save = parsePdfBulletsFile(await file.text());
-      setText(save.text);
+      setText(plainSpaces(save.text));
       setSelection(null);
       if (save.autoSpace !== null) setAutoSpace(save.autoSpace);
 
@@ -498,7 +499,7 @@ export default function BulletBench() {
         if (field) setFieldId(field);
       }
       if (filled) {
-        setText(filled.value!);
+        setText(plainSpaces(filled.value!));
         setSelection(null);
       }
 
@@ -1006,7 +1007,10 @@ export default function BulletBench() {
                 ref={inputRef}
                 value={text}
                 onChange={(e) => {
-                  setText(e.target.value);
+                  // A paste of shaped output arrives here with its half
+                  // spaces. The draft holds plain spaces only; the output
+                  // is where shaping shows. Same length, so the caret holds.
+                  setText(plainSpaces(e.target.value));
                   syncActiveLine(e.currentTarget);
                 }}
                 onSelect={(e) => syncActiveLine(e.currentTarget)}
