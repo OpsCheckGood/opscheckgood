@@ -143,7 +143,8 @@ describeBuilt('single-file offline build', () => {
     );
 
     const text = root.textContent ?? '';
-    expect(text).toContain('AF Form 1206');
+    // The bench has no form picker; its bar is the Status readout and the buttons.
+    expect(text).toContain('Open Form');
     expect(text).toContain('Copy Output');
     // The measured width appears once the font is in, alongside the shaping.
     expect(text).toMatch(/\d+(\.\d+)?\s?mm/);
