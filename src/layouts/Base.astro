@@ -86,7 +86,15 @@ const nav = [
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <!--
+      interactive-widget: when the keyboard opens, the page shrinks to the
+      space above it instead of sliding under it, so a bar fixed to the bottom
+      of the screen sits on the keyboard rather than behind it.
+    -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
+    />
     <!--
       Colours the phone's own chrome to match the page, which is most of what
       separates "a website in a browser" from "an app". Two values so the bar

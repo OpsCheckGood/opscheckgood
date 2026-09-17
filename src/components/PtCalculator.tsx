@@ -249,16 +249,19 @@ export default function PtCalculator() {
 
   return (
     <div className="mx-auto flex max-w-[1400px] flex-col gap-4 px-3 sm:px-6 py-6">
-      <DownloadBar
-        items={[
-          {
-            label: 'PDF calculator',
-            detail: 'The PT calculator as a fillable PDF that scores on its own in Acrobat or Reader.',
-            run: async () => downloadBytes(await ptCalculatorPdf(), downloadName('PT Calculator')),
-            primary: true,
-          },
-        ]}
-      />
+      {/* Last on a phone: there this page is for scoring, not for the PDF. */}
+      <div className="contents max-sm:order-last max-sm:block">
+        <DownloadBar
+          items={[
+            {
+              label: 'PDF calculator',
+              detail: 'The PT calculator as a fillable PDF that scores on its own in Acrobat or Reader.',
+              run: async () => downloadBytes(await ptCalculatorPdf(), downloadName('PT Calculator')),
+              primary: true,
+            },
+          ]}
+        />
+      </div>
 
       {/* ---- Personal information ---------------------------------------- */}
       <section className="panel p-5">
@@ -278,7 +281,7 @@ export default function PtCalculator() {
             <span aria-hidden>&#8635;</span> Clear all
           </button>
         </div>
-        <div className="flex flex-wrap items-end gap-x-8 gap-y-4">
+        <div className="pt-fields flex flex-wrap items-end gap-x-8 gap-y-4">
           <Field label="Age (yrs)" htmlFor="pt-age">
             <TextBox
               id="pt-age"
@@ -360,6 +363,8 @@ export default function PtCalculator() {
       <section className="panel p-4">
         <SourceStamp sources={[dataset.meta, BODY_FAT_TABLES.meta]} />
       </section>
+
+      <ScoreStrip result={result} />
     </div>
   );
 }
@@ -399,14 +404,17 @@ function SectionTitle({ step, title }: { step: number; title: string }) {
 function Field({
   label,
   htmlFor,
+  span,
   children,
 }: {
   label: string;
   htmlFor?: string;
+  /** On a phone, take the whole row of the two-column grid (see .pt-fields). */
+  span?: boolean;
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className={span ? 'pt-span flex flex-col gap-1.5' : 'flex flex-col gap-1.5'}>
       {htmlFor ? (
         <label className="util" htmlFor={htmlFor}>
           {label}
@@ -441,7 +449,7 @@ function TextBox({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       className="tabular border px-3 py-2 text-[13px]"
-      style={{ ...CONTROL, width }}
+      style={{ ...CONTROL, width: `var(--pt-w, ${width})` }}
     />
   );
 }
@@ -471,7 +479,7 @@ function Select({
       disabled={disabled}
       onChange={(e) => onChange(e.target.value)}
       className="border px-3 py-2 text-[13px]"
-      style={{ ...CONTROL, width, maxWidth: '100%', opacity: disabled ? 0.5 : 1 }}
+      style={{ ...CONTROL, width: `var(--pt-w, ${width})`, maxWidth: '100%', opacity: disabled ? 0.5 : 1 }}
     >
       {options.map((o) => (
         <option key={o.value} value={o.value}>
@@ -517,7 +525,7 @@ function Readout({
         color: tones.color,
         fontWeight: strong ? 600 : 400,
         borderRadius: 6,
-        width,
+        width: `var(--pt-w, ${width})`,
         maxWidth: '100%',
       }}
     >
@@ -605,9 +613,9 @@ function ComponentPanel({
         </label>
       </div>
 
-      <div className="flex flex-wrap items-end gap-x-8 gap-y-4">
+      <div className="pt-fields flex flex-wrap items-end gap-x-8 gap-y-4">
         {component.events.length > 1 && (
-          <Field label="Event" htmlFor={`${component.id}-event`}>
+          <Field label="Event" htmlFor={`${component.id}-event`} span>
             <Select
               id={`${component.id}-event`}
               value={event.id}
@@ -621,7 +629,7 @@ function ComponentPanel({
 
         {!exempt && event.input === 'waist' && (
           <>
-            <Field label="Height (in)" htmlFor={key('height')}>
+            <Field label="Height (in)" htmlFor={key('height')} span>
               <TextBox
                 id={key('height')}
                 value={box('height')}
@@ -629,7 +637,7 @@ function ComponentPanel({
                 width="5.5rem"
               />
             </Field>
-            <Field label="Waist (in)">
+            <Field label="Waist (in)" span>
               <div className="flex gap-2">
                 {(['w1', 'w2', 'w3'] as const).map((slot, i) => (
                   <TextBox
@@ -712,7 +720,7 @@ function ComponentPanel({
           />
         </Field>
 
-        <Field label="Minimum to pass">
+        <Field label="Minimum to pass" span>
           <Readout value={minimumText} width="10rem" tone="plain" />
         </Field>
       </div>
@@ -762,7 +770,7 @@ function Composite({
   const rating = result.rating ? RATING[result.rating] : null;
 
   return (
-    <section className="panel p-4">
+    <section id="pt-composite" className="panel p-4">
       <h2 className="title m-0 mb-3">Composite result</h2>
 
       <div className="flex flex-wrap items-center gap-x-8 gap-y-5">
@@ -852,7 +860,10 @@ function Composite({
                 className="util absolute -translate-x-1/2 whitespace-nowrap"
                 style={{ left: `${mark}%`, letterSpacing: '0.06em' }}
               >
-                {mark} {name}
+                {mark}
+                {/* The words collide with each other and with 100 on a phone;
+                    the numbers alone still read against the marks. */}
+                <span className="max-sm:hidden"> {name}</span>
               </span>
             ),
           )}
@@ -879,6 +890,51 @@ function Composite({
         </ul>
       )}
     </section>
+  );
+}
+
+/**
+ * The composite, pinned above the tab bar on a phone.
+ *
+ * The full result sits below five panels of entries, so on a phone it is two
+ * screens away from the box being typed in. This keeps the number in view
+ * while the entries change, and tapping it goes to the full panel. Hidden on
+ * a desktop, where the panel is already on screen.
+ */
+function ScoreStrip({ result }: { result: PtResult }) {
+  const color = ratingColor(result.rating);
+  const rating = result.rating ? RATING[result.rating] : null;
+  const percent = result.percent;
+  return (
+    <a
+      href="#pt-composite"
+      className="pt-score-strip mobile-only"
+      aria-label={
+        percent === null
+          ? 'Composite score: incomplete. Go to the composite result.'
+          : `Composite score ${percent.toFixed(1)} of 100, ${rating?.word ?? ''}. Go to the composite result.`
+      }
+    >
+      <span className="flex flex-col gap-0.5">
+        <span className="util" style={{ letterSpacing: '0.06em' }}>
+          Composite
+        </span>
+        <span className="tabular text-[20px] font-bold leading-none" style={{ color }}>
+          {percent === null ? '—' : percent.toFixed(1)}
+          <span className="util ml-1" style={{ letterSpacing: '0.06em' }}>
+            / 100
+          </span>
+        </span>
+      </span>
+      <span className="ml-auto flex min-w-0 flex-col items-end gap-0.5 text-right">
+        <span className="text-[15px] font-bold leading-none" style={{ color }}>
+          {rating ? rating.word : 'INCOMPLETE'}
+        </span>
+        <span className="util truncate" style={{ letterSpacing: '0.06em' }}>
+          {rating ? rating.detail : 'Fill every box'}
+        </span>
+      </span>
+    </a>
   );
 }
 
@@ -942,7 +998,7 @@ function Tier2Panel({
 
       {/* What the entries above decided, which is the whole reason this panel
           is open or shut. */}
-      <div className="flex flex-wrap items-end gap-x-8 gap-y-4">
+      <div className="pt-fields flex flex-wrap items-end gap-x-8 gap-y-4">
         <Field label="Waist ÷ height">
           <Readout value={whtr === null ? '—' : whtr.toFixed(2)} width="5.5rem" />
         </Field>
@@ -953,7 +1009,7 @@ function Tier2Panel({
             tone={rating === null ? 'plain' : ratingTone(rating)}
           />
         </Field>
-        <Field label="Tier 2 required?">
+        <Field label="Tier 2 required?" span>
           <Readout
             value={bfa.requirement}
             width="24rem"
@@ -965,7 +1021,7 @@ function Tier2Panel({
       {open && standard ? (
         <>
           <div
-            className="mt-5 flex flex-wrap items-end gap-x-8 gap-y-4 pt-5"
+            className="pt-fields mt-5 flex flex-wrap items-end gap-x-8 gap-y-4 pt-5"
             style={{ borderTop: '1px solid var(--rule)' }}
           >
             {standard.sites.map((site) => {
@@ -990,7 +1046,7 @@ function Tier2Panel({
             })}
           </div>
 
-          <div className="mt-4 flex flex-wrap items-end gap-x-8 gap-y-4">
+          <div className="pt-fields mt-4 flex flex-wrap items-end gap-x-8 gap-y-4">
             <Field label="Circumference">
               <Readout
                 value={assessment.circumference === null ? '—' : formatInches(assessment.circumference)}

@@ -691,6 +691,87 @@ body {
 }
 
 /* ---------------------------------------------------------------------------
+ * The PT Calculator on a phone
+ *
+ * The one tool people open on a phone. Its desktop layout is rows of small
+ * boxes sized to their contents, wrapping where they run out of room; on a
+ * phone that wraps into a ragged column. Here each row becomes a two-column
+ * grid, every control fills its cell, and the composite score is pinned
+ * above the tab bar so it stays in view while the entries change.
+ * ------------------------------------------------------------------------ */
+
+@media (max-width: 640px) {
+  .pt-fields {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 14px 12px;
+    align-items: end;
+    /* Read by the controls' inline width, which is a fallback to this. */
+    --pt-w: 100%;
+  }
+
+  .pt-fields > * {
+    min-width: 0;
+  }
+
+  .pt-fields .pt-span {
+    grid-column: 1 / -1;
+  }
+
+  /* Thumb-sized. The 16px input face is set above; this gives it room. */
+  .pt-fields input,
+  .pt-fields select {
+    min-height: 44px;
+  }
+
+  .pt-fields output {
+    min-height: 44px;
+    line-height: 26px;
+  }
+
+  .pt-score-strip {
+    --pt-strip: 58px;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: calc(var(--tabbar) + env(safe-area-inset-bottom));
+    z-index: 29;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: var(--pt-strip);
+    padding: 8px 16px;
+    background: var(--panel);
+    border-top: 1px solid var(--rule);
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  /* The footer is the last thing on the page and has to clear both bars. */
+  body:has(.pt-score-strip) .site-footer {
+    padding-bottom: calc(var(--tabbar) + 58px + env(safe-area-inset-bottom));
+  }
+
+  /* Landing on the composite from the strip: clear the sticky top bar. */
+  #pt-composite {
+    scroll-margin-top: 96px;
+  }
+
+  /*
+   * Keyboard up. The tab bar is no use while typing and the keyboard leaves
+   * little screen, so it goes, and the score comes down to sit on the
+   * keyboard where it is read between entries.
+   */
+  body:has(.pt-fields :focus) .tabbar {
+    display: none;
+  }
+
+  body:has(.pt-fields :focus) .pt-score-strip {
+    bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* ---------------------------------------------------------------------------
  * Printing a certificate
  *
  * The Decoration Writer's preview is the letter page myDecs prints, scaled to
