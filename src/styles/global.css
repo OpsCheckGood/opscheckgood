@@ -490,7 +490,7 @@ body {
   margin: 0;
   padding: 6px;
   list-style: none;
-  min-width: 264px;
+  min-width: 220px;
   background: var(--panel);
   border: 1px solid var(--rule-strong);
   box-shadow: 0 10px 24px rgb(0 0 0 / 0.14);
@@ -512,13 +512,6 @@ body {
   font-size: var(--text-small);
   font-weight: 600;
   color: var(--ink);
-}
-
-.nav-menu-note {
-  display: block;
-  margin-top: 1px;
-  font-size: var(--text-micro);
-  color: var(--ink-faint);
 }
 
 /* ---------------------------------------------------------------------------
