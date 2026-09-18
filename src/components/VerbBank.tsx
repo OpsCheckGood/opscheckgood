@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FORMS, getForm, isFormUsable } from '@/lib/data/forms';
-import { IRREGULAR_PAST, loadVerbs } from '@/lib/data/vocab';
+import { ADVERBS, IRREGULAR_PAST, loadVerbs } from '@/lib/data/vocab';
 import { loadFontMetrics } from '@/lib/metrics/registry';
 import type { FontMetrics } from '@/lib/metrics/font';
 import { roundMm } from '@/lib/metrics/units';
@@ -16,6 +16,9 @@ import type { VerbEntry } from '@/lib/data/types';
  * because on a 1206 the question is never only "is this stronger" but "does
  * it still fit". Picks are shown in the past tense, the tense a bullet is
  * written in, with the width each one adds or saves against the verb.
+ *
+ * Entries on The Tongue and Quill's action verb table are tagged, and its
+ * sample adverbs follow the list, measured the same way.
  */
 
 /** Enough rows to scan; beyond this the search box is the faster tool. */
@@ -81,6 +84,12 @@ export default function VerbBank() {
     }
     return [...leading, ...rest];
   }, [verbs, query, pastTense]);
+
+  /** Adverbs that match the same query, or all of them when there is none. */
+  const adverbs = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return ADVERBS.data.filter((a) => q === '' || a.includes(q));
+  }, [query]);
 
   const control = {
     background: 'var(--panel)',
@@ -165,6 +174,15 @@ export default function VerbBank() {
                       style={{ color: 'var(--ink)', minWidth: '11em' }}
                     >
                       <span style={{ fontWeight: 600 }}>{shown}</span>
+                      {entry.tq && (
+                        <span
+                          className="util"
+                          style={{ color: 'var(--accent)' }}
+                          title="On The Tongue and Quill's action verb table"
+                        >
+                          T&amp;Q
+                        </span>
+                      )}
                       {baseMm !== null && (
                         <span className="tabular text-[10.5px]" style={{ color: 'var(--ink-faint)' }}>
                           {roundMm(baseMm, 1)}mm
@@ -214,10 +232,48 @@ export default function VerbBank() {
         </>
       )}
 
+      {/* ---- Adverbs ------------------------------------------------------- */}
+      {adverbs.length > 0 && (
+        <section className="panel p-4">
+          <div className="flex flex-wrap items-baseline justify-between gap-3">
+            <h2 className="title m-0">Sample adverbs</h2>
+            <span className="util">The Tongue and Quill</span>
+          </div>
+          <p className="m-0 mt-1 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
+            The handbook's own list. Use sparingly: an adverb rarely does the work a number
+            does.
+          </p>
+          <ul className="m-0 mt-3 flex list-none flex-wrap gap-2 p-0">
+            {adverbs.map((adverb) => {
+              const mm = measure(adverb);
+              return (
+                <li
+                  key={adverb}
+                  className="flex items-baseline gap-2 border px-2.5 py-1 text-[12px]"
+                  style={{
+                    background: 'var(--panel-sunk)',
+                    borderColor: 'var(--rule-strong)',
+                    color: 'var(--ink)',
+                  }}
+                >
+                  <span>{adverb}</span>
+                  {mm !== null && (
+                    <span className="tabular text-[10.5px]" style={{ color: 'var(--ink-faint)' }}>
+                      {roundMm(mm, 1)}mm
+                    </span>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
+
       <p className="util m-0" style={{ textTransform: 'none' }}>
-        A curated list, not an official one: the same picks the Bench shows first when a
-        listed verb is selected. Widths are measured without kerning, the way a PDF form
-        field lays plain text out. Nothing you type here leaves your device.
+        A curated list, not an official one, except where marked T&amp;Q: those verbs and the
+        adverbs are The Tongue and Quill's. The picks are the same ones the Bench shows first
+        when a listed verb is selected. Widths are measured without kerning, the way a PDF
+        form field lays plain text out. Nothing you type here leaves your device.
       </p>
     </div>
   );

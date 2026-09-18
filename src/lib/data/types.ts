@@ -129,6 +129,8 @@ export interface VerbEntry {
   synonyms: string[];
   /** Optional grouping, e.g. "leadership". Purely for display. */
   category?: string;
+  /** True when the verb is on The Tongue and Quill's action verb table. */
+  tq?: boolean;
 }
 
 /** The action-verb list as the synonym lookup sees it: keyed by base form. */

@@ -48,9 +48,11 @@ the bullet again, in this order:
   dictionary. Each group is listed shortest first with the width it adds or saves, and
   every pick comes back in the tense the word was selected in, irregulars included
   (`lead` is offered as `led`, never `leaded`). The action-verb list is data
-  (`src/data/vocab/verbs.json`), about 700 past-tense verbs with three picks each; the
+  (`src/data/vocab/verbs.json`), about 740 past-tense verbs with three picks each, the
+  ones on The Tongue and Quill's action verb table tagged as such; the
   irregular past-tense map beside it (`irregular-past.json`) is checked against WordNet's
-  exception list by the tests. The **Verbs** tab lists the whole thing with widths.
+  exception list by the tests. The **Verbs** tab lists the whole thing with widths, and
+  the handbook's sample adverbs under it (`adverbs.json`).
 - **Review** — what a reviewer would say, as a list: words used more than once (grouped
   with their inflections), bullets that open with a weak word instead of an action verb,
   bullets with no number in them, and acronyms on neither approved list that the draft

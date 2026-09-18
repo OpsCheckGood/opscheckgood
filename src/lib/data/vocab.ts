@@ -10,6 +10,7 @@ import {
   type WeakOpener,
 } from './types';
 
+import adverbsRaw from '../../data/vocab/adverbs.json';
 import fluffRaw from '../../data/vocab/fluff.json';
 import irregularPastRaw from '../../data/vocab/irregular-past.json';
 import stopwordsRaw from '../../data/vocab/stopwords.json';
@@ -57,6 +58,7 @@ function normalizeVerbs(raw: unknown, _meta: unknown, file: string): VerbEntry[]
       synonyms: e.synonyms.map((s) => String(s).toLowerCase()),
     };
     if (typeof e.category === 'string' && e.category !== '') out.category = e.category;
+    if (e.tq === true) out.tq = true;
     return out;
   });
 }
@@ -150,6 +152,22 @@ export const FLUFF: Dataset<FluffData> = loadDataset(
   'src/data/vocab/fluff.json',
   fluffRaw,
   normalizeFluff,
+);
+
+function normalizeWordList(raw: unknown, _meta: unknown, file: string): string[] {
+  if (!Array.isArray(raw) || raw.length === 0) {
+    throw new DataFileError(file, 'data must be a non-empty array of words');
+  }
+  const words = raw.map((w) => String(w).toLowerCase());
+  if (new Set(words).size !== words.length) throw new DataFileError(file, 'a word repeats');
+  return words;
+}
+
+/** The Tongue and Quill's sample adverbs, for the Verbs page. */
+export const ADVERBS: Dataset<string[]> = loadDataset(
+  'src/data/vocab/adverbs.json',
+  adverbsRaw,
+  normalizeWordList,
 );
 
 export const STOPWORDS: Dataset<ReadonlySet<string>> = loadDataset(

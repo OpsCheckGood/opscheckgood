@@ -4,7 +4,7 @@ import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readMeta, isPlaceholderString, isPlaceholderNumber } from '@/lib/data/loader';
 import { FORMS, isFieldPopulated, isFormUsable, usableForms } from '@/lib/data/forms';
-import { IRREGULAR_PAST, STOPWORDS, indexActionVerbs, loadVerbs } from '@/lib/data/vocab';
+import { ADVERBS, IRREGULAR_PAST, STOPWORDS, indexActionVerbs, loadVerbs } from '@/lib/data/vocab';
 import { HQ_APPROVED, COMMON } from '@/lib/data/abbreviationSets';
 import { normalizeAbbreviations } from '@/lib/data/abbreviations';
 import { embeddedFontPaths } from '@/lib/metrics/registry';
@@ -221,6 +221,21 @@ describe('other datasets', () => {
     // Sorted, so a hand edit lands where a reader looks for it.
     expect(verbs.map((v) => v.verb)).toEqual([...verbs.map((v) => v.verb)].sort());
     expect(Object.keys(indexActionVerbs(verbs)).length).toBe(verbs.length);
+    // The Tongue and Quill table: 165 verbs, every one tagged and spelt as a past tense.
+    const tq = verbs.filter((v) => v.tq);
+    expect(tq.length).toBeGreaterThanOrEqual(160);
+    for (const v of ['compelled', 'deterred', 'excelled', 'propelled', 'sought', 'strove', 'led']) {
+      expect(verbs.some((e) => e.verb === v), v).toBe(true);
+    }
+    for (const v of ['compeled', 'detered', 'exceled', 'propeled']) {
+      expect(verbs.some((e) => e.verb === v), v).toBe(false);
+    }
+  });
+
+  it('loads the sample adverbs lowercased, unique and sorted', () => {
+    expect(ADVERBS.data.length).toBeGreaterThan(30);
+    expect(ADVERBS.data).toEqual([...ADVERBS.data].sort());
+    for (const a of ADVERBS.data) expect(a).toMatch(/^[a-z]+ly$/);
   });
 
   // The map is hand-written; WordNet's exception list is the check on it.
