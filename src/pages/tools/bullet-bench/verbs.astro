@@ -1,0 +1,15 @@
+---
+import Base from '../../../layouts/Base.astro';
+import BenchNav from '../../../components/BenchNav.astro';
+import VerbBank from '../../../components/VerbBank.tsx';
+---
+
+<Base
+  title="Verbs — Bullet Bench"
+  description="The action-verb list Bullet Bench draws on, with every verb and its picks measured for width."
+  brand="Bullet Bench"
+  tagline="Start strong. Stay on the line."
+>
+  <BenchNav current="verbs" />
+  <VerbBank client:load />
+</Base>

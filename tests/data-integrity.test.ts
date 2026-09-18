@@ -4,7 +4,7 @@ import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readMeta, isPlaceholderString, isPlaceholderNumber } from '@/lib/data/loader';
 import { FORMS, isFieldPopulated, isFormUsable, usableForms } from '@/lib/data/forms';
-import { STOPWORDS, VERBS } from '@/lib/data/vocab';
+import { IRREGULAR_PAST, STOPWORDS, indexActionVerbs, loadVerbs } from '@/lib/data/vocab';
 import { HQ_APPROVED, COMMON } from '@/lib/data/abbreviationSets';
 import { normalizeAbbreviations } from '@/lib/data/abbreviations';
 import { embeddedFontPaths } from '@/lib/metrics/registry';
@@ -207,8 +207,34 @@ describe('other datasets', () => {
     expect(STOPWORDS.data.size).toBeGreaterThan(20);
   });
 
-  it('loads the (empty) verb bank', () => {
-    expect(VERBS.data).toEqual([]);
+  it('loads the action-verb list with a base and synonyms for every verb', async () => {
+    const verbs = (await loadVerbs()).data;
+    expect(verbs.length).toBeGreaterThan(600);
+    for (const entry of verbs) {
+      expect(entry.verb, entry.verb).toMatch(/^[a-z][a-z' -]*$/);
+      expect(entry.base, entry.verb).toMatch(/^[a-z][a-z' -]*$/);
+      expect(entry.synonyms.length, entry.verb).toBeGreaterThan(0);
+      // A synonym is a single dictionary form: the editor replaces one word.
+      for (const syn of entry.synonyms) expect(syn, `${entry.verb}: ${syn}`).toMatch(/^[a-z]+$/);
+      expect(entry.synonyms, entry.verb).not.toContain(entry.base);
+    }
+    // Sorted, so a hand edit lands where a reader looks for it.
+    expect(verbs.map((v) => v.verb)).toEqual([...verbs.map((v) => v.verb)].sort());
+    expect(Object.keys(indexActionVerbs(verbs)).length).toBe(verbs.length);
+  });
+
+  // The map is hand-written; WordNet's exception list is the check on it.
+  it('agrees with WordNet about every irregular past', () => {
+    const exc = new Map<string, string[]>();
+    for (const line of readFileSync(join(root, 'vendor', 'wordnet-exc', 'verb.exc'), 'latin1').split('\n')) {
+      const [inflected, ...bases] = line.trim().split(' ');
+      if (inflected) exc.set(inflected, bases);
+    }
+    expect(Object.keys(IRREGULAR_PAST.data).length).toBeGreaterThan(100);
+    for (const [base, past] of Object.entries(IRREGULAR_PAST.data)) {
+      if (past === base) continue;
+      expect(exc.get(past), `${base} -> ${past}`).toContain(base);
+    }
   });
 });
 

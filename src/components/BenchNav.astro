@@ -2,15 +2,16 @@
 /**
  * Bullet Bench's own navigation.
  *
- * The abbreviation lists and the thesaurus are not sections of the site, they
- * are reference pages belonging to this one tool: the lists decide what its
- * Abbreviate pass does, and the thesaurus is the same lookup its editor runs on
- * a selected word. Putting them in the site header implied they stood alongside
- * the tools themselves.
+ * The abbreviation lists, the verb list and the thesaurus are not sections of
+ * the site, they are reference pages belonging to this one tool: the lists
+ * decide what its Abbreviate pass does, the verbs are what its editor offers
+ * first on a selected word, and the thesaurus is the same lookup it runs.
+ * Putting them in the site header implied they stood alongside the tools
+ * themselves.
  */
 interface Props {
   /** Which page is showing, so it can be marked rather than linked. */
-  current: 'bench' | 'abbreviations' | 'thesaurus';
+  current: 'bench' | 'abbreviations' | 'verbs' | 'thesaurus';
 }
 
 const { current } = Astro.props;
@@ -20,6 +21,7 @@ const root = `${base}/tools/bullet-bench`;
 const tabs = [
   { id: 'bench', label: 'Bench', href: `${root}/` },
   { id: 'abbreviations', label: 'Abbreviations', href: `${root}/abbreviations/` },
+  { id: 'verbs', label: 'Verbs', href: `${root}/verbs/` },
   { id: 'thesaurus', label: 'Thesaurus', href: `${root}/thesaurus/` },
 ] as const;
 ---

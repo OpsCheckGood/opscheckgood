@@ -1,22 +1,27 @@
 import { loadDataset } from './loader';
 import {
   DataFileError,
+  type ActionVerbIndex,
   type Dataset,
   type SynonymData,
   type VerbEntry,
   type WeakOpener,
 } from './types';
 
+import irregularPastRaw from '../../data/vocab/irregular-past.json';
 import stopwordsRaw from '../../data/vocab/stopwords.json';
-import verbsRaw from '../../data/vocab/verbs.json';
 import weakOpenersRaw from '../../data/vocab/weak-openers.json';
 
 /**
  * Vocabulary datasets.
  *
- * Synonyms are deliberately absent here: that file is large and only feature 5
- * needs it, so it is loaded through `loadSynonyms()` as its own chunk rather
- * than pulled into the initial bundle.
+ * Synonyms and the action-verb list are deliberately absent from the eager
+ * imports: the dictionary is large and the verb list is only wanted once a
+ * word is selected or the Verbs page opens, so both load through
+ * `loadSynonyms()` / `loadVerbs()` as their own chunks rather than being
+ * pulled into the initial bundle. `loadSynonyms()` folds the verb list and
+ * the irregular past-tense map into the dictionary it returns, so every
+ * lookup sees one object.
  */
 
 function normalizeStopwords(raw: unknown, _meta: unknown, file: string): ReadonlySet<string> {
@@ -26,13 +31,45 @@ function normalizeStopwords(raw: unknown, _meta: unknown, file: string): Readonl
 
 function normalizeVerbs(raw: unknown, _meta: unknown, file: string): VerbEntry[] {
   if (!Array.isArray(raw)) throw new DataFileError(file, 'data must be an array of entries');
+  const seen = new Set<string>();
   return raw.map((entry, i) => {
-    if (typeof entry !== 'object' || entry === null || typeof (entry as VerbEntry).verb !== 'string') {
-      throw new DataFileError(file, `entry ${i} must be {verb: string, category?: string}`);
+    const e = entry as Partial<VerbEntry>;
+    if (
+      typeof e !== 'object' ||
+      e === null ||
+      typeof e.verb !== 'string' ||
+      e.verb === '' ||
+      typeof e.base !== 'string' ||
+      e.base === '' ||
+      !Array.isArray(e.synonyms)
+    ) {
+      throw new DataFileError(file, `entry ${i} must be {verb, base, synonyms[], category?}`);
     }
-    const { verb, category } = entry as VerbEntry;
-    return category ? { verb, category } : { verb };
+    const verb = e.verb.toLowerCase();
+    if (seen.has(verb)) throw new DataFileError(file, `entry ${i} repeats "${verb}"`);
+    seen.add(verb);
+    const out: VerbEntry = {
+      verb,
+      base: e.base.toLowerCase(),
+      synonyms: e.synonyms.map((s) => String(s).toLowerCase()),
+    };
+    if (typeof e.category === 'string' && e.category !== '') out.category = e.category;
+    return out;
   });
+}
+
+function normalizeIrregularPast(raw: unknown, _meta: unknown, file: string): Record<string, string> {
+  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) {
+    throw new DataFileError(file, 'data must be an object of base -> past');
+  }
+  const out: Record<string, string> = {};
+  for (const [base, past] of Object.entries(raw as Record<string, unknown>)) {
+    if (typeof past !== 'string' || past === '') {
+      throw new DataFileError(file, `"${base}" must map to a past-tense string`);
+    }
+    out[base.toLowerCase()] = past.toLowerCase();
+  }
+  return out;
 }
 
 function normalizeWeakOpeners(raw: unknown, _meta: unknown, file: string): WeakOpener[] {
@@ -56,11 +93,32 @@ export const STOPWORDS: Dataset<ReadonlySet<string>> = loadDataset(
   normalizeStopwords,
 );
 
-export const VERBS: Dataset<VerbEntry[]> = loadDataset(
-  'src/data/vocab/verbs.json',
-  verbsRaw,
-  normalizeVerbs,
+export const IRREGULAR_PAST: Dataset<Record<string, string>> = loadDataset(
+  'src/data/vocab/irregular-past.json',
+  irregularPastRaw,
+  normalizeIrregularPast,
 );
+
+let verbsPromise: Promise<Dataset<VerbEntry[]>> | null = null;
+
+/** Lazily loads the curated action-verb list as its own chunk. */
+export function loadVerbs(): Promise<Dataset<VerbEntry[]>> {
+  verbsPromise ??= import('../../data/vocab/verbs.json').then((module) =>
+    loadDataset<unknown, VerbEntry[]>('src/data/vocab/verbs.json', module.default, normalizeVerbs),
+  );
+  return verbsPromise;
+}
+
+/** The verb list keyed by dictionary form, which is what a lookup resolves to. */
+export function indexActionVerbs(entries: readonly VerbEntry[]): ActionVerbIndex {
+  const index: ActionVerbIndex = {};
+  for (const entry of entries) {
+    // First entry wins when two share a base ("found" and "founded" do not,
+    // but a future edit might); the list is alphabetical, so that is stable.
+    index[entry.base] ??= { verb: entry.verb, synonyms: entry.synonyms };
+  }
+  return index;
+}
 
 export const WEAK_OPENERS: Dataset<WeakOpener[]> = loadDataset(
   'src/data/vocab/weak-openers.json',
@@ -70,23 +128,34 @@ export const WEAK_OPENERS: Dataset<WeakOpener[]> = loadDataset(
 
 let synonymsPromise: Promise<Dataset<SynonymData>> | null = null;
 
-/** Lazily loads the synonym map as its own chunk. Safe to call repeatedly. */
+/**
+ * Lazily loads the synonym map as its own chunk. Safe to call repeatedly.
+ *
+ * The returned data also carries the irregular past-tense map and the
+ * action-verb list, so a lookup that gets this object needs nothing else.
+ */
 export function loadSynonyms(): Promise<Dataset<SynonymData>> {
-  synonymsPromise ??= import('../../data/vocab/synonyms.json').then((module) =>
-    loadDataset<SynonymData, SynonymData>(
-      'src/data/vocab/synonyms.json',
-      module.default,
-      (raw, _meta, file) => {
-        if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) {
-          throw new DataFileError(file, 'data must be an object');
-        }
-        const { senses, exceptions } = raw as Partial<SynonymData>;
-        if (typeof senses !== 'object' || senses === null) {
-          throw new DataFileError(file, 'data.senses must be an object of lemma -> senses');
-        }
-        return { senses, exceptions: exceptions ?? {} };
-      },
-    ),
+  synonymsPromise ??= Promise.all([import('../../data/vocab/synonyms.json'), loadVerbs()]).then(
+    ([module, verbs]) =>
+      loadDataset<SynonymData, SynonymData>(
+        'src/data/vocab/synonyms.json',
+        module.default,
+        (raw, _meta, file) => {
+          if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) {
+            throw new DataFileError(file, 'data must be an object');
+          }
+          const { senses, exceptions } = raw as Partial<SynonymData>;
+          if (typeof senses !== 'object' || senses === null) {
+            throw new DataFileError(file, 'data.senses must be an object of lemma -> senses');
+          }
+          return {
+            senses,
+            exceptions: exceptions ?? {},
+            pastTense: IRREGULAR_PAST.data,
+            actionVerbs: indexActionVerbs(verbs.data),
+          };
+        },
+      ),
   );
   return synonymsPromise;
 }

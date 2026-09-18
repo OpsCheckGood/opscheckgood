@@ -4,7 +4,7 @@ import { loadSynonyms } from '@/lib/data/vocab';
 import { loadFontMetrics } from '@/lib/metrics/registry';
 import type { FontMetrics } from '@/lib/metrics/font';
 import { roundMm } from '@/lib/metrics/units';
-import { findSenses, type ResolvedSense } from '@/lib/text/synonyms';
+import { ACTION_VERB_LABEL, findSenses, type ResolvedSense } from '@/lib/text/synonyms';
 import type { SynonymData } from '@/lib/data/types';
 
 /**
@@ -175,6 +175,7 @@ export default function Thesaurus() {
         <p className="m-0 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
           Type a word and press Look up. Past tense is fine — <em>led</em>, <em>directed</em>{' '}
           and <em>overhauled</em> all resolve, and replacements come back in the same tense.
+          A word on the action-verb list shows that list's picks first.
         </p>
       ) : senses.length === 0 ? (
         <p className="m-0 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
@@ -196,14 +197,18 @@ export default function Thesaurus() {
           </div>
 
           {senses.map((sense, index) => (
-            <section key={index} className="panel p-4">
+            <section
+              key={index}
+              className="panel p-4"
+              style={sense.curated ? { borderColor: 'var(--accent)' } : undefined}
+            >
               <div className="flex flex-wrap items-baseline gap-x-2.5">
                 <span className="util">{index + 1}</span>
                 <span
                   className="util"
                   style={{ textTransform: 'none', fontStyle: 'italic', color: 'var(--accent)' }}
                 >
-                  {sense.partOfSpeech}
+                  {sense.curated ? ACTION_VERB_LABEL : sense.partOfSpeech}
                 </span>
                 <span className="text-[13px]" style={{ color: 'var(--ink)' }}>
                   {sense.definition}
@@ -228,7 +233,7 @@ export default function Thesaurus() {
                       className="flex items-baseline gap-2 border px-2.5 py-1.5 text-[12px]"
                       style={{
                         background: 'var(--panel-sunk)',
-                        borderColor: 'var(--rule-strong)',
+                        borderColor: sense.curated ? 'var(--accent)' : 'var(--rule-strong)',
                         color: 'var(--ink)',
                       }}
                     >

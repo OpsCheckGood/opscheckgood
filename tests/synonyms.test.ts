@@ -17,6 +17,12 @@ beforeAll(async () => {
   data = (await loadSynonyms()).data;
 }, 120_000);
 
+/** Regular -ed, or one of the irregular pasts the map knows: past tense either way. */
+function isPastTense(text: string): boolean {
+  const lower = text.toLowerCase();
+  return lower.endsWith('ed') || Object.values(data.pastTense ?? {}).includes(lower);
+}
+
 describe('inflect', () => {
   it('handles regular endings', () => {
     expect(inflect('direct', 'ed')).toBe('directed');
@@ -100,7 +106,7 @@ describe('findSynonyms', () => {
     const found = findSynonyms('directed', data);
     expect(found.length).toBeGreaterThan(0);
     expect(found[0]!.lemma).toBe('direct');
-    expect(found.every((o) => o.text.endsWith('ed'))).toBe(true);
+    expect(found.every((o) => isPastTense(o.text))).toBe(true);
   });
 
   it('resolves a gerund', () => {
@@ -123,6 +129,93 @@ describe('findSynonyms', () => {
     for (const word of ['lead', 'direct', 'train', 'improve']) {
       expect(findSynonyms(word, data).map((o) => o.text.toLowerCase())).not.toContain(word);
     }
+  });
+});
+
+/**
+ * The curated action-verb list rides along with the dictionary. Its picks
+ * were chosen for bullets, so they lead, flagged so the panel can say why.
+ */
+describe('action-verb list', () => {
+  it('is merged into the loaded data', () => {
+    expect(Object.keys(data.actionVerbs ?? {}).length).toBeGreaterThan(600);
+    expect(data.pastTense?.lead).toBe('led');
+  });
+
+  it('puts the list\'s picks first, in the selected tense, and marks them', () => {
+    const found = findSynonyms('Directed', data);
+    const curated = found.filter((o) => o.curated);
+    expect(curated.length).toBe(3);
+    expect(found.slice(0, 3).every((o) => o.curated)).toBe(true);
+    // direct -> govern, lead, manage: "lead" comes back as "led", not "leaded".
+    expect(curated.map((o) => o.text)).toEqual(['Governed', 'Led', 'Managed']);
+    // The dictionary still follows.
+    expect(found.length).toBeGreaterThan(3);
+    expect(found.slice(3).every((o) => !o.curated)).toBe(true);
+  });
+
+  it('shows the list as the leading meaning on the thesaurus page', () => {
+    const senses = findSenses('managed', data);
+    expect(senses[0]!.curated).toBe(true);
+    expect(senses[0]!.partOfSpeech).toBe('verb');
+    expect(senses[0]!.options.map((o) => o.text)).toEqual(['directed', 'supervised', 'wielded']);
+    expect(senses.slice(1).every((s) => !s.curated)).toBe(true);
+  });
+
+  it('resolves a listed verb the dictionary lacks', () => {
+    const found = findSynonyms('re-engineered', data);
+    expect(found.length).toBeGreaterThan(0);
+    expect(found.every((o) => o.curated)).toBe(true);
+    expect(findDefinition('re-engineered', data)?.actionVerb).toBe(true);
+  });
+
+  it('says when a dictionary word is also on the list', () => {
+    expect(findDefinition('led', data)?.actionVerb).toBe(true);
+    expect(findDefinition('aardvark', data)?.actionVerb).toBe(false);
+  });
+
+  it('leaves a word not on the list to the dictionary alone', () => {
+    const found = findSynonyms('aggregated', data);
+    expect(found.length).toBeGreaterThan(0);
+    expect(found.some((o) => o.curated)).toBe(false);
+  });
+});
+
+describe('irregular pasts', () => {
+  it('inflects an irregular base to its real past when given the map', () => {
+    expect(inflect('lead', 'ed', { lead: 'led' })).toBe('led');
+    expect(inflect('take', 'ed', { take: 'took' })).toBe('took');
+    // The map only speaks to -ed.
+    expect(inflect('take', 'ing', { take: 'took' })).toBe('taking');
+    expect(inflect('lead', 'ed')).toBe('leaded');
+  });
+
+  it('offers irregular verbs in the past tense instead of dropping them', () => {
+    // Dictionary synonyms of "guide" include "lead"; before the map it was
+    // silently left out of a past-tense lookup.
+    expect(findSynonyms('guided', data).map((o) => o.text)).toContain('led');
+    expect(findSynonyms('constructed', data).map((o) => o.text)).toContain('built');
+  });
+});
+
+describe('reducing to a dictionary form', () => {
+  it('does not mistake a doubled-consonant base for the source of a -ed word', () => {
+    // "cod" and "rat" are verbs, but their pasts are "codded" and "ratted".
+    expect(findDefinition('coded', data)?.lemma).toBe('code');
+    expect(findDefinition('rated', data)?.lemma).toBe('rate');
+    expect(findDefinition('hoped', data)?.lemma).toBe('hope');
+    // Single-consonant stems that really are the base still resolve.
+    expect(findDefinition('dropped', data)?.lemma).toBe('drop');
+    expect(findDefinition('visited', data)?.lemma).toBe('visit');
+  });
+
+  it('prefers the full spelling of a doubled-l verb over WordNet\'s short one', () => {
+    expect(findDefinition('installed', data)?.lemma).toBe('install');
+    expect(findDefinition('enrolled', data)?.lemma).toBe('enroll');
+    expect(findDefinition('fulfilled', data)?.lemma).toBe('fulfill');
+    // A real irregular is untouched.
+    expect(findDefinition('led', data)?.lemma).toBe('lead');
+    expect(findDefinition('wrote', data)?.lemma).toBe('write');
   });
 });
 
@@ -173,7 +266,7 @@ describe('reconstruction quality', () => {
     for (const word of ['directed', 'managed', 'improved', 'trained']) {
       const found = findSynonyms(word, data);
       expect(found.length, `"${word}" produced nothing`).toBeGreaterThan(0);
-      expect(found.every((o) => o.text.endsWith('ed'))).toBe(true);
+      expect(found.every((o) => isPastTense(o.text))).toBe(true);
     }
   });
 });

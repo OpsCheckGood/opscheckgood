@@ -116,11 +116,23 @@ export interface AbbreviationEntry {
 // Vocabulary
 // ---------------------------------------------------------------------------
 
+/**
+ * One verb from the curated action-verb list (`vocab/verbs.json`).
+ *
+ * `verb` is the past-tense form a bullet opens with, `base` the dictionary
+ * form the synonym lookup keys on, and `synonyms` are dictionary forms so
+ * they can be put into whatever tense the selected word was written in.
+ */
 export interface VerbEntry {
   verb: string;
+  base: string;
+  synonyms: string[];
   /** Optional grouping, e.g. "leadership". Purely for display. */
   category?: string;
 }
+
+/** The action-verb list as the synonym lookup sees it: keyed by base form. */
+export type ActionVerbIndex = Record<string, { verb: string; synonyms: string[] }>;
 
 /** An opening word reviewers send bullets back for, with what to try instead. */
 export interface WeakOpener {
@@ -153,6 +165,18 @@ export interface SynonymData {
    * written in the past tense, so without this most lookups find nothing.
    */
   exceptions: Record<string, string>;
+  /**
+   * Dictionary form -> simple past for irregular verbs (lead -> led), merged
+   * in by `loadSynonyms` from `vocab/irregular-past.json`. Without it an
+   * irregular synonym cannot be put into the past tense and has to be dropped.
+   */
+  pastTense?: Record<string, string>;
+  /**
+   * The curated action-verb list, merged in by `loadSynonyms` so a lookup
+   * can offer its picks ahead of the dictionary and resolve a listed verb the
+   * dictionary lacks.
+   */
+  actionVerbs?: ActionVerbIndex;
 }
 
 // ---------------------------------------------------------------------------

@@ -8,10 +8,16 @@ import type { Sense, SynonymData } from '../data/types';
  * WordNet lemmas. So a lookup has to reduce the selected word to its dictionary
  * form, then push each synonym back into the same form before offering it.
  *
- * Re-inflection uses regular rules and will occasionally produce something
- * ugly. That is why the option list shows the exact string that will be
- * inserted rather than the dictionary form: the user reads what they are about
- * to get and simply does not pick the bad one.
+ * Re-inflection uses regular rules, plus a map of irregular pasts (lead ->
+ * led) so the verbs bullets are actually built from come back right. It will
+ * still occasionally produce something ugly. That is why the option list
+ * shows the exact string that will be inserted rather than the dictionary
+ * form: the user reads what they are about to get and simply does not pick
+ * the bad one.
+ *
+ * Two sources feed a lookup. The curated action-verb list comes first: its
+ * three or so picks per verb were chosen for bullets, and they lead the list
+ * flagged as such. The dictionary follows with everything else.
  */
 
 export type Inflection = 'none' | 's' | 'ed' | 'ing';
@@ -23,6 +29,8 @@ export interface SynonymOption {
   lemma: string;
   /** True when the form was reconstructed rather than looked up verbatim. */
   reconstructed: boolean;
+  /** True when it comes from the curated action-verb list, not the dictionary. */
+  curated: boolean;
 }
 
 const VOWELS = new Set(['a', 'e', 'i', 'o', 'u']);
@@ -49,8 +57,17 @@ function doublesFinalConsonant(base: string): boolean {
   return !isVowel(c1) && isVowel(v) && !isVowel(c2) && !'wxy'.includes(c2);
 }
 
-export function inflect(base: string, form: Inflection): string {
+/**
+ * Puts a dictionary form into `form`. `pastTense` supplies irregular simple
+ * pasts; without it an irregular base gets the regular rule, which is wrong.
+ */
+export function inflect(
+  base: string,
+  form: Inflection,
+  pastTense?: Readonly<Record<string, string>>,
+): string {
   if (form === 'none') return base;
+  if (form === 'ed' && pastTense && Object.hasOwn(pastTense, base)) return pastTense[base]!;
   const last = base.at(-1) ?? '';
   const penultimate = base.at(-2) ?? '';
 
@@ -85,8 +102,12 @@ function candidateBases(word: string): Array<{ base: string; form: Inflection }>
   }
   if (word.endsWith('s') && !word.endsWith('ss')) add(word.slice(0, -1), 's');
 
+  // A stem that would double its last consonant cannot be the base: "cod"
+  // gives "codded", so "coded" must come from "code". Tried in that order,
+  // with the bare stem kept as a fallback since the doubling rule is a guess.
   if (word.endsWith('ing') && word.length > 4) {
     const stem = word.slice(0, -3);
+    if (doublesFinalConsonant(stem)) add(`${stem}e`, 'ing');
     add(stem, 'ing');
     add(`${stem}e`, 'ing');
     if (stem.length > 1 && stem.at(-1) === stem.at(-2)) add(stem.slice(0, -1), 'ing');
@@ -94,6 +115,7 @@ function candidateBases(word: string): Array<{ base: string; form: Inflection }>
   if (word.endsWith('ied') && word.length > 4) add(`${word.slice(0, -3)}y`, 'ed');
   if (word.endsWith('ed') && word.length > 3) {
     const stem = word.slice(0, -2);
+    if (doublesFinalConsonant(stem)) add(word.slice(0, -1), 'ed');
     add(stem, 'ed');
     add(word.slice(0, -1), 'ed');
     if (stem.length > 1 && stem.at(-1) === stem.at(-2)) add(stem.slice(0, -1), 'ed');
@@ -130,6 +152,31 @@ function exceptionFor(data: SynonymData, word: string): string | undefined {
   return Object.hasOwn(data.exceptions, word) ? data.exceptions[word] : undefined;
 }
 
+function actionVerbFor(data: SynonymData, lemma: string) {
+  const verbs = data.actionVerbs;
+  return verbs && Object.hasOwn(verbs, lemma) ? verbs[lemma] : undefined;
+}
+
+/** Past-tense form -> base, for the listed verbs; built once per dataset. */
+const actionPastCache = new WeakMap<SynonymData, Map<string, string>>();
+
+function actionVerbByPast(data: SynonymData): Map<string, string> {
+  let map = actionPastCache.get(data);
+  if (!map) {
+    map = new Map();
+    for (const [base, entry] of Object.entries(data.actionVerbs ?? {})) {
+      if (!map.has(entry.verb)) map.set(entry.verb, base);
+    }
+    actionPastCache.set(data, map);
+  }
+  return map;
+}
+
+/** The label shown where a dictionary definition would be. */
+export const ACTION_VERB_LABEL = 'action verb list';
+export const ACTION_VERB_DEFINITION =
+  'On the curated list of verbs bullets are built from. These picks come first.';
+
 export interface Definition {
   /** The dictionary form the definition belongs to. */
   lemma: string;
@@ -137,6 +184,8 @@ export interface Definition {
   text: string;
   /** True when the selected word was inflected and had to be reduced. */
   reduced: boolean;
+  /** True when the word is on the curated action-verb list. */
+  actionVerb: boolean;
 }
 
 /** One meaning, with its synonyms already put into the selected word's form. */
@@ -144,6 +193,8 @@ export interface ResolvedSense {
   partOfSpeech: string;
   definition: string;
   options: SynonymOption[];
+  /** True for the action-verb list's entry, which leads when present. */
+  curated: boolean;
 }
 
 /**
@@ -158,7 +209,7 @@ export function resolveLemma(
 ): { lemma: string; form: Inflection } | null {
   const lower = word.toLowerCase();
   if (lower.length < 3) return null;
-  if (sensesFor(data, lower)) return { lemma: lower, form: 'none' };
+  if (sensesFor(data, lower) || actionVerbFor(data, lower)) return { lemma: lower, form: 'none' };
 
   const irregular = exceptionFor(data, lower);
   if (irregular) {
@@ -167,10 +218,28 @@ export function resolveLemma(
       : lower.endsWith('s')
         ? 's'
         : 'ed';
-    return { lemma: irregular, form };
+    // WordNet's list prefers the shorter spelling of a doubled-l verb, so
+    // "installed" maps to "instal". When the regular rule reaches a longer
+    // lemma the shorter one is the start of, that is the spelling people use.
+    const fuller = candidateBases(lower).find(
+      (c) =>
+        c.form === form &&
+        c.base.length > irregular.length &&
+        c.base.startsWith(irregular) &&
+        sensesFor(data, c.base),
+    );
+    return { lemma: fuller?.base ?? irregular, form };
   }
   for (const candidate of candidateBases(lower)) {
     if (sensesFor(data, candidate.base)) {
+      return { lemma: candidate.base, form: candidate.form };
+    }
+  }
+  // Listed verbs the dictionary lacks ("re-engineered", "benchmarked").
+  const listedBase = actionVerbByPast(data).get(lower);
+  if (listedBase) return { lemma: listedBase, form: 'ed' };
+  for (const candidate of candidateBases(lower)) {
+    if (actionVerbFor(data, candidate.base)) {
       return { lemma: candidate.base, form: candidate.form };
     }
   }
@@ -196,22 +265,47 @@ function irregularBases(data: SynonymData): Set<string> {
   return set;
 }
 
-/** Puts one sense's synonyms into the form the selected word was written in. */
+/** Puts a list of dictionary forms into the form the selected word was written in. */
 function optionsFor(
-  sense: Sense,
+  synonyms: readonly string[],
   word: string,
   lemma: string,
   form: Inflection,
   irregulars: Set<string>,
+  data: SynonymData,
+  curated: boolean,
 ): SynonymOption[] {
-  return sense.s
-    // -ing and -s are regular even for irregular verbs; -ed is not.
-    .filter((syn) => form !== 'ed' || !irregulars.has(syn))
-    .map((syn) => ({
-      text: matchCase(form === 'none' ? syn : inflect(syn, form), word),
-      lemma,
-      reconstructed: form !== 'none',
-    }));
+  const pastTense = data.pastTense ?? {};
+  return (
+    synonyms
+      // -ing and -s are regular even for irregular verbs; -ed is not, so an
+      // irregular base is offered only when its past is known.
+      .filter((syn) => form !== 'ed' || !irregulars.has(syn) || Object.hasOwn(pastTense, syn))
+      .map((syn) => ({
+        text: matchCase(form === 'none' ? syn : inflect(syn, form, pastTense), word),
+        lemma,
+        reconstructed: form !== 'none',
+        curated,
+      }))
+  );
+}
+
+/** The action-verb list's entry for a lemma, shaped like a dictionary sense. */
+function curatedSense(
+  word: string,
+  lemma: string,
+  form: Inflection,
+  irregulars: Set<string>,
+  data: SynonymData,
+): ResolvedSense | null {
+  const entry = actionVerbFor(data, lemma);
+  if (!entry) return null;
+  return {
+    partOfSpeech: 'verb',
+    definition: ACTION_VERB_DEFINITION,
+    options: optionsFor(entry.synonyms, word, lemma, form, irregulars, data, true),
+    curated: true,
+  };
 }
 
 /**
@@ -225,26 +319,42 @@ export function findSenses(word: string, data: SynonymData): ResolvedSense[] {
   if (!resolved) return [];
   const senses = sensesFor(data, resolved.lemma) ?? [];
   const irregulars = irregularBases(data);
+  const { lemma, form } = resolved;
 
-  return senses
-    .map((sense) => ({
-      partOfSpeech: PART_OF_SPEECH[sense.p] ?? sense.p,
-      definition: sense.g,
-      options: optionsFor(sense, word, resolved.lemma, resolved.form, irregulars),
-    }))
-    .filter((sense) => sense.options.length > 0);
+  const curated = curatedSense(word, lemma, form, irregulars, data);
+  const dictionary = senses.map((sense) => ({
+    partOfSpeech: PART_OF_SPEECH[sense.p] ?? sense.p,
+    definition: sense.g,
+    options: optionsFor(sense.s, word, lemma, form, irregulars, data, false),
+    curated: false,
+  }));
+  return [...(curated ? [curated] : []), ...dictionary].filter(
+    (sense) => sense.options.length > 0,
+  );
 }
 
 export function findDefinition(word: string, data: SynonymData): Definition | null {
   const resolved = resolveLemma(word, data);
   if (!resolved) return null;
+  const actionVerb = actionVerbFor(data, resolved.lemma) !== undefined;
   const first = sensesFor(data, resolved.lemma)?.[0];
-  if (!first) return null;
+  if (!first) {
+    // Listed but not in the dictionary: still worth saying what it is.
+    if (!actionVerb) return null;
+    return {
+      lemma: resolved.lemma,
+      partOfSpeech: 'verb',
+      text: ACTION_VERB_DEFINITION,
+      reduced: resolved.form !== 'none',
+      actionVerb,
+    };
+  }
   return {
     lemma: resolved.lemma,
     partOfSpeech: PART_OF_SPEECH[first.p] ?? first.p,
     text: first.g,
     reduced: resolved.form !== 'none',
+    actionVerb,
   };
 }
 
@@ -254,7 +364,9 @@ export function findDefinition(word: string, data: SynonymData): Definition | nu
  *
  * Mixing parts of speech is what offers `physique` as a replacement for
  * `build`. Mixing senses within one part of speech is tolerable here, because
- * the editor sorts by width and you are scanning for something shorter.
+ * the editor sorts by width and you are scanning for something shorter. The
+ * action-verb list's picks lead when the word is on it, and since that entry
+ * is a verb, a listed word only ever gets verbs back.
  */
 export function findSynonyms(word: string, data: SynonymData): SynonymOption[] {
   const senses = findSenses(word, data);

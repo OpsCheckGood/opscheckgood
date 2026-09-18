@@ -123,6 +123,23 @@ type StatusState = 'ok' | 'warn' | 'bad' | 'idle';
 const BENCH_FORM = getForm('af1206') ?? FORMS[0]!;
 const BENCH_FIELD = BENCH_FORM.data.fields[0]!;
 
+/** Where a replacement came from, which decides its place and its border. */
+type OptionKind = 'abbreviation' | 'verb' | 'synonym';
+
+const OPTION_RANK: Record<OptionKind, number> = { abbreviation: 0, verb: 1, synonym: 2 };
+
+const OPTION_BORDER: Record<OptionKind, string> = {
+  abbreviation: 'var(--ok)',
+  verb: 'var(--accent)',
+  synonym: 'var(--rule-strong)',
+};
+
+const OPTION_TITLE: Record<OptionKind, string> = {
+  abbreviation: 'Approved abbreviation',
+  verb: 'From the action-verb list',
+  synonym: '',
+};
+
 const STATE_COLOR: Record<StatusState, string> = {
   ok: 'var(--ok)',
   warn: 'var(--warn)',
@@ -599,21 +616,22 @@ export default function BulletBench() {
 
   /**
    * Replacement options for the selected word, each carrying the width it
-   * would add or save. Sorted by that delta so the shortest surface first --
-   * on a line that will not fit, the shortest option is the useful one.
+   * would add or save. Three groups, in order: an approved abbreviation, the
+   * action-verb list's picks, then the dictionary. Within a group the list is
+   * sorted by that delta so the shortest surface first -- on a line that will
+   * not fit, the shortest option is the useful one.
    */
   const options = useMemo(() => {
     if (!selection || !font) return [];
     const current = font.widthMm(selection.word, sizePt, false);
 
-    const synonyms: Array<SynonymOption & { deltaMm: number; kind: 'synonym' | 'abbreviation' }> =
-      synonymData
-        ? findSynonyms(selection.word, synonymData).map((option) => ({
-            ...option,
-            kind: 'synonym' as const,
-            deltaMm: font.widthMm(option.text, sizePt, false) - current,
-          }))
-        : [];
+    const synonyms: Array<SynonymOption & { deltaMm: number; kind: OptionKind }> = synonymData
+      ? findSynonyms(selection.word, synonymData).map((option) => ({
+          ...option,
+          kind: option.curated ? ('verb' as const) : ('synonym' as const),
+          deltaMm: font.widthMm(option.text, sizePt, false) - current,
+        }))
+      : [];
 
     // An approved abbreviation is usually the biggest single saving available,
     // so it belongs in the same list rather than somewhere separate.
@@ -625,6 +643,7 @@ export default function BulletBench() {
         text: abbr,
         lemma: selection.word.toLowerCase(),
         reconstructed: false,
+        curated: false,
         kind: 'abbreviation',
         deltaMm: font.widthMm(abbr, sizePt, false) - current,
       });
@@ -638,7 +657,12 @@ export default function BulletBench() {
         seen.add(key);
         return true;
       })
-      .sort((a, b) => a.deltaMm - b.deltaMm || a.text.localeCompare(b.text));
+      .sort(
+        (a, b) =>
+          OPTION_RANK[a.kind] - OPTION_RANK[b.kind] ||
+          a.deltaMm - b.deltaMm ||
+          a.text.localeCompare(b.text),
+      );
   }, [selection, synonymData, font, sizePt, suggestionTable]);
 
   /** What the selected word actually means, so a shorter swap stays correct. */
@@ -1194,6 +1218,15 @@ export default function BulletBench() {
                   from "{selection.word}"
                 </span>
               )}
+              {definition?.actionVerb && (
+                <span
+                  className="util"
+                  style={{ color: 'var(--accent)' }}
+                  title="On the curated list of verbs bullets are built from"
+                >
+                  action verb
+                </span>
+              )}
             </div>
             <p className="m-0 mt-1.5 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
               {definition
@@ -1213,8 +1246,9 @@ export default function BulletBench() {
 
         {!selection ? (
           <p className="m-0 mt-3 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
-            Highlight or click a word on the left. Replacements are listed shortest first,
-            with the width each one adds or saves.
+            Highlight or click a word on the left. Replacements come in three groups: an
+            approved abbreviation, the action-verb list's picks, then the dictionary. Each
+            group is listed shortest first, with the width it adds or saves.
           </p>
         ) : options.length === 0 ? (
           <p className="m-0 mt-3 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
@@ -1232,15 +1266,15 @@ export default function BulletBench() {
                   className="flex items-baseline gap-2 border px-2.5 py-1.5 text-[12px]"
                   title={
                     option.kind === 'abbreviation'
-                      ? 'Approved abbreviation'
+                      ? OPTION_TITLE.abbreviation
                       : option.reconstructed
-                        ? `From "${option.lemma}", put back into the tense you selected`
-                        : undefined
+                        ? `${option.kind === 'verb' ? `${OPTION_TITLE.verb}, ` : 'From '}` +
+                          `"${option.lemma}", put back into the tense you selected`
+                        : OPTION_TITLE[option.kind] || undefined
                   }
                   style={{
                     background: 'var(--panel-sunk)',
-                    borderColor:
-                      option.kind === 'abbreviation' ? 'var(--ok)' : 'var(--rule-strong)',
+                    borderColor: OPTION_BORDER[option.kind],
                     color: 'var(--ink)',
                   }}
                 >

@@ -48,8 +48,14 @@ bullet again:
   bullets with no number in them, and acronyms on neither approved list that the draft
   does not spell out. Click a finding and the caret goes to it; click again for the next
   occurrence. The weak-opener list is data (`src/data/vocab/weak-openers.json`).
-- **Definition & Synonyms** — the word under the caret, defined, with replacements
-  listed shortest first and the width each one adds or saves.
+- **Definition & Synonyms** — the word under the caret, defined, with replacements in
+  three groups: an approved abbreviation, the action-verb list's picks, then the
+  dictionary. Each group is listed shortest first with the width it adds or saves, and
+  every pick comes back in the tense the word was selected in, irregulars included
+  (`lead` is offered as `led`, never `leaded`). The action-verb list is data
+  (`src/data/vocab/verbs.json`), about 700 past-tense verbs with three picks each; the
+  irregular past-tense map beside it (`irregular-past.json`) is checked against WordNet's
+  exception list by the tests. The **Verbs** tab lists the whole thing with widths.
 
 **Open Form** reads an AF form PDF -- the 1206 someone sent you, a 910 with comments in
 it -- recognises which form it is from its own XFA data, selects it, and puts the
@@ -387,7 +393,7 @@ src/
   data/                    every value that could change, as JSON with meta
     forms/                 form definitions (af1206, af910, af911, sandbox)
     abbreviations/         hq-approved, common
-    vocab/                 verbs, stopwords, synonyms
+    vocab/                 action verbs, irregular pasts, stopwords, weak openers, synonyms
   lib/
     data/                  loaders, schemas, validation
     metrics/               font parsing and measurement
