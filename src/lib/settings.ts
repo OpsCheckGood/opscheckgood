@@ -15,16 +15,22 @@ export const BENCH_PREFS_KEY = 'ocg.bullet-bench.prefs.v1';
 
 export type Theme = 'light' | 'dark';
 
+/** The three boxes under the draft, each of which can be folded to its header. */
+export type BenchPanel = 'synonyms' | 'review' | 'patrol';
+
 export interface BenchPrefs {
   autoSpace: boolean;
   abbreviate: boolean;
   showDuplicates: boolean;
+  /** Which of the boxes under the draft are folded to their header line. */
+  folded: Record<BenchPanel, boolean>;
 }
 
 export const DEFAULT_BENCH_PREFS: BenchPrefs = {
   autoSpace: true,
   abbreviate: true,
   showDuplicates: true,
+  folded: { synonyms: false, review: false, patrol: false },
 };
 
 function readRaw(key: string): string | null {
@@ -60,7 +66,11 @@ export function parseBenchPrefs(raw: string | null): BenchPrefs {
     // change; without it the new default wins once, after which a deliberate
     // "off" is kept like any other preference.
     const duplicatesChosen = parsed.duplicatesDefaulted === true;
+    const folded = (parsed.folded ?? {}) as Partial<Record<BenchPanel, unknown>>;
+    const fold = (panel: BenchPanel) =>
+      typeof folded[panel] === 'boolean' ? (folded[panel] as boolean) : DEFAULT_BENCH_PREFS.folded[panel];
     return {
+      folded: { synonyms: fold('synonyms'), review: fold('review'), patrol: fold('patrol') },
       autoSpace: typeof parsed.autoSpace === 'boolean' ? parsed.autoSpace : DEFAULT_BENCH_PREFS.autoSpace,
       abbreviate: typeof parsed.abbreviate === 'boolean' ? parsed.abbreviate : DEFAULT_BENCH_PREFS.abbreviate,
       showDuplicates:

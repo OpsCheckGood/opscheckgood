@@ -41,7 +41,8 @@ pdf-bullets, and its half-spaces become ordinary spaces on the way in; only the 
 carries them. Otherwise the shaper would be measuring its own last answer.
 
 Under the shaper sit three more boxes that read the same draft rather than asking for
-the bullet again, in this order:
+the bullet again, in this order. Each folds to its header line, which keeps its count,
+and the fold is remembered with the other bench preferences:
 
 - **Definition & Synonyms** — the word under the caret, defined, with replacements in
   three groups: an approved abbreviation, the action-verb list's picks, then the

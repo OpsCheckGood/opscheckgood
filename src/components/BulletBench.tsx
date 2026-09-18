@@ -11,7 +11,7 @@ import {
 } from '@/lib/data/abbreviationStore';
 import { parsePdfBulletsFile, serializePdfBulletsFile } from '@/lib/data/pdfBulletsFile';
 import { readForm, bulletFields } from '@/lib/pdf/form';
-import { loadBenchPrefs, saveBenchPrefs, DEFAULT_BENCH_PREFS } from '@/lib/settings';
+import { loadBenchPrefs, saveBenchPrefs, DEFAULT_BENCH_PREFS, type BenchPanel } from '@/lib/settings';
 import { useMediaQuery, NARROW } from '@/lib/useMediaQuery';
 import { FLUFF, IRREGULAR_PAST, STOPWORDS, WEAK_OPENERS } from '@/lib/data/vocab';
 import { loadFontMetrics } from '@/lib/metrics/registry';
@@ -177,6 +177,10 @@ export default function BulletBench() {
   // spacing work: shortening the words first is what gives the optimizer room.
   const [abbreviate, setAbbreviate] = useState(DEFAULT_BENCH_PREFS.abbreviate);
   const [showDuplicates, setShowDuplicates] = useState(DEFAULT_BENCH_PREFS.showDuplicates);
+  /** Which boxes under the draft are folded to their header. A preference. */
+  const [folded, setFolded] = useState(DEFAULT_BENCH_PREFS.folded);
+  const toggleFold = (panel: BenchPanel) =>
+    setFolded((f) => ({ ...f, [panel]: !f[panel] }));
   const [activeLine, setActiveLine] = useState(0);
   const [copyNote, setCopyNote] = useState<string | null>(null);
   /** Two-step clear: one click arms it, a second within a few seconds does it. */
@@ -215,6 +219,7 @@ export default function BulletBench() {
     setAutoSpace(prefs.autoSpace);
     setAbbreviate(prefs.abbreviate);
     setShowDuplicates(prefs.showDuplicates);
+    setFolded(prefs.folded);
     setDraftLoaded(true);
   }, []);
 
@@ -226,8 +231,9 @@ export default function BulletBench() {
       autoSpace,
       abbreviate,
       showDuplicates,
+      folded,
     });
-  }, [autoSpace, abbreviate, showDuplicates, draftLoaded]);
+  }, [autoSpace, abbreviate, showDuplicates, folded, draftLoaded]);
 
   // Read after mount, and again when the tab regains focus, so an edit made on
   // the Abbreviations page in another tab is picked up without a reload.
@@ -388,6 +394,12 @@ export default function BulletBench() {
       }),
     [text],
   );
+  /**
+   * Repeats get one row of chips rather than a row each: the draft already
+   * paints them, so the list only has to name them. The rest keep a row.
+   */
+  const repeatFindings = findings.filter((f) => f.kind === 'repeat');
+  const otherFindings = findings.filter((f) => f.kind !== 'repeat');
   /** Which occurrence of each finding the last click went to. */
   const [visited, setVisited] = useState<Record<string, number>>({});
 
@@ -1182,16 +1194,14 @@ export default function BulletBench() {
 
       {/* ---- Synonyms ---------------------------------------------------- */}
       <section className="panel p-4">
-        <div className="flex flex-wrap items-baseline justify-between gap-3">
-          <h2 className="title m-0">Definition &amp; Synonyms</h2>
-          <span className="util">
-            {selection
-              ? `Selected: ${selection.word}`
-              : 'Select a word in the draft'}
-          </span>
-        </div>
+        <PanelHeader
+          title="Definition & Synonyms"
+          summary={selection ? `Selected: ${selection.word}` : 'Select a word in the draft'}
+          folded={folded.synonyms}
+          onToggle={() => toggleFold('synonyms')}
+        />
 
-        {selection && (
+        {!folded.synonyms && selection && (
           <div
             className="mt-3 rounded-[4px] border p-3"
             style={{ background: 'var(--panel-sunk)', borderColor: 'var(--rule)' }}
@@ -1230,13 +1240,13 @@ export default function BulletBench() {
           </div>
         )}
 
-        {selectionRepeats > 1 && (
+        {!folded.synonyms && selectionRepeats > 1 && (
           <p className="m-0 mt-2 text-[12px]" style={{ color: 'var(--warn)' }}>
             "{selection?.word}" appears {selectionRepeats} times in this draft.
           </p>
         )}
 
-        {!selection ? (
+        {folded.synonyms ? null : !selection ? (
           <p className="m-0 mt-3 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
             Highlight or click a word on the left. Replacements come in three groups: an
             approved abbreviation, the action-verb list's picks, then the dictionary. Each
@@ -1295,23 +1305,53 @@ export default function BulletBench() {
         follows -- there is nothing to paste back.
       */}
       <section className="panel p-4">
-        <div className="flex flex-wrap items-baseline justify-between gap-3">
-          <h2 className="title m-0">Review</h2>
-          <span className="util">
-            {liveLines === 0
+        <PanelHeader
+          title="Review"
+          summary={
+            liveLines === 0
               ? 'Nothing to review'
               : findings.length === 0
                 ? 'Nothing flagged'
-                : `${findings.length} finding${findings.length === 1 ? '' : 's'}`}
-          </span>
-        </div>
+                : `${findings.length} finding${findings.length === 1 ? '' : 's'}`
+          }
+          folded={folded.review}
+          onToggle={() => toggleFold('review')}
+        />
+        {!folded.review && (
         <p className="m-0 mt-1 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
           Repeated words, weak openers, bullets with no number, and acronyms on neither
           list. Click a finding to go to it in the draft.
         </p>
-        {findings.length > 0 && (
+        )}
+        {!folded.review && repeatFindings.length > 0 && (
+          <div className="mt-3 flex flex-wrap items-center gap-2 text-[12px]">
+            <span className="util" style={{ color: 'var(--warn)', minWidth: '7.5em' }}>
+              Repeated
+            </span>
+            {repeatFindings.map((finding) => (
+              <button
+                key={finding.token}
+                type="button"
+                onClick={() => jumpTo(finding)}
+                className="flex items-baseline gap-1.5 border px-2 py-0.5 text-[12px]"
+                title={`${finding.message} Click to go to it; click again for the next one.`}
+                style={{
+                  background: duplicateColour.get(finding.token.split(' / ')[0]!.toLowerCase()),
+                  borderColor: 'var(--rule)',
+                  color: 'var(--ink)',
+                }}
+              >
+                <span style={{ fontWeight: 600 }}>{finding.token.split(' / ')[0]}</span>
+                <span className="tabular" style={{ color: 'var(--ink-muted)' }}>
+                  ×{finding.occurrences.length}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
+        {!folded.review && otherFindings.length > 0 && (
           <ul className="m-0 mt-3 flex list-none flex-col gap-1.5 p-0">
-            {findings.map((finding) => (
+            {otherFindings.map((finding) => (
               <li key={`${finding.kind}:${finding.token}:${finding.occurrences[0]!.start}`}>
                 <button
                   type="button"
@@ -1371,17 +1411,20 @@ export default function BulletBench() {
         and never touches the text.
       */}
       <section className="panel p-4">
-        <div className="flex flex-wrap items-baseline justify-between gap-3">
-          <h2 className="title m-0">Fluff Patrol</h2>
-          <span className="util">
-            {liveLines === 0
+        <PanelHeader
+          title="Fluff Patrol"
+          summary={
+            liveLines === 0
               ? 'Nothing to patrol'
               : patrolFindings.length === 0
                 ? 'Nothing flagged'
                 : `${patrolFindings.length} finding${patrolFindings.length === 1 ? '' : 's'}` +
-                  ` · ${patrolCounts.high} high · ${patrolCounts.medium} medium · ${patrolCounts.low} low`}
-          </span>
-        </div>
+                  ` · ${patrolCounts.high} high · ${patrolCounts.medium} medium · ${patrolCounts.low} low`
+          }
+          folded={folded.patrol}
+          onToggle={() => toggleFold('patrol')}
+        />
+        {!folded.patrol && (<>
         <p className="m-0 mt-1 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
           Fluff, vague claims, duty language, number style and readability, each as a
           question rather than a verdict. Suggestions, not policy: dismiss what does not
@@ -1498,6 +1541,7 @@ export default function BulletBench() {
             Restore {patrolDismissed} dismissed
           </button>
         )}
+        </>)}
       </section>
 
       {/* Off-screen mirror so Copy has something to select when the clipboard
@@ -1580,6 +1624,42 @@ function Field({
       <span className="util">{label}</span>
       {children}
     </div>
+  );
+}
+
+/**
+ * A box's header line: the title, a one-line summary that stays readable
+ * when the box is folded, and the fold itself. The whole line is the button,
+ * so a fold is one click anywhere on it, and the state is a preference.
+ */
+function PanelHeader({
+  title,
+  summary,
+  folded,
+  onToggle,
+}: {
+  title: string;
+  summary: string;
+  folded: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-expanded={!folded}
+      className="flex w-full flex-wrap items-baseline justify-between gap-3 border-0 bg-transparent p-0 text-left"
+      style={{ color: 'inherit', cursor: 'pointer' }}
+      title={folded ? 'Unfold' : 'Fold to the header line'}
+    >
+      <h2 className="title m-0 flex items-baseline gap-2">
+        <span aria-hidden style={{ color: 'var(--ink-faint)', fontSize: 10 }}>
+          {folded ? '\u25B6' : '\u25BC'}
+        </span>
+        {title}
+      </h2>
+      <span className="util">{summary}</span>
+    </button>
   );
 }
 
