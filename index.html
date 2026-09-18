@@ -1,0 +1,57 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><!--
+      interactive-widget: when the keyboard opens, the page shrinks to the
+      space above it instead of sliding under it, so a bar fixed to the bottom
+      of the screen sits on the keyboard rather than behind it.
+    --><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"><!--
+      Colours the phone's own chrome to match the page, which is most of what
+      separates "a website in a browser" from "an app". Two values so the bar
+      follows the theme.
+    --><meta name="theme-color" content="#f2f1ed" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#121314" media="(prefers-color-scheme: dark)"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Ops Check Good"><title>Ops Check Good</title><meta name="description" content="Free administrative and readiness tools for United States Air Force personnel: physical fitness assessment scoring, performance statement and award bullet formatting, official memorandum and letter of counseling generation, decoration citation drafting, below-the-zone promotion dates, basic pay lookup by grade and years of service, promotion ceremony scripts, and a First Sergeant helping-agency directory. Runs entirely in the browser."><!-- No favicon link, no web fonts, no analytics: hard constraint 1. --><!--
+      Runs before first paint so a stored theme choice is applied to <html>
+      before anything is drawn. Inline and synchronous on purpose: an external
+      or deferred script would paint the wrong theme first and then correct it.
+    --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('ocg.theme');
+          if (stored === 'light' || stored === 'dark') {
+            document.documentElement.setAttribute('data-theme', stored);
+          }
+        } catch (e) {
+          /* Blocked storage: fall through to the default. */
+        }
+      })();
+    </script><link rel="stylesheet" href="/opscheckgood/_astro/Base.ci3WEg2q.css"></head><body><a href="#main" class="sr-only focus:not-sr-only absolute left-2 top-2 z-10 px-3 py-2" style="background: var(--panel); border: 1px solid var(--rule-strong);">Skip to content</a><header class="app-bar flex flex-wrap items-center gap-x-6 gap-y-2 border-b px-4 sm:px-8 py-4 sm:py-5" style="border-color: var(--rule);"><div class="min-w-0"><a href="/opscheckgood/" class="wordmark no-underline block" style="font-size: 24px;">Ops Check Good</a></div><nav class="ml-auto flex flex-wrap items-center gap-x-8 gap-y-2" aria-label="Site"><span class="desktop-only contents"><div class="nav-menu"><a href="/opscheckgood/" class="nav-link nav-menu-label">Tools</a><div class="nav-menu-panel"><ul class="nav-menu-list"><li><a href="/opscheckgood/tools/bullet-bench/" class="no-underline"><span class="nav-menu-name">Bullet Bench</span></a></li><li><a href="/opscheckgood/tools/epb-worksheet/" class="no-underline"><span class="nav-menu-name">EPB Worksheet</span></a></li><li><a href="/opscheckgood/tools/decoration-writer/" class="no-underline"><span class="nav-menu-name">Decoration Writer</span></a></li><li><a href="/opscheckgood/tools/mfr/" class="no-underline"><span class="nav-menu-name">MFR Generator</span></a></li><li><a href="/opscheckgood/tools/promotion-script/" class="no-underline"><span class="nav-menu-name">Promotion Script Builder</span></a></li><li><a href="/opscheckgood/tools/pt-calculator/" class="no-underline"><span class="nav-menu-name">PT Calculator</span></a></li><li><a href="/opscheckgood/tools/btz-calculator/" class="no-underline"><span class="nav-menu-name">BTZ Calculator</span></a></li><li><a href="/opscheckgood/tools/pay-calculator/" class="no-underline"><span class="nav-menu-name">Pay Calculator</span></a></li><li><a href="/opscheckgood/first-sergeant/" class="no-underline"><span class="nav-menu-name">First Sergeant Toolkit</span></a></li></ul></div></div><a href="/opscheckgood/first-sergeant/" class="nav-link">First Sergeant</a><a href="/opscheckgood/settings/" class="nav-link">Settings</a></span><button id="theme-toggle" type="button" class="theme-toggle" aria-label="Switch to dark mode"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path data-icon="moon" d="M20.5 14.3A8.5 8.5 0 0 1 9.7 3.5a8.5 8.5 0 1 0 10.8 10.8z"></path><g data-icon="sun" style="display: none;"><circle cx="12" cy="12" r="4.2"></circle><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"></path></g></svg></button></nav></header><main id="main" class="app-shell"><div class="pt-8 sm:pt-12"></div><ul class="mx-auto m-0 grid max-w-[1480px] list-none gap-4 px-4 sm:px-8 p-0 sm:grid-cols-2 lg:grid-cols-3"><li class="tool-card tool-card--wide card sm:col-span-2 lg:col-span-3"><a href="/opscheckgood/tools/pt-calculator/" class="h2 no-underline block" title="Score a fitness assessment.">PT Calculator</a></li><li class="tool-card card"><a href="/opscheckgood/tools/bullet-bench/" class="h2 no-underline block" title="Write sharp. Get recognized.">Bullet Bench</a></li><li class="tool-card card"><a href="/opscheckgood/tools/epb-worksheet/" class="h2 no-underline block" title="Every box counted. Cut it here, not in myEval.">EPB Worksheet</a></li><li class="tool-card card"><a href="/opscheckgood/tools/decoration-writer/" class="h2 no-underline block" title="Fit the certificate, not the counter.">Decoration Writer</a></li><li class="tool-card card"><a href="/opscheckgood/tools/mfr/" class="h2 no-underline block" title="Format it once. Sign it.">MFR Generator</a></li><li class="tool-card card"><a href="/opscheckgood/tools/promotion-script/" class="h2 no-underline block" title="Names in. Run of show out.">Promotion Script Builder</a></li><li class="tool-card card"><a href="/opscheckgood/tools/btz-calculator/" class="h2 no-underline block" title="Know the date. Build the package.">BTZ Calculator</a></li><li class="tool-card card"><a href="/opscheckgood/tools/pay-calculator/" class="h2 no-underline block" title="Your grade. Your years. Your number.">Pay Calculator</a></li><li class="tool-card tool-card--wide card sm:col-span-2 lg:col-span-3"><a href="/opscheckgood/first-sergeant/" class="h2 no-underline block" title="Where do I send them?">First Sergeant</a></li></ul><div class="pb-16"></div></main><nav class="tabbar" aria-label="Tools"><a href="/opscheckgood/" aria-current="page">Tools</a><a href="/opscheckgood/tools/bullet-bench/">Bullet</a><a href="/opscheckgood/tools/epb-worksheet/">EPB</a><a href="/opscheckgood/tools/decoration-writer/">Decoration</a><a href="/opscheckgood/tools/mfr/">MFR</a></nav><footer class="site-footer"><div class="mx-auto grid max-w-[1480px] items-baseline gap-x-8 gap-y-3 px-4 sm:px-8 py-6 text-center sm:grid-cols-3 sm:text-left"><p class="util m-0" style="color: var(--ink);">Built for Airmen, by Airmen.</p><p class="util m-0 sm:text-center" style="color: var(--ink);">&copy; 2026 Ops Check Good</p><nav class="flex flex-wrap items-baseline justify-center gap-x-6 gap-y-2 sm:justify-end" aria-label="Site links"><a href="/opscheckgood/" class="footer-link">Tools</a><a href="/opscheckgood/first-sergeant/" class="footer-link">First Sergeant Toolkit</a><a href="/opscheckgood/settings/" class="footer-link">Settings</a></nav></div><div class="site-footer-legal"><div class="mx-auto max-w-[1480px] px-4 sm:px-8 pb-6 text-center sm:text-left"><p class="m-0 leading-relaxed" style="font-size: var(--text-micro); color: var(--ink-faint);">Unofficial. Not affiliated with or endorsed by the U.S. Air Force or the Department of War. Official guidance governs.</p></div></div></footer><script>
+      (function () {
+        var button = document.getElementById('theme-toggle');
+        if (!button) return;
+        var root = document.documentElement;
+
+        function current() {
+          // Light is the default, so an absent attribute means light.
+          return root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+        }
+        function label() {
+          // Shows the mode pressing it gives you: a moon in the light, a sun in the dark.
+          var dark = current() === 'dark';
+          var moon = button.querySelector('[data-icon="moon"]');
+          var sun = button.querySelector('[data-icon="sun"]');
+          if (moon) moon.style.display = dark ? 'none' : '';
+          if (sun) sun.style.display = dark ? '' : 'none';
+          button.setAttribute('aria-label', 'Switch to ' + (dark ? 'light' : 'dark') + ' mode');
+        }
+
+        button.addEventListener('click', function () {
+          var next = current() === 'dark' ? 'light' : 'dark';
+          root.setAttribute('data-theme', next);
+          try {
+            localStorage.setItem('ocg.theme', next);
+          } catch (e) {
+            /* Choice applies for this page view only. */
+          }
+          label();
+        });
+
+        label();
+      })();
+    </script></body></html>
