@@ -1,13 +1,15 @@
 import type { AbbreviationTable } from '../data/abbreviations';
 import type { FluffData, FluffSeverity, WeakOpener } from '../data/types';
 import { findAcronyms } from './analyze';
-import { splitLines } from './tokenize';
+import { groupBullets, splitLines } from './tokenize';
 
 /**
  * Fluff Patrol: the performance-statement quality checks.
  *
- * Reads the draft the shaper reads, one bullet per line, and comes back with
- * questions rather than verdicts. Everything here is deterministic pattern
+ * Reads the draft the shaper reads, one statement per bullet -- a bullet runs
+ * from a line that opens with a dash to the next one, so a continuation line
+ * belongs to the bullet above it -- and comes back with questions rather
+ * than verdicts. Everything here is deterministic pattern
  * matching against the rule set in src/data/vocab/fluff.json: no model, no
  * network, no guess about whether a claim is true. A finding says what was
  * matched, why that wording tends to weaken a statement, and what to ask
@@ -41,7 +43,9 @@ export interface PatrolFinding {
   severity: FluffSeverity;
   /** The matched text as it appears in the draft. */
   token: string;
-  /** Zero-based draft line. */
+  /** One-based ordinal of the bullet, as the panel numbers them. */
+  bullet: number;
+  /** Zero-based draft line the match starts on. */
   line: number;
   /** Character offsets into the whole draft. */
   start: number;
@@ -59,7 +63,12 @@ export interface PatrolFinding {
 export type Indicator = 'detected' | 'possibly-missing';
 
 export interface LineSignals {
+  /** One-based ordinal of the bullet. */
+  bullet: number;
+  /** Zero-based draft line the bullet starts on. */
   line: number;
+  /** Zero-based draft line it ends on, inclusive. */
+  lastLine: number;
   action: Indicator;
   result: Indicator;
   impact: Indicator;
@@ -153,10 +162,26 @@ function overlaps(taken: Array<[number, number]>, start: number, end: number): b
 // Fluff dictionary
 // ---------------------------------------------------------------------------
 
+/** Locates a draft offset on its line: the last line start at or before it. */
+function lineAt(starts: readonly number[], offset: number): number {
+  let line = 0;
+  for (let i = 0; i < starts.length; i++) if (starts[i]! <= offset) line = i;
+  return line;
+}
+
+interface Bullet {
+  /** The bullet's text as it sits in the draft, its lines joined by newlines. */
+  text: string;
+  ordinal: number;
+  /** Draft offset of the text's first character. */
+  base: number;
+  first: number;
+  last: number;
+}
+
 function fluffFindings(
-  line: string,
-  index: number,
-  base: number,
+  { text: line, ordinal, base, first: index }: Bullet,
+  starts: readonly number[],
   data: FluffData,
 ): PatrolFinding[] {
   const out: PatrolFinding[] = [];
@@ -175,7 +200,8 @@ function fluffFindings(
         label: category.label,
         severity: rule.severity,
         token: match[0],
-        line: index,
+        bullet: ordinal,
+        line: lineAt(starts, base + start),
         start: base + start,
         end: base + end,
         why: category.why,
@@ -208,7 +234,7 @@ function firstMatch(line: string, words: readonly string[]): string | undefined 
   return undefined;
 }
 
-function signalsFor(line: string, index: number, sources: PatrolSources): LineSignals {
+function signalsFor({ text: line, ordinal, first: index, last }: Bullet, sources: PatrolSources): LineSignals {
   const { signals } = sources.fluff;
   const lead = LEAD.exec(line)?.[0].length ?? 0;
   const body = line.slice(lead);
@@ -243,7 +269,9 @@ function signalsFor(line: string, index: number, sources: PatrolSources): LineSi
 
   const flag = (v: string | undefined): Indicator => (v ? 'detected' : 'possibly-missing');
   return {
+    bullet: ordinal,
     line: index,
+    lastLine: last,
     action: flag(evidence.action),
     result: flag(evidence.result),
     impact: flag(evidence.impact),
@@ -259,9 +287,8 @@ function signalsFor(line: string, index: number, sources: PatrolSources): LineSi
 // ---------------------------------------------------------------------------
 
 function numberFindings(
-  line: string,
-  index: number,
-  base: number,
+  { text: line, ordinal, base, first: index }: Bullet,
+  starts: readonly number[],
   data: FluffData,
 ): PatrolFinding[] {
   const out: PatrolFinding[] = [];
@@ -279,7 +306,8 @@ function numberFindings(
       label,
       severity,
       token: m[0],
-      line: index,
+      bullet: ordinal,
+      line: lineAt(starts, base + m.index!),
       start: base + m.index!,
       end: base + m.index! + m[0].length,
       why,
@@ -321,6 +349,7 @@ function numberFindings(
 function packageNumberFindings(
   lines: readonly string[],
   starts: readonly number[],
+  bulletOf: (line: number) => number,
 ): PatrolFinding[] {
   const out: PatrolFinding[] = [];
   const first = (re: RegExp) => {
@@ -339,6 +368,7 @@ function packageNumberFindings(
       label: 'Percent style',
       severity: 'low',
       token: percentWord.m[0],
+      bullet: bulletOf(percentWord.i),
       line: percentWord.i,
       start: starts[percentWord.i]! + percentWord.m.index!,
       end: starts[percentWord.i]! + percentWord.m.index! + percentWord.m[0].length,
@@ -357,6 +387,7 @@ function packageNumberFindings(
       label: 'Currency style',
       severity: 'low',
       token: bareK.m[0],
+      bullet: bulletOf(bareK.i),
       line: bareK.i,
       start: starts[bareK.i]! + bareK.m.index!,
       end: starts[bareK.i]! + bareK.m.index! + bareK.m[0].length,
@@ -374,9 +405,8 @@ function packageNumberFindings(
 // ---------------------------------------------------------------------------
 
 function readabilityFindings(
-  line: string,
-  index: number,
-  base: number,
+  { text: line, ordinal, base, first: index }: Bullet,
+  starts: readonly number[],
   signals: LineSignals,
   data: FluffData,
 ): PatrolFinding[] {
@@ -390,6 +420,7 @@ function readabilityFindings(
       label,
       severity,
       token,
+      bullet: ordinal,
       line: index,
       start: base + lead,
       end: base + line.length,
@@ -430,7 +461,8 @@ function readabilityFindings(
       label: 'Passive voice',
       severity: 'low',
       token: passive[0],
-      line: index,
+      bullet: ordinal,
+      line: lineAt(starts, base + passive.index),
       start: base + passive.index,
       end: base + passive.index + passive[0].length,
       why: 'may be passive voice, which hides who acted (a heuristic, not a parse)',
@@ -450,18 +482,27 @@ export function patrol(text: string, sources: PatrolSources): PatrolReport {
   const findings: PatrolFinding[] = [];
   const signals: LineSignals[] = [];
 
-  lines.forEach((line, i) => {
-    if (line.trim() === '') return;
-    const base = starts[i]!;
-    const lineSignals = signalsFor(line, i, sources);
-    signals.push(lineSignals);
+  const spans = groupBullets(lines);
+  const bullets: Bullet[] = spans.map((span, n) => ({
+    text: lines.slice(span.first, span.last + 1).join('\n'),
+    ordinal: n + 1,
+    base: starts[span.first]!,
+    first: span.first,
+    last: span.last,
+  }));
+  const bulletOf = (line: number) =>
+    bullets.find((b) => line >= b.first && line <= b.last)?.ordinal ?? 0;
+
+  for (const bullet of bullets) {
+    const bulletSignals = signalsFor(bullet, sources);
+    signals.push(bulletSignals);
     findings.push(
-      ...fluffFindings(line, i, base, sources.fluff),
-      ...numberFindings(line, i, base, sources.fluff),
-      ...readabilityFindings(line, i, base, lineSignals, sources.fluff),
+      ...fluffFindings(bullet, starts, sources.fluff),
+      ...numberFindings(bullet, starts, sources.fluff),
+      ...readabilityFindings(bullet, starts, bulletSignals, sources.fluff),
     );
-  });
-  findings.push(...packageNumberFindings(lines, starts));
+  }
+  findings.push(...packageNumberFindings(lines, starts, bulletOf));
 
   findings.sort(
     (a, b) =>

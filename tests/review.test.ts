@@ -15,6 +15,17 @@ const ofKind = (findings: Finding[], kind: Finding['kind']) =>
   findings.filter((f) => f.kind === kind);
 
 describe('reviewDraft', () => {
+  it('reads a bullet from its dash to the next one', () => {
+    // The continuation line neither opens a bullet nor lacks a number on its own.
+    const text = '- Led 4 crews\nsupported the wing';
+    expect(ofKind(review(text), 'weak-opener')).toHaveLength(0);
+    expect(ofKind(review(text), 'no-number')).toHaveLength(0);
+    // A number anywhere in the bullet counts; none anywhere is one finding.
+    const none = ofKind(review('- Led crews\nfor the wing'), 'no-number');
+    expect(none).toHaveLength(1);
+    expect(none[0]!.occurrences[0]!.line).toBe(0);
+  });
+
   it('flags a word used more than once, with every occurrence', () => {
     const text = '- Led 12 airmen; led 3 exercises\n- Drove 4 fixes';
     const repeats = ofKind(review(text), 'repeat');

@@ -177,6 +177,48 @@ describe('readability', () => {
   });
 });
 
+describe('bullets', () => {
+  it('reads a bullet from its dash to the next one, continuation lines included', () => {
+    const text = '- Led 4 crews through 12 sorties\nrestoring readiness for the wing\n- Very good work';
+    const { lines, findings } = run(text);
+    expect(lines).toHaveLength(2);
+    expect(lines[0]).toMatchObject({ bullet: 1, line: 0, lastLine: 1 });
+    expect(lines[0]!.impact).toBe('detected');
+    expect(lines[0]!.evidence.impact).toBe('readiness');
+    expect(lines[1]).toMatchObject({ bullet: 2, line: 2, lastLine: 2 });
+    const very = findings.find((f) => f.token === 'Very')!;
+    expect(very.bullet).toBe(2);
+    expect(very.line).toBe(2);
+    expect(text.slice(very.start, very.end)).toBe('Very');
+  });
+
+  it('puts a finding on a continuation line on that line, inside its bullet', () => {
+    const text = '- Led 4 crews\nwith numerous partners';
+    const f = run(text).findings.find((x) => x.token === 'numerous')!;
+    expect(f.bullet).toBe(1);
+    expect(f.line).toBe(1);
+    expect(text.slice(f.start, f.end)).toBe('numerous');
+  });
+
+  it('matches a phrase across the line break inside a bullet', () => {
+    const text = '- Led 4 crews in\norder to qualify';
+    expect(run(text).findings.some((f) => f.category === 'redundant-phrasing')).toBe(true);
+  });
+
+  it('counts words and semicolons over the whole bullet', () => {
+    const text = '- a; b; c\nd; e';
+    expect(run(text).findings.some((f) => f.category === 'semicolons')).toBe(true);
+  });
+
+  it('treats a draft with no dashes as one statement per line', () => {
+    expect(run('Led 4 crews\nDrove 2 fixes').lines).toHaveLength(2);
+  });
+
+  it('ends a bullet at a blank line', () => {
+    expect(run('- Led 4 crews\n\nloose line').lines).toHaveLength(2);
+  });
+});
+
 describe('report', () => {
   it('tallies by severity and sorts high first', () => {
     const { findings } = run('- Flawless, very good, additionally fine');

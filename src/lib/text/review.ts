@@ -1,7 +1,7 @@
 import type { AbbreviationTable } from '../data/abbreviations';
 import type { WeakOpener } from '../data/types';
 import { findAcronyms, findDuplicates } from './analyze';
-import { splitLines } from './tokenize';
+import { groupBullets, splitLines } from './tokenize';
 
 /**
  * The Review panel: what a reviewer would say out loud, as a list.
@@ -127,10 +127,13 @@ export function reviewDraft(text: string, sources: ReviewSources): Finding[] {
     });
   }
 
-  // Weak openers and bullets with no number, one pass over the lines.
+  // Weak openers and bullets with no number, one pass over the bullets. A
+  // bullet is a dash to the next dash, so a continuation line is neither a
+  // second opener nor a second chance to lack a number.
   const weak = new Map(sources.weakOpeners.map((w) => [w.word, w]));
-  lines.forEach((line, i) => {
-    if (line.trim() === '') return;
+  groupBullets(lines).forEach(({ first: i, last }) => {
+    const line = lines[i]!;
+    const whole = lines.slice(i, last + 1).join('\n');
     const lead = LEAD.exec(line)?.[0].length ?? 0;
     WORD.lastIndex = 0;
     const first = new RegExp(WORD.source, 'y');
@@ -150,11 +153,11 @@ export function reviewDraft(text: string, sources: ReviewSources): Finding[] {
         });
       }
     }
-    if (!/\d|\bzero\b/i.test(line)) {
+    if (!/\d|\bzero\b/i.test(whole)) {
       findings.push({
         kind: 'no-number',
-        token: line.slice(lead, lead + 40).trim() + (line.length - lead > 40 ? '…' : ''),
-        occurrences: [{ line: i, start: starts[i]! + lead, end: starts[i]! + line.length }],
+        token: line.slice(lead, lead + 40).trim() + (whole.length - lead > 40 ? '…' : ''),
+        occurrences: [{ line: i, start: starts[i]! + lead, end: starts[last]! + lines[last]!.length }],
         message: 'No number. Impact without a figure reads as opinion.',
         suggestions: [],
       });

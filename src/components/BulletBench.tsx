@@ -1427,8 +1427,9 @@ export default function BulletBench() {
         {!folded.patrol && (<>
         <p className="m-0 mt-1 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
           Fluff, vague claims, duty language, number style and readability, each as a
-          question rather than a verdict. Suggestions, not policy: dismiss what does not
-          apply. Nothing here rewrites the draft.
+          question rather than a verdict. A bullet runs from its dash to the next one, so
+          a continuation line is read with the line above it. Suggestions, not policy:
+          dismiss what does not apply. Nothing here rewrites the draft.
         </p>
 
         {patrolReport.lines.length > 0 && (
@@ -1441,9 +1442,14 @@ export default function BulletBench() {
                 >
                   <span
                     className="tabular shrink-0"
-                    style={{ color: 'var(--ink-faint)', minWidth: '4.5em' }}
+                    style={{ color: 'var(--ink-faint)', minWidth: '5.5em' }}
+                    title={
+                      signals.lastLine > signals.line
+                        ? `Lines ${signals.line + 1}–${signals.lastLine + 1}`
+                        : `Line ${signals.line + 1}`
+                    }
                   >
-                    line {signals.line + 1}
+                    bullet {signals.bullet}
                   </span>
                   {INDICATORS.map(({ key, label }) => {
                     const detected = signals[key] === 'detected';
@@ -1494,8 +1500,12 @@ export default function BulletBench() {
                 >
                   {SEVERITY_LABEL[finding.severity]}
                 </span>
-                <span className="tabular shrink-0" style={{ color: 'var(--ink-faint)' }}>
-                  line {finding.line + 1}
+                <span
+                  className="tabular shrink-0"
+                  style={{ color: 'var(--ink-faint)' }}
+                  title={`Line ${finding.line + 1}`}
+                >
+                  bullet {finding.bullet}
                 </span>
                 <span style={{ fontWeight: 600 }}>{finding.token}</span>
                 <span className="util" style={{ textTransform: 'none' }}>
