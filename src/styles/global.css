@@ -293,16 +293,17 @@ body {
 }
 
 /*
- * A tool on the home page: a number, a name, an arrow, inside a hairline.
- * The card is the link (see .card); the arrow is where the eye lands.
+ * A tool on the home page: its name inside a hairline, nothing else.
+ * The card is the link (see .card).
  */
 .tool-card {
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 22px;
-  min-height: 240px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 200px;
   padding: 26px 28px;
   border: 1px solid var(--rule);
   background: var(--panel);
@@ -319,15 +320,7 @@ body {
   min-height: 0;
   flex-direction: row;
   align-items: center;
-  gap: 28px;
   padding: 26px 28px;
-}
-
-.tool-card .arrow {
-  display: block;
-  width: 30px;
-  height: 18px;
-  color: var(--ink);
 }
 
 /*

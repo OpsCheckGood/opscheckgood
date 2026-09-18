@@ -4,12 +4,10 @@ import { tools, firstSergeant } from '../lib/site-nav';
 
 // The PT Calculator leads on its own row: it is the tool people open most.
 // The rest follow in catalogue order, and the toolkit closes on its own row.
-const pad = (n: number) => String(n).padStart(2, '0');
+// Each card is the tool's name in a box and nothing else.
 const ready = tools.filter((t) => t.ready);
 const featured = ready.find((t) => t.href.includes('/pt-calculator/')) ?? ready[0];
 const cards = ready.filter((t) => t !== featured);
-const arrow =
-  '<svg class="arrow" viewBox="0 0 30 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 9h27M19 1l9 8-9 8"/></svg>';
 ---
 
 <Base title="Ops Check Good">
@@ -19,29 +17,23 @@ const arrow =
   {/* Three across on a desktop: the featured tool on a row of its own, six tools in two even rows, the toolkit on a row of its own. Two on a tablet, one on a phone. */}
   <ul class="mx-auto m-0 grid max-w-[1480px] list-none gap-4 px-4 sm:px-8 p-0 sm:grid-cols-2 lg:grid-cols-3">
     <li class="tool-card tool-card--wide card sm:col-span-2 lg:col-span-3">
-      <span class="util">{pad(1)}</span>
       <a href={featured.href} class="h2 no-underline block" title={featured.tagline}>
         {featured.name}
       </a>
-      <Fragment set:html={arrow} />
     </li>
     {
-      cards.map((tool, i) => (
+      cards.map((tool) => (
         <li class="tool-card card">
-          <span class="util">{pad(i + 2)}</span>
           <a href={tool.href} class="h2 no-underline block" title={tool.tagline}>
             {tool.name}
           </a>
-          <Fragment set:html={arrow} />
         </li>
       ))
     }
     <li class="tool-card tool-card--wide card sm:col-span-2 lg:col-span-3">
-      <span class="util">{pad(cards.length + 2)} · Toolkit</span>
       <a href={firstSergeant.href} class="h2 no-underline block" title={firstSergeant.tagline}>
         First Sergeant
       </a>
-      <Fragment set:html={arrow} />
     </li>
   </ul>
   <div class="pb-16"></div>
