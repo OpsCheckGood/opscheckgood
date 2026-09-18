@@ -3,11 +3,14 @@ import {
   DataFileError,
   type ActionVerbIndex,
   type Dataset,
+  type FluffData,
+  type FluffSeverity,
   type SynonymData,
   type VerbEntry,
   type WeakOpener,
 } from './types';
 
+import fluffRaw from '../../data/vocab/fluff.json';
 import irregularPastRaw from '../../data/vocab/irregular-past.json';
 import stopwordsRaw from '../../data/vocab/stopwords.json';
 import weakOpenersRaw from '../../data/vocab/weak-openers.json';
@@ -86,6 +89,68 @@ function normalizeWeakOpeners(raw: unknown, _meta: unknown, file: string): WeakO
     };
   });
 }
+
+const SEVERITIES: ReadonlySet<string> = new Set<FluffSeverity>(['high', 'medium', 'low']);
+
+function normalizeFluff(raw: unknown, _meta: unknown, file: string): FluffData {
+  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) {
+    throw new DataFileError(file, 'data must be an object');
+  }
+  const d = raw as Partial<FluffData>;
+  const t = d.thresholds;
+  if (!t || [t.sentenceWords, t.acronyms, t.semicolons, t.slashes, t.parentheticals].some((n) => typeof n !== 'number' || n <= 0)) {
+    throw new DataFileError(file, 'thresholds must be positive numbers');
+  }
+  if (typeof d.categories !== 'object' || d.categories === null) {
+    throw new DataFileError(file, 'categories must be an object');
+  }
+  for (const [id, c] of Object.entries(d.categories)) {
+    if (!c || typeof c.label !== 'string' || !SEVERITIES.has(c.severity) || typeof c.ask !== 'string') {
+      throw new DataFileError(file, `category "${id}" must have label, severity and ask`);
+    }
+  }
+  if (!Array.isArray(d.terms)) throw new DataFileError(file, 'terms must be an array');
+  const seen = new Set<string>();
+  const terms = d.terms.map((e, i) => {
+    if (!e || typeof e.term !== 'string' || e.term.trim() === '' || typeof e.category !== 'string') {
+      throw new DataFileError(file, `term ${i} must have term and category`);
+    }
+    const term = e.term.trim().toLowerCase();
+    if (seen.has(term)) throw new DataFileError(file, `term "${term}" appears twice`);
+    seen.add(term);
+    if (!Object.hasOwn(d.categories!, e.category)) {
+      throw new DataFileError(file, `term "${term}" names unknown category "${e.category}"`);
+    }
+    if (e.severity !== undefined && !SEVERITIES.has(e.severity)) {
+      throw new DataFileError(file, `term "${term}" has an unknown severity`);
+    }
+    const out: FluffData['terms'][number] = { term, category: e.category };
+    if (e.severity) out.severity = e.severity;
+    if (Array.isArray(e.try) && e.try.length > 0) out.try = e.try.map(String);
+    return out;
+  });
+  const list = (v: unknown, what: string) => {
+    if (!Array.isArray(v)) throw new DataFileError(file, `${what} must be an array of words`);
+    return v.map((w) => String(w).toLowerCase());
+  };
+  return {
+    thresholds: { ...t },
+    categories: d.categories,
+    terms,
+    signals: {
+      impact: list(d.signals?.impact, 'signals.impact'),
+      scope: list(d.signals?.scope, 'signals.scope'),
+      result: list(d.signals?.result, 'signals.result'),
+    },
+    units: list(d.units, 'units'),
+  };
+}
+
+export const FLUFF: Dataset<FluffData> = loadDataset(
+  'src/data/vocab/fluff.json',
+  fluffRaw,
+  normalizeFluff,
+);
 
 export const STOPWORDS: Dataset<ReadonlySet<string>> = loadDataset(
   'src/data/vocab/stopwords.json',

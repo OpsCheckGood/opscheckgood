@@ -40,14 +40,9 @@ The draft is the text as typed. Paste a bullet that has already been shaped, her
 pdf-bullets, and its half-spaces become ordinary spaces on the way in; only the output
 carries them. Otherwise the shaper would be measuring its own last answer.
 
-Under the shaper sit two more boxes that read the same draft rather than asking for the
-bullet again:
+Under the shaper sit three more boxes that read the same draft rather than asking for
+the bullet again, in this order:
 
-- **Review** — what a reviewer would say, as a list: words used more than once (grouped
-  with their inflections), bullets that open with a weak word instead of an action verb,
-  bullets with no number in them, and acronyms on neither approved list that the draft
-  does not spell out. Click a finding and the caret goes to it; click again for the next
-  occurrence. The weak-opener list is data (`src/data/vocab/weak-openers.json`).
 - **Definition & Synonyms** — the word under the caret, defined, with replacements in
   three groups: an approved abbreviation, the action-verb list's picks, then the
   dictionary. Each group is listed shortest first with the width it adds or saves, and
@@ -56,6 +51,26 @@ bullet again:
   (`src/data/vocab/verbs.json`), about 700 past-tense verbs with three picks each; the
   irregular past-tense map beside it (`irregular-past.json`) is checked against WordNet's
   exception list by the tests. The **Verbs** tab lists the whole thing with widths.
+- **Review** — what a reviewer would say, as a list: words used more than once (grouped
+  with their inflections), bullets that open with a weak word instead of an action verb,
+  bullets with no number in them, and acronyms on neither approved list that the draft
+  does not spell out. Click a finding and the caret goes to it; click again for the next
+  occurrence. The weak-opener list is data (`src/data/vocab/weak-openers.json`).
+- **Fluff Patrol** — the performance-statement quality checks, each as a question rather
+  than a verdict: fluff words and phrases by category and severity (vague intensifiers,
+  generic success claims, empty qualifiers, weak contributions, duty language, redundant
+  phrasing, overused performance terms, unsupported superlatives, filler transitions);
+  number style (a bare number with nothing it counts, a number glued to its unit, a
+  dollar figure without separators, doubled symbols, mixed percent or currency styles
+  across the draft); and readability (length, semicolons, slashes, parentheticals,
+  acronym density, a passive-voice heuristic). Above the findings, each bullet gets four
+  heuristic indicators — Action, Result, Impact, Scope — shown as detected or possibly
+  missing, never scored and never all required. Dismiss hides a finding for the draft and
+  never touches the text; Jump puts the caret on it. Every rule is deterministic pattern
+  matching against `src/data/vocab/fluff.json`, which carries the categories, terms,
+  severities, questions, signal words and thresholds: no model, no network, nothing
+  rewritten. Not built yet from the same specification: the metric calculator, evidence
+  notes, templates and a rule-management screen.
 
 **Open Form** reads an AF form PDF -- the 1206 someone sent you, a 910 with comments in
 it -- recognises which form it is from its own XFA data, selects it, and puts the

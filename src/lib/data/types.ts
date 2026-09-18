@@ -705,3 +705,44 @@ export interface PayTable {
   /** Printed verbatim under the result. */
   footnotes: string[];
 }
+
+// ---------------------------------------------------------------------------
+// Fluff Patrol
+// ---------------------------------------------------------------------------
+
+export type FluffSeverity = 'high' | 'medium' | 'low';
+
+export interface FluffCategory {
+  label: string;
+  severity: FluffSeverity;
+  /** Why the wording may weaken a statement, in a clause. */
+  why: string;
+  /** The question the writer is asked, never a verdict. */
+  ask: string;
+}
+
+export interface FluffTerm {
+  /** A word or phrase, matched case-insensitively on word boundaries. */
+  term: string;
+  category: string;
+  /** Overrides the category's severity. */
+  severity?: FluffSeverity;
+  /** Shorter or more specific alternatives, when there are any. */
+  try?: string[];
+}
+
+export interface FluffData {
+  thresholds: {
+    sentenceWords: number;
+    acronyms: number;
+    semicolons: number;
+    slashes: number;
+    parentheticals: number;
+  };
+  categories: Record<string, FluffCategory>;
+  terms: FluffTerm[];
+  /** Words that signal each element of Action-Result-Impact-Scope. */
+  signals: { impact: string[]; scope: string[]; result: string[] };
+  /** Units a number should be separated from by a space. */
+  units: string[];
+}

@@ -13,7 +13,7 @@ import { parsePdfBulletsFile, serializePdfBulletsFile } from '@/lib/data/pdfBull
 import { readForm, bulletFields } from '@/lib/pdf/form';
 import { loadBenchPrefs, saveBenchPrefs, DEFAULT_BENCH_PREFS } from '@/lib/settings';
 import { useMediaQuery, NARROW } from '@/lib/useMediaQuery';
-import { STOPWORDS, WEAK_OPENERS } from '@/lib/data/vocab';
+import { FLUFF, IRREGULAR_PAST, STOPWORDS, WEAK_OPENERS } from '@/lib/data/vocab';
 import { loadFontMetrics } from '@/lib/metrics/registry';
 import { ensureFontFace } from '@/lib/metrics/fontface';
 import type { FontMetrics } from '@/lib/metrics/font';
@@ -31,6 +31,7 @@ import { SPACE_CHARS, countSpaces, plainSpaces, unshape } from '@/lib/shape/spac
 import { splitLines } from '@/lib/text/tokenize';
 import { findDuplicates } from '@/lib/text/analyze';
 import { reviewDraft, KIND_LABEL, type Finding, type Occurrence } from '@/lib/text/review';
+import { patrol, tally, SEVERITY_LABEL, type LineSignals, type PatrolFinding } from '@/lib/text/fluff';
 import {
   findSynonyms,
   findDefinition,
@@ -80,13 +81,28 @@ import type { SynonymData } from '@/lib/data/types';
  *
  * One thing pdf-bullets does not do: a bullet too long for one row is broken
  * where the form will break it and every full row is shaped, with the last
- * row left as typed. See shape/bullet.ts. The other panels -- Review, and
- * Definition & Synonyms -- are separate boxes that read the same draft. There
- * is one text box on purpose: a second one to paste into would be a second
- * copy, and the two would drift.
+ * row left as typed. See shape/bullet.ts. The other panels -- Definition &
+ * Synonyms, Review, and Fluff Patrol, in that order under the draft -- are
+ * separate boxes that read the same draft. There is one text box on purpose:
+ * a second one to paste into would be a second copy, and the two would drift.
  */
 
 const DRAFT_KEY = 'ocg.bullet-bench.draft.v2';
+/** Fluff Patrol findings the writer has dismissed, by finding key. */
+const DISMISSED_KEY = 'ocg.bullet-bench.patrol-dismissed.v1';
+
+const SEVERITY_COLOR: Record<PatrolFinding['severity'], string> = {
+  high: 'var(--bad)',
+  medium: 'var(--warn)',
+  low: 'var(--ink-faint)',
+};
+
+const INDICATORS: ReadonlyArray<{ key: keyof LineSignals['evidence']; label: string }> = [
+  { key: 'action', label: 'Action' },
+  { key: 'result', label: 'Result' },
+  { key: 'impact', label: 'Impact' },
+  { key: 'scope', label: 'Scope' },
+];
 
 // Every line lands within the field, and no word repeats across them: the
 // sample is the first thing a visitor sees, and it should not be a rainbow.
@@ -375,11 +391,8 @@ export default function BulletBench() {
   /** Which occurrence of each finding the last click went to. */
   const [visited, setVisited] = useState<Record<string, number>>({});
 
-  function jumpTo(finding: Finding) {
-    const key = `${finding.kind}:${finding.token}`;
-    const next = ((visited[key] ?? -1) + 1) % finding.occurrences.length;
-    setVisited({ ...visited, [key]: next });
-    const occurrence: Occurrence = finding.occurrences[next]!;
+  /** Puts the caret on a span of the draft and scrolls its line into view. */
+  function jumpToSpan(occurrence: Occurrence) {
     const el = inputRef.current;
     if (!el) return;
     el.focus();
@@ -388,6 +401,60 @@ export default function BulletBench() {
     const row = draftMirrorRef.current?.children[occurrence.line] as HTMLElement | undefined;
     row?.scrollIntoView({ block: 'center', behavior: 'smooth' });
   }
+
+  function jumpTo(finding: Finding) {
+    const key = `${finding.kind}:${finding.token}`;
+    const next = ((visited[key] ?? -1) + 1) % finding.occurrences.length;
+    setVisited({ ...visited, [key]: next });
+    jumpToSpan(finding.occurrences[next]!);
+  }
+
+  /**
+   * Fluff Patrol: the writing-quality checks, as questions. Reads the same
+   * draft; the rule set is data (src/data/vocab/fluff.json).
+   */
+  const patrolReport = useMemo(
+    () =>
+      patrol(text, {
+        fluff: FLUFF.data,
+        hq: HQ_APPROVED.data,
+        common: COMMON.data,
+        weakOpeners: WEAK_OPENERS.data,
+        irregularPast: IRREGULAR_PAST.data,
+      }),
+    [text],
+  );
+  /** Findings the writer has dismissed for this draft. Kept in this browser only. */
+  const [dismissed, setDismissed] = useState<ReadonlySet<string>>(() => new Set());
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(DISMISSED_KEY);
+      if (saved) setDismissed(new Set(JSON.parse(saved) as string[]));
+    } catch {
+      /* Nothing dismissed. */
+    }
+  }, []);
+  function dismissFinding(key: string) {
+    const next = new Set(dismissed);
+    next.add(key);
+    setDismissed(next);
+    try {
+      localStorage.setItem(DISMISSED_KEY, JSON.stringify([...next]));
+    } catch {
+      /* Not remembered; still dismissed for this visit. */
+    }
+  }
+  function restoreDismissed() {
+    setDismissed(new Set());
+    try {
+      localStorage.removeItem(DISMISSED_KEY);
+    } catch {
+      /* Nothing to do. */
+    }
+  }
+  const patrolFindings = patrolReport.findings.filter((f) => !dismissed.has(f.key));
+  const patrolDismissed = patrolReport.findings.length - patrolFindings.length;
+  const patrolCounts = tally(patrolFindings);
 
   /**
    * Keeps each output bullet level with its draft line, the way pdf-bullets
@@ -1113,81 +1180,6 @@ export default function BulletBench() {
         </section>
       </div>
 
-      {/* ---- Review ------------------------------------------------------ */}
-      {/*
-        Its own box, reading the same draft. Every finding is a place in the
-        draft; clicking one puts the caret there, and clicking again walks to
-        the next occurrence. The fix happens in the draft, and the shaper
-        follows -- there is nothing to paste back.
-      */}
-      <section className="panel p-4">
-        <div className="flex flex-wrap items-baseline justify-between gap-3">
-          <h2 className="title m-0">Review</h2>
-          <span className="util">
-            {liveLines === 0
-              ? 'Nothing to review'
-              : findings.length === 0
-                ? 'Nothing flagged'
-                : `${findings.length} finding${findings.length === 1 ? '' : 's'}`}
-          </span>
-        </div>
-        <p className="m-0 mt-1 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
-          Repeated words, weak openers, bullets with no number, and acronyms on neither
-          list. Click a finding to go to it in the draft.
-        </p>
-        {findings.length > 0 && (
-          <ul className="m-0 mt-3 flex list-none flex-col gap-1.5 p-0">
-            {findings.map((finding) => (
-              <li key={`${finding.kind}:${finding.token}:${finding.occurrences[0]!.start}`}>
-                <button
-                  type="button"
-                  onClick={() => jumpTo(finding)}
-                  className="flex w-full flex-wrap items-baseline gap-x-3 gap-y-1 border px-3 py-2 text-left text-[12px]"
-                  style={{
-                    background: 'var(--panel-sunk)',
-                    borderColor: 'var(--rule)',
-                    color: 'var(--ink)',
-                  }}
-                >
-                  <span
-                    className="util shrink-0"
-                    style={{
-                      color: finding.kind === 'no-number' ? 'var(--ink-faint)' : 'var(--warn)',
-                      minWidth: '7.5em',
-                    }}
-                  >
-                    {KIND_LABEL[finding.kind]}
-                  </span>
-                  <span className="tabular shrink-0" style={{ color: 'var(--ink-faint)' }}>
-                    line {finding.occurrences[0]!.line + 1}
-                    {finding.occurrences.length > 1 ? ` +${finding.occurrences.length - 1}` : ''}
-                  </span>
-                  <span
-                    style={{
-                      fontWeight: 600,
-                      background:
-                        finding.kind === 'repeat'
-                          ? duplicateColour.get(finding.token.split(' / ')[0]!.toLowerCase())
-                          : undefined,
-                      padding: finding.kind === 'repeat' ? '0 4px' : undefined,
-                      borderRadius: 2,
-                    }}
-                  >
-                    {finding.token}
-                  </span>
-                  <span style={{ color: 'var(--ink-muted)' }}>{finding.message}</span>
-                  {finding.suggestions.length > 0 && (
-                    <span style={{ color: 'var(--ink-muted)' }}>
-                      Try: {finding.suggestions.join(', ')}
-                    </span>
-                  )}
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
       {/* ---- Synonyms ---------------------------------------------------- */}
       <section className="panel p-4">
         <div className="flex flex-wrap items-baseline justify-between gap-3">
@@ -1292,6 +1284,219 @@ export default function BulletBench() {
               </li>
             ))}
           </ul>
+        )}
+      </section>
+
+      {/* ---- Review ------------------------------------------------------ */}
+      {/*
+        Its own box, reading the same draft. Every finding is a place in the
+        draft; clicking one puts the caret there, and clicking again walks to
+        the next occurrence. The fix happens in the draft, and the shaper
+        follows -- there is nothing to paste back.
+      */}
+      <section className="panel p-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-3">
+          <h2 className="title m-0">Review</h2>
+          <span className="util">
+            {liveLines === 0
+              ? 'Nothing to review'
+              : findings.length === 0
+                ? 'Nothing flagged'
+                : `${findings.length} finding${findings.length === 1 ? '' : 's'}`}
+          </span>
+        </div>
+        <p className="m-0 mt-1 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
+          Repeated words, weak openers, bullets with no number, and acronyms on neither
+          list. Click a finding to go to it in the draft.
+        </p>
+        {findings.length > 0 && (
+          <ul className="m-0 mt-3 flex list-none flex-col gap-1.5 p-0">
+            {findings.map((finding) => (
+              <li key={`${finding.kind}:${finding.token}:${finding.occurrences[0]!.start}`}>
+                <button
+                  type="button"
+                  onClick={() => jumpTo(finding)}
+                  className="flex w-full flex-wrap items-baseline gap-x-3 gap-y-1 border px-3 py-2 text-left text-[12px]"
+                  style={{
+                    background: 'var(--panel-sunk)',
+                    borderColor: 'var(--rule)',
+                    color: 'var(--ink)',
+                  }}
+                >
+                  <span
+                    className="util shrink-0"
+                    style={{
+                      color: finding.kind === 'no-number' ? 'var(--ink-faint)' : 'var(--warn)',
+                      minWidth: '7.5em',
+                    }}
+                  >
+                    {KIND_LABEL[finding.kind]}
+                  </span>
+                  <span className="tabular shrink-0" style={{ color: 'var(--ink-faint)' }}>
+                    line {finding.occurrences[0]!.line + 1}
+                    {finding.occurrences.length > 1 ? ` +${finding.occurrences.length - 1}` : ''}
+                  </span>
+                  <span
+                    style={{
+                      fontWeight: 600,
+                      background:
+                        finding.kind === 'repeat'
+                          ? duplicateColour.get(finding.token.split(' / ')[0]!.toLowerCase())
+                          : undefined,
+                      padding: finding.kind === 'repeat' ? '0 4px' : undefined,
+                      borderRadius: 2,
+                    }}
+                  >
+                    {finding.token}
+                  </span>
+                  <span style={{ color: 'var(--ink-muted)' }}>{finding.message}</span>
+                  {finding.suggestions.length > 0 && (
+                    <span style={{ color: 'var(--ink-muted)' }}>
+                      Try: {finding.suggestions.join(', ')}
+                    </span>
+                  )}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {/* ---- Fluff Patrol ------------------------------------------------ */}
+      {/*
+        The writing-quality checks: fluff, vague claims, duty language, number
+        style and readability, each phrased as a question. Every rule is
+        deterministic pattern matching against a data file; nothing is sent
+        anywhere and nothing is rewritten. Dismiss removes a finding from view
+        and never touches the text.
+      */}
+      <section className="panel p-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-3">
+          <h2 className="title m-0">Fluff Patrol</h2>
+          <span className="util">
+            {liveLines === 0
+              ? 'Nothing to patrol'
+              : patrolFindings.length === 0
+                ? 'Nothing flagged'
+                : `${patrolFindings.length} finding${patrolFindings.length === 1 ? '' : 's'}` +
+                  ` · ${patrolCounts.high} high · ${patrolCounts.medium} medium · ${patrolCounts.low} low`}
+          </span>
+        </div>
+        <p className="m-0 mt-1 text-[12px]" style={{ color: 'var(--ink-muted)' }}>
+          Fluff, vague claims, duty language, number style and readability, each as a
+          question rather than a verdict. Suggestions, not policy: dismiss what does not
+          apply. Nothing here rewrites the draft.
+        </p>
+
+        {patrolReport.lines.length > 0 && (
+          <div className="mt-3">
+            <ul className="m-0 flex list-none flex-col gap-1 p-0">
+              {patrolReport.lines.map((signals) => (
+                <li
+                  key={signals.line}
+                  className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px]"
+                >
+                  <span
+                    className="tabular shrink-0"
+                    style={{ color: 'var(--ink-faint)', minWidth: '4.5em' }}
+                  >
+                    line {signals.line + 1}
+                  </span>
+                  {INDICATORS.map(({ key, label }) => {
+                    const detected = signals[key] === 'detected';
+                    return (
+                      <span
+                        key={key}
+                        className="border px-2 py-0.5 text-[11px]"
+                        title={
+                          detected
+                            ? `${label}: "${signals.evidence[key]}"`
+                            : `${label}: possibly missing`
+                        }
+                        style={{
+                          borderColor: detected ? 'var(--rule-strong)' : 'var(--warn)',
+                          color: detected ? 'var(--ink)' : 'var(--warn)',
+                          background: 'var(--panel-sunk)',
+                        }}
+                      >
+                        <span aria-hidden>{detected ? '\u2713' : '?'}</span> {label}
+                      </span>
+                    );
+                  })}
+                </li>
+              ))}
+            </ul>
+            <p className="util m-0 mt-2" style={{ textTransform: 'none' }}>
+              Action, result, impact and scope are heuristic indicators, not a score. Not
+              every bullet needs all four.
+            </p>
+          </div>
+        )}
+
+        {patrolFindings.length > 0 && (
+          <ul className="m-0 mt-3 flex list-none flex-col gap-1.5 p-0">
+            {patrolFindings.map((finding) => (
+              <li
+                key={finding.key}
+                className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border px-3 py-2 text-[12px]"
+                style={{
+                  background: 'var(--panel-sunk)',
+                  borderColor: 'var(--rule)',
+                  color: 'var(--ink)',
+                }}
+              >
+                <span
+                  className="util shrink-0"
+                  style={{ color: SEVERITY_COLOR[finding.severity], minWidth: '4.5em' }}
+                >
+                  {SEVERITY_LABEL[finding.severity]}
+                </span>
+                <span className="tabular shrink-0" style={{ color: 'var(--ink-faint)' }}>
+                  line {finding.line + 1}
+                </span>
+                <span style={{ fontWeight: 600 }}>{finding.token}</span>
+                <span className="util" style={{ textTransform: 'none' }}>
+                  {finding.label}
+                </span>
+                <span style={{ color: 'var(--ink-muted)' }}>
+                  {finding.why.charAt(0).toUpperCase() + finding.why.slice(1)}. {finding.ask}
+                  {finding.try.length > 0 ? ` Try: ${finding.try.join(', ')}.` : ''}
+                </span>
+                <span className="ml-auto flex shrink-0 gap-2">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      jumpToSpan({ line: finding.line, start: finding.start, end: finding.end })
+                    }
+                    className="util border px-2 py-0.5"
+                    style={{ borderColor: 'var(--rule-strong)', color: 'var(--ink)' }}
+                  >
+                    Jump
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => dismissFinding(finding.key)}
+                    className="util border px-2 py-0.5"
+                    style={{ borderColor: 'var(--rule)', color: 'var(--ink-faint)' }}
+                    title="Hide this finding for this draft. The text is not changed."
+                  >
+                    Dismiss
+                  </button>
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {patrolDismissed > 0 && (
+          <button
+            type="button"
+            onClick={restoreDismissed}
+            className="util mt-3 border px-2 py-1"
+            style={{ borderColor: 'var(--rule)', color: 'var(--ink-faint)' }}
+          >
+            Restore {patrolDismissed} dismissed
+          </button>
         )}
       </section>
 
