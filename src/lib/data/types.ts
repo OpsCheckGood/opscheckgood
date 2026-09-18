@@ -655,3 +655,53 @@ export interface ReferenceEntry {
   section: string;
   url: string;
 }
+
+// ---------------------------------------------------------------------------
+// Basic pay
+// ---------------------------------------------------------------------------
+
+/**
+ * The DFAS basic pay table, one edition per file.
+ *
+ * Everything the calculator shows is read from here: the grades, their
+ * titles, the years-of-service columns and every rate. The component knows
+ * that a column applies once a member is over the years it names, and
+ * nothing else.
+ */
+
+export type PayGroup = 'enlisted' | 'officer' | 'officer-prior' | 'warrant';
+
+export interface PayGrade {
+  /** Pay grade as DFAS prints it, e.g. "E-5"; a note row may extend it. */
+  id: string;
+  group: PayGroup;
+  /** Display-only Air Force and Space Force title. */
+  title: string;
+  abbr: string;
+  /** One rate per column, to the cent; null where the source prints a blank. */
+  monthly: (number | null)[];
+}
+
+export interface PayCap {
+  monthly: number;
+  applies: string;
+  text: string;
+}
+
+export interface PayTable {
+  /** ISO date the rates took effect. */
+  effective: string;
+  raisePercent: number;
+  /**
+   * Lower bound of each column in years: 0 for "2 or less", then 2, 3, 4, 6
+   * and so on. A column applies once cumulative service exceeds its bound.
+   */
+  steps: number[];
+  /** Column headings as printed, parallel to `steps`. */
+  columns: string[];
+  grades: PayGrade[];
+  caps: Record<string, PayCap>;
+  seniorEnlisted: { monthly: number; text: string };
+  /** Printed verbatim under the result. */
+  footnotes: string[];
+}

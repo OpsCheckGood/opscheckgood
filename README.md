@@ -151,6 +151,25 @@ way; the two agree in the ordinary case and diverge at month ends, and
 cycle lookup, timeline, copyable summary, local draft persistence. Data `verified`
 against the instruction.
 
+### Pay calculator
+
+A pay grade and a length of service go in; monthly basic pay comes out, with the annual
+and twice-monthly figures beside it and the next longevity raise under it. **Compare with
+another grade** opens a second panel prefilled with the next grade up at the same length
+of service, and the difference is shown a month, a year and as a percentage.
+
+The table is DFAS basic pay effective 1 January 2026, every column for every grade to the
+cent, in `src/data/pay/basic-pay-2026.json`. The one rule in code is that a column applies
+once cumulative service is *over* the years it names, so six years exactly is still the
+"over 4" column; `tests/pay-basic.test.ts` pins that boundary and `tests/pay-data.test.ts`
+pins a spread of cells against the published table. A new year is a new data file.
+
+Basic pay only: no allowances, special pays or taxes, and the page says so under the
+result rather than letting the figure read as take-home pay.
+
+**Built:** lookup, comparison, next longevity step, local draft persistence. Data
+`verified` against DFAS.
+
 ### MFR generator
 
 Writes an official memorandum for record, or a letter of counseling, admonishment or
@@ -392,6 +411,7 @@ npm run ci           # everything CI runs
 src/
   data/                    every value that could change, as JSON with meta
     forms/                 form definitions (af1206, af910, af911, sandbox)
+    pay/                   DFAS basic pay table, one edition per file
     abbreviations/         hq-approved, common
     vocab/                 action verbs, irregular pasts, stopwords, weak openers, synonyms
   lib/

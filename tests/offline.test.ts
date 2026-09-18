@@ -634,6 +634,94 @@ describeBuilt('single-file offline BTZ calculator', () => {
 });
 
 /**
+ * Constraint 3 for the pay calculator: a grade and a length of service must
+ * produce a dollar figure from disk, with no network and no site behind it.
+ */
+describeBuilt('single-file offline pay calculator', () => {
+  const file = join(dist, 'pay-calculator-offline.html');
+  let html = '';
+  beforeAll(() => {
+    html = readFileSync(file, 'utf8');
+  });
+
+  it('exists', () => {
+    expect(existsSync(file)).toBe(true);
+  });
+
+  it('carries only its own bundle', () => {
+    expect(html.length).toBeLessThan(500_000);
+  });
+
+  it('looks up and compares basic pay with no network available', async () => {
+    const { JSDOM } = await import('jsdom');
+    const dom = new JSDOM(html, {
+      runScripts: 'dangerously',
+      pretendToBeVisual: true,
+      url: 'file:///pay-calculator-offline.html',
+    });
+
+    const denied: string[] = [];
+    dom.window.fetch = ((input: unknown) => {
+      denied.push(String(input));
+      return Promise.reject(new Error('network disabled'));
+    }) as typeof fetch;
+
+    const mount = dom.window.document.getElementById('pay-calculator-root')!;
+    await vi.waitFor(
+      () => {
+        expect(mount.querySelector('select')).not.toBeNull();
+      },
+      { timeout: 45000, interval: 100 },
+    );
+
+    const doc = dom.window.document;
+    const setValue = (el: HTMLInputElement | HTMLSelectElement, value: string) => {
+      const proto =
+        el.tagName === 'SELECT'
+          ? dom.window.HTMLSelectElement.prototype
+          : dom.window.HTMLInputElement.prototype;
+      Object.getOwnPropertyDescriptor(proto, 'value')!.set!.call(el, value);
+      el.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
+      el.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    };
+
+    // The default: an E-5 at six years, which is the "over 4" column.
+    expect(mount.textContent).toContain('$3,946.80');
+
+    setValue(doc.getElementById('pay-a-grade') as HTMLSelectElement, 'E-7');
+    setValue(doc.getElementById('pay-a-years') as HTMLInputElement, '14');
+    setValue(doc.getElementById('pay-a-months') as HTMLInputElement, '2');
+    await vi.waitFor(
+      () => {
+        expect(mount.textContent).toContain('$5,835.00');
+      },
+      { timeout: 10000, interval: 50 },
+    );
+    expect(mount.textContent).toContain('$70,020.00 a year');
+    expect(mount.textContent).toContain('Over 14 years column');
+
+    // Compare opens on the next grade at the same length of service.
+    const button = [...mount.querySelectorAll('button')].find((b) =>
+      /compare with another/i.test(b.textContent ?? ''),
+    )!;
+    button.click();
+    await vi.waitFor(
+      () => {
+        expect(mount.textContent).toContain('$6,247.20');
+      },
+      { timeout: 10000, interval: 50 },
+    );
+    const text = mount.textContent ?? '';
+    expect(text).toContain('+$412.20');
+    expect(text).toContain('DFAS');
+    expect(text).not.toContain('Unverified data');
+    expect(denied, `page attempted network requests: ${denied.join(', ')}`).toEqual([]);
+
+    dom.window.close();
+  }, 90000);
+});
+
+/**
  * Constraint 3 for the EPB Worksheet: the counters are the whole tool, and
  * they have to move with no network and no site behind them.
  */

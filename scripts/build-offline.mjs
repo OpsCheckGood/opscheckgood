@@ -94,6 +94,14 @@ const TOOLS = [
     outFile: 'epb-worksheet-offline.html',
   },
   {
+    name: 'Pay Calculator',
+    wordmark: 'PAY CALCULATOR',
+    tagline: 'Your grade. Your years. Your number.',
+    entry: 'src/offline-entry-pay.tsx',
+    rootId: 'pay-calculator-root',
+    outFile: 'pay-calculator-offline.html',
+  },
+  {
     name: 'First Sergeant Toolkit',
     wordmark: 'FIRST SERGEANT',
     tagline: 'Where do I send them?',

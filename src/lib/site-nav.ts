@@ -108,6 +108,17 @@ export const tools: Tool[] = [
       'Projects a below-the-zone consideration window, board quarter and promotion date ' +
       'from a date entered active duty and a date of rank, and shows the arithmetic.',
   },
+  {
+    name: 'Pay Calculator',
+    short: 'Pay',
+    tagline: 'Your grade. Your years. Your number.',
+    href: `${base}/tools/pay-calculator/`,
+    ready: true,
+    blurb:
+      'Looks up monthly basic pay from the DFAS table for a pay grade and length of ' +
+      'service, with the annual figure and the next longevity raise, and compares it with ' +
+      'another grade for the "if I made rank" question.',
+  },
 ];
 
 /**
